@@ -14,9 +14,19 @@ extern uint64_t initial_stack_top;
 static inline uint64_t align_up_u64(uint64_t v, uint64_t a) { return (v + a - 1) & ~(a - 1); }
 static inline uint64_t align_down_u64(uint64_t v, uint64_t a) { return v & ~(a - 1); }
 
+/* Limine gives a virtual framebuffer address (usually HHDM). Convert back to phys. */
+static inline uint64_t fb_limine_addr_to_phys(uint64_t addr) {
+    if (addr >= pmm_hhdm_offset) {
+        uint64_t phys = addr - pmm_hhdm_offset;
+        if (phys < pmm_max_physical) return phys;
+    }
+    return addr; /* Assume already physical if not in HHDM window */
+}
+
 static void map_framebuffer_region(struct limine_framebuffer *fb) {
     if (!fb) return;
-    uint64_t fb_phys = (uint64_t)fb->address;
+    uint64_t fb_input = (uint64_t)fb->address;
+    uint64_t fb_phys = fb_limine_addr_to_phys(fb_input);
     uint64_t fb_size = (uint64_t)fb->pitch * fb->height;
     uint64_t start = align_down_u64(fb_phys, PAGE_SIZE);
     uint64_t end   = align_up_u64(fb_phys + fb_size, PAGE_SIZE);
