@@ -18,3 +18,24 @@ int strcmp(const char *a, const char *b) {
     while (*a && (*a == *b)) { a++; b++; }
     return (uint8_t)*a - (uint8_t)*b;
 }
+
+int strncmp(const char *a, const char *b, size_t n) {
+    while (n && *a && (*a == *b)) {
+        a++; b++; n--;
+    }
+    if (n == 0) return 0;
+    return (uint8_t)*a - (uint8_t)*b;
+}
+
+char *strcpy(char *dst, const char *src) {
+    char *d = dst;
+    while ((*d++ = *src++)) {}
+    return dst;
+}
+
+void *memcpy(void *dst, const void *src, unsigned long n) {
+    unsigned char *d = dst;
+    const unsigned char *s = src;
+    while (n--) *d++ = *s++;
+    return dst;
+}

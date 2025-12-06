@@ -24,7 +24,12 @@ set(CFLAGS_KERNEL
 
 set(LDFLAGS_KERNEL "-nostdlib -z max-page-size=0x1000 -T ${CMAKE_SOURCE_DIR}/linker.ld")
 
-file(GLOB_RECURSE KERNEL_C "kernel/*.c" "boot/limine_requests.c")
+file(GLOB_RECURSE KERNEL_C
+    "kernel/*.c"
+    "kernel/*/*.c"
+    "kernel/*/*/*.c"
+    "boot/limine_requests.c"
+)
 set(KERNEL_ASM boot/kernel_entry.asm)
 
 add_executable(kernel.elf ${KERNEL_C} ${KERNEL_ASM})
@@ -33,6 +38,8 @@ target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:C>:${CFLAGS_KERNE
 
 target_include_directories(kernel.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/kernel/include
+    ${CMAKE_SOURCE_DIR}/kernel/gui
+    ${CMAKE_SOURCE_DIR}/kernel/installer
     ${CMAKE_SOURCE_DIR}/boot
 )
 

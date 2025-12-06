@@ -22,6 +22,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pci.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pit.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_keyboard.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_mouse.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/serial.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/vga.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/interrupts/irq.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj.d"
@@ -44,7 +45,12 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/fat32.c" "CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/initrd.c" "CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/vfs.c" "CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.c" "CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/ui.c" "CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer/installer.c" "CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/lodepng_compat.c" "CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/math.c" "CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/png_stub.c" "CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/printf.c" "CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdio.c" "CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdlib.c" "CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj.d"
@@ -54,6 +60,9 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/net.c" "CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/tcp.c" "CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/udp.c" "CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/hid.c" "CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.c" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -115,6 +115,11 @@ void fb_init(uint64_t addr, uint32_t width, uint32_t height, uint32_t pitch, uin
 uint32_t fb_width(void) { return fb_w; }
 uint32_t fb_height(void) { return fb_h; }
 
+uint32_t fb_getpixel(uint32_t x, uint32_t y) {
+    if (!fb || x >= fb_w || y >= fb_h) return 0;
+    return fb[y * fb_pitch + x];
+}
+
 void fb_putpixel(uint32_t x, uint32_t y, uint32_t color) {
     if (!fb || x >= fb_w || y >= fb_h) return;
     fb[y * fb_pitch + x] = color;
@@ -138,8 +143,9 @@ void fb_fill_screen(uint32_t color) {
 }
 
 void fb_draw_char(uint32_t x, uint32_t y, char c, uint32_t fg, uint32_t bg) {
-    if (c < 32 || c > 127) return;
-    const uint8_t *glyph = font8x8[c - 32];
+    unsigned char uc = (unsigned char)c;
+    if (uc < 32 || uc > 127) return;
+    const uint8_t *glyph = font8x8[uc - 32];
     for (uint32_t row = 0; row < 8; ++row) {
         uint8_t bits = glyph[row];
         for (uint32_t col = 0; col < 8; ++col) {

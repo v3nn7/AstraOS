@@ -61,6 +61,9 @@ void kmain(void) {
         for (;;) __asm__ volatile("hlt");
     }
     keyboard_init();
+    mouse_init();
+    usb_init();
+    hid_init();
     interrupts_enable();
 
     printf("AstraKernel (Limine) start\n");

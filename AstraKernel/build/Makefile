@@ -501,6 +501,30 @@ kernel/arch/x86_64/drivers/ps2_keyboard.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.s
 .PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.s
 
+kernel/arch/x86_64/drivers/ps2_mouse.obj: kernel/arch/x86_64/drivers/ps2_mouse.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.obj
+
+# target to build an object file
+kernel/arch/x86_64/drivers/ps2_mouse.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.obj
+
+kernel/arch/x86_64/drivers/ps2_mouse.i: kernel/arch/x86_64/drivers/ps2_mouse.c.i
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/drivers/ps2_mouse.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.i
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.i
+
+kernel/arch/x86_64/drivers/ps2_mouse.s: kernel/arch/x86_64/drivers/ps2_mouse.c.s
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/drivers/ps2_mouse.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.s
+.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.s
+
 kernel/arch/x86_64/drivers/serial.obj: kernel/arch/x86_64/drivers/serial.c.obj
 .PHONY : kernel/arch/x86_64/drivers/serial.obj
 
@@ -1029,6 +1053,102 @@ kernel/fs/vfs.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.s
 .PHONY : kernel/fs/vfs.c.s
 
+kernel/gui/event.obj: kernel/gui/event.c.obj
+.PHONY : kernel/gui/event.obj
+
+# target to build an object file
+kernel/gui/event.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj
+.PHONY : kernel/gui/event.c.obj
+
+kernel/gui/event.i: kernel/gui/event.c.i
+.PHONY : kernel/gui/event.i
+
+# target to preprocess a source file
+kernel/gui/event.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/event.c.i
+.PHONY : kernel/gui/event.c.i
+
+kernel/gui/event.s: kernel/gui/event.c.s
+.PHONY : kernel/gui/event.s
+
+# target to generate assembly for a file
+kernel/gui/event.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/event.c.s
+.PHONY : kernel/gui/event.c.s
+
+kernel/gui/ui.obj: kernel/gui/ui.c.obj
+.PHONY : kernel/gui/ui.obj
+
+# target to build an object file
+kernel/gui/ui.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj
+.PHONY : kernel/gui/ui.c.obj
+
+kernel/gui/ui.i: kernel/gui/ui.c.i
+.PHONY : kernel/gui/ui.i
+
+# target to preprocess a source file
+kernel/gui/ui.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.i
+.PHONY : kernel/gui/ui.c.i
+
+kernel/gui/ui.s: kernel/gui/ui.c.s
+.PHONY : kernel/gui/ui.s
+
+# target to generate assembly for a file
+kernel/gui/ui.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.s
+.PHONY : kernel/gui/ui.c.s
+
+kernel/installer/installer.obj: kernel/installer/installer.c.obj
+.PHONY : kernel/installer/installer.obj
+
+# target to build an object file
+kernel/installer/installer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj
+.PHONY : kernel/installer/installer.c.obj
+
+kernel/installer/installer.i: kernel/installer/installer.c.i
+.PHONY : kernel/installer/installer.i
+
+# target to preprocess a source file
+kernel/installer/installer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.i
+.PHONY : kernel/installer/installer.c.i
+
+kernel/installer/installer.s: kernel/installer/installer.c.s
+.PHONY : kernel/installer/installer.s
+
+# target to generate assembly for a file
+kernel/installer/installer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.s
+.PHONY : kernel/installer/installer.c.s
+
+kernel/lib/lodepng_compat.obj: kernel/lib/lodepng_compat.c.obj
+.PHONY : kernel/lib/lodepng_compat.obj
+
+# target to build an object file
+kernel/lib/lodepng_compat.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj
+.PHONY : kernel/lib/lodepng_compat.c.obj
+
+kernel/lib/lodepng_compat.i: kernel/lib/lodepng_compat.c.i
+.PHONY : kernel/lib/lodepng_compat.i
+
+# target to preprocess a source file
+kernel/lib/lodepng_compat.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.i
+.PHONY : kernel/lib/lodepng_compat.c.i
+
+kernel/lib/lodepng_compat.s: kernel/lib/lodepng_compat.c.s
+.PHONY : kernel/lib/lodepng_compat.s
+
+# target to generate assembly for a file
+kernel/lib/lodepng_compat.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.s
+.PHONY : kernel/lib/lodepng_compat.c.s
+
 kernel/lib/math.obj: kernel/lib/math.c.obj
 .PHONY : kernel/lib/math.obj
 
@@ -1052,6 +1172,30 @@ kernel/lib/math.s: kernel/lib/math.c.s
 kernel/lib/math.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/math.c.s
 .PHONY : kernel/lib/math.c.s
+
+kernel/lib/png_stub.obj: kernel/lib/png_stub.c.obj
+.PHONY : kernel/lib/png_stub.obj
+
+# target to build an object file
+kernel/lib/png_stub.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj
+.PHONY : kernel/lib/png_stub.c.obj
+
+kernel/lib/png_stub.i: kernel/lib/png_stub.c.i
+.PHONY : kernel/lib/png_stub.i
+
+# target to preprocess a source file
+kernel/lib/png_stub.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.i
+.PHONY : kernel/lib/png_stub.c.i
+
+kernel/lib/png_stub.s: kernel/lib/png_stub.c.s
+.PHONY : kernel/lib/png_stub.s
+
+# target to generate assembly for a file
+kernel/lib/png_stub.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.s
+.PHONY : kernel/lib/png_stub.c.s
 
 kernel/lib/printf.obj: kernel/lib/printf.c.obj
 .PHONY : kernel/lib/printf.obj
@@ -1269,6 +1413,78 @@ kernel/net/udp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/udp.c.s
 .PHONY : kernel/net/udp.c.s
 
+kernel/usb/hid.obj: kernel/usb/hid.c.obj
+.PHONY : kernel/usb/hid.obj
+
+# target to build an object file
+kernel/usb/hid.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj
+.PHONY : kernel/usb/hid.c.obj
+
+kernel/usb/hid.i: kernel/usb/hid.c.i
+.PHONY : kernel/usb/hid.i
+
+# target to preprocess a source file
+kernel/usb/hid.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.i
+.PHONY : kernel/usb/hid.c.i
+
+kernel/usb/hid.s: kernel/usb/hid.c.s
+.PHONY : kernel/usb/hid.s
+
+# target to generate assembly for a file
+kernel/usb/hid.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.s
+.PHONY : kernel/usb/hid.c.s
+
+kernel/usb/usb.obj: kernel/usb/usb.c.obj
+.PHONY : kernel/usb/usb.obj
+
+# target to build an object file
+kernel/usb/usb.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj
+.PHONY : kernel/usb/usb.c.obj
+
+kernel/usb/usb.i: kernel/usb/usb.c.i
+.PHONY : kernel/usb/usb.i
+
+# target to preprocess a source file
+kernel/usb/usb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.i
+.PHONY : kernel/usb/usb.c.i
+
+kernel/usb/usb.s: kernel/usb/usb.c.s
+.PHONY : kernel/usb/usb.s
+
+# target to generate assembly for a file
+kernel/usb/usb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.s
+.PHONY : kernel/usb/usb.c.s
+
+kernel/usb/xhci.obj: kernel/usb/xhci.c.obj
+.PHONY : kernel/usb/xhci.obj
+
+# target to build an object file
+kernel/usb/xhci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj
+.PHONY : kernel/usb/xhci.c.obj
+
+kernel/usb/xhci.i: kernel/usb/xhci.c.i
+.PHONY : kernel/usb/xhci.i
+
+# target to preprocess a source file
+kernel/usb/xhci.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.i
+.PHONY : kernel/usb/xhci.c.i
+
+kernel/usb/xhci.s: kernel/usb/xhci.c.s
+.PHONY : kernel/usb/xhci.s
+
+# target to generate assembly for a file
+kernel/usb/xhci.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.s
+.PHONY : kernel/usb/xhci.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1322,6 +1538,9 @@ help:
 	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.obj"
 	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.i"
 	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.s"
+	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.obj"
+	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.i"
+	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.s"
 	@echo "... kernel/arch/x86_64/drivers/serial.obj"
 	@echo "... kernel/arch/x86_64/drivers/serial.i"
 	@echo "... kernel/arch/x86_64/drivers/serial.s"
@@ -1388,9 +1607,24 @@ help:
 	@echo "... kernel/fs/vfs.obj"
 	@echo "... kernel/fs/vfs.i"
 	@echo "... kernel/fs/vfs.s"
+	@echo "... kernel/gui/event.obj"
+	@echo "... kernel/gui/event.i"
+	@echo "... kernel/gui/event.s"
+	@echo "... kernel/gui/ui.obj"
+	@echo "... kernel/gui/ui.i"
+	@echo "... kernel/gui/ui.s"
+	@echo "... kernel/installer/installer.obj"
+	@echo "... kernel/installer/installer.i"
+	@echo "... kernel/installer/installer.s"
+	@echo "... kernel/lib/lodepng_compat.obj"
+	@echo "... kernel/lib/lodepng_compat.i"
+	@echo "... kernel/lib/lodepng_compat.s"
 	@echo "... kernel/lib/math.obj"
 	@echo "... kernel/lib/math.i"
 	@echo "... kernel/lib/math.s"
+	@echo "... kernel/lib/png_stub.obj"
+	@echo "... kernel/lib/png_stub.i"
+	@echo "... kernel/lib/png_stub.s"
 	@echo "... kernel/lib/printf.obj"
 	@echo "... kernel/lib/printf.i"
 	@echo "... kernel/lib/printf.s"
@@ -1418,6 +1652,15 @@ help:
 	@echo "... kernel/net/udp.obj"
 	@echo "... kernel/net/udp.i"
 	@echo "... kernel/net/udp.s"
+	@echo "... kernel/usb/hid.obj"
+	@echo "... kernel/usb/hid.i"
+	@echo "... kernel/usb/hid.s"
+	@echo "... kernel/usb/usb.obj"
+	@echo "... kernel/usb/usb.i"
+	@echo "... kernel/usb/usb.s"
+	@echo "... kernel/usb/xhci.obj"
+	@echo "... kernel/usb/xhci.i"
+	@echo "... kernel/usb/xhci.s"
 .PHONY : help
 
 
