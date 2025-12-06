@@ -1,3 +1,0 @@
-/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/limine-populate.dir
-/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/edit_cache.dir
-/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/rebuild_cache.dir

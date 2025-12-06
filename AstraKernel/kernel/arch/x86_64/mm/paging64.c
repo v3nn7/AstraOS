@@ -89,6 +89,18 @@ int map_page(virt_addr_t virt, phys_addr_t phys, uint64_t flags) {
     }
     uint64_t *pd = get_table_ptr(pdpt[pdpt_i]);
 
+    /* If a huge page is present but we need 4K, split the 2MB page into a PT */
+    if ((pd[pd_i] & PAGE_HUGE) && !(flags & PAGE_HUGE)) {
+        uint64_t huge_phys_base = pd[pd_i] & ~0x1FFFFFULL;
+        uint64_t *tbl = alloc_table();
+        if (!tbl) return -1;
+        for (int j = 0; j < 512; ++j) {
+            uint64_t p = huge_phys_base + ((uint64_t)j << 12);
+            tbl[j] = make_entry(p, PAGE_WRITE | PAGE_PRESENT);
+        }
+        pd[pd_i] = make_entry(phys_of(tbl), PAGE_WRITE | PAGE_PRESENT);
+    }
+
     /* Obsługa Huge Pages (2MB) */
     if (flags & PAGE_HUGE) {
         pd[pd_i] = make_entry(phys, flags | PAGE_HUGE | PAGE_PRESENT);
@@ -153,6 +165,28 @@ void paging_init(phys_addr_t kernel_start, phys_addr_t kernel_end) {
     for (int i = 0; i < 512; ++i) {
         uint64_t addr = (uint64_t)i * 0x200000ULL; // 2MB
         pd_low[i] = make_entry(addr, PAGE_WRITE | PAGE_HUGE);
+    }
+
+    /* 1a. Wymuszone zmapowanie 0xB8000 jako 4K (rozbicie pierwszego PD wpisu) */
+    {
+        /* przygotuj PT dla 0..2MB */
+        uint64_t *pt0 = alloc_table();
+        if (pt0) {
+            /* zastąp pd_low[0] wpisem do PT */
+            pd_low[0] = make_entry(phys_of(pt0), PAGE_WRITE | PAGE_PRESENT);
+            /* wyczyść PT */
+            memset_local(pt0, 0, PAGE_SIZE);
+            /* zmapuj VGA tekst: 0xB8000 -> 0xB8000, RW */
+            size_t vga_idx = (0xB8000 >> 12) & 0x1FF;
+            pt0[vga_idx] = make_entry(0xB8000, PAGE_WRITE | PAGE_PRESENT);
+            /* pozostale wpisy opcjonalnie mogą pokryć resztę 0..2MB jako RW */
+            for (size_t j = 0; j < 512; ++j) {
+                if (pt0[j] == 0) {
+                    uint64_t p = ((uint64_t)j) << 12;
+                    pt0[j] = make_entry(p, PAGE_WRITE | PAGE_PRESENT);
+                }
+            }
+        }
     }
 
     /* 2. Kernel Map (High Memory): KERNEL_BASE + P

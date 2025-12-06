@@ -25,13 +25,25 @@ static void map_framebuffer_region(struct limine_framebuffer *fb) {
     }
 }
 
-static void init_framebuffer(void) {
-    if (!limine_fb_request.response) return;
-    struct limine_framebuffer_response *resp = (struct limine_framebuffer_response *)limine_fb_request.response;
-    if (resp->framebuffer_count == 0) return;
+static bool init_framebuffer(void) {
+    printf("FB: checking response...\n");
+    struct limine_framebuffer_response *resp = limine_fb_request.response;
+    if (!resp) {
+        printf("FB: no response!\n");
+        return false;
+    }
+    printf("FB: count=%d\n", (int)resp->framebuffer_count);
+    if (resp->framebuffer_count == 0) {
+        printf("FB: count is 0!\n");
+        return false;
+    }
     struct limine_framebuffer *fb = resp->framebuffers[0];
+    printf("FB: addr=%p w=%d h=%d pitch=%d bpp=%d\n", 
+           fb->address, (int)fb->width, (int)fb->height, (int)fb->pitch, (int)fb->bpp);
     map_framebuffer_region(fb);
     fb_init((uint64_t)fb->address, fb->width, fb->height, fb->pitch, fb->bpp);
+    printf("FB: initialized!\n");
+    return true;
 }
 
 void kmain(void) {
@@ -40,14 +52,26 @@ void kmain(void) {
     irq_init();
     paging_init((phys_addr_t)_kernel_start_physical, (phys_addr_t)_kernel_end_physical);
 
-    init_framebuffer();
+    bool fb_ok = init_framebuffer();
+    if (!fb_ok) {
+        /* VGA fallback (mapping 0xB8000 jest w paging_init) */
+        vga_init();
+        vga_write("Framebuffer unavailable. VGA fallback active.\n");
+        /* Bez FB nie uruchamiamy shell; czekamy w halt */
+        for (;;) __asm__ volatile("hlt");
+    }
     keyboard_init();
     interrupts_enable();
 
     printf("AstraKernel (Limine) start\n");
 
     scheduler_init();
-    shell_run();
+    if (fb_ok) {
+        shell_run();
+    } else {
+        vga_write("Shell requires framebuffer. Halting.\n");
+        for (;;) __asm__ volatile("hlt");
+    }
 
     for (;;) {
         __asm__ volatile("hlt");

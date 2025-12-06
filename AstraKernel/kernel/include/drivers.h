@@ -17,3 +17,9 @@ void fb_fill_screen(uint32_t color);
 void fb_draw_char(uint32_t x, uint32_t y, char c, uint32_t fg, uint32_t bg);
 void fb_draw_text(uint32_t x, uint32_t y, const char *text, uint32_t fg, uint32_t bg);
 void fb_scroll_up(uint32_t pixels, uint32_t bg);
+
+/* VGA text fallback */
+void vga_init(void);
+void vga_clear(void);
+void vga_putc(char c);
+void vga_write(const char *s);

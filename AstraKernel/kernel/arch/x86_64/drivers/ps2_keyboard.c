@@ -57,6 +57,18 @@ static char translate(uint8_t sc) {
 static void keyboard_irq(interrupt_frame_t *frame) {
     (void)frame;
     uint8_t sc = inb(PS2_DATA);
+    /* ACK handling if status flags errors */
+    /* Ignore 0xFA (ACK) and 0xFE (resend) for simplicity */
+    if (sc == 0xFA || sc == 0xFE) return;
+
+    /* Extended scancodes: skip prefix 0xE0 and store next byte with high bit set */
+    static bool extended = false;
+    if (sc == 0xE0) { extended = true; return; }
+    if (extended) {
+        sc |= 0x80; /* mark as extended */
+        extended = false;
+    }
+
     if (sc == 0x2A || sc == 0x36) { shift = true; return; }
     if (sc == 0xAA || sc == 0xB6) { shift = false; return; }
     if (sc & 0x80) return;
@@ -71,9 +83,18 @@ static void wait_output(void) {
     while (!(inb(PS2_STATUS) & 0x01)) { }
 }
 
+static void pic_unmask_irq1(void) {
+    uint8_t mask = inb(0x21);
+    mask &= ~(1 << 1); // enable IRQ1
+    outb(0x21, mask);
+}
+
 void keyboard_init(void) {
     head = tail = 0;
     shift = false;
+    /* Clear output buffer */
+    while (inb(PS2_STATUS) & 0x01) (void)inb(PS2_DATA);
+
     wait_input();
     outb(PS2_CMD, 0xAD); /* disable port 1 */
     wait_input();
@@ -87,6 +108,16 @@ void keyboard_init(void) {
     outb(PS2_CMD, 0x60);
     wait_input();
     outb(PS2_DATA, config);
+
+    /* Enable scanning */
+    wait_input();
+    outb(PS2_DATA, 0xF4);
+    wait_output();
+    (void)inb(PS2_DATA); /* ACK discard */
+
+    /* Unmask PIC IRQ1 */
+    pic_unmask_irq1();
+
     irq_register_handler(1, keyboard_irq);
 }
 

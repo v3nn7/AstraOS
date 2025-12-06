@@ -23,25 +23,11 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
   "/usr/share/cmake/Modules/Compiler/GNU-C.cmake"
   "/usr/share/cmake/Modules/Compiler/GNU.cmake"
-  "/usr/share/cmake/Modules/ExternalProject/shared_internal_commands.cmake"
-  "/usr/share/cmake/Modules/FetchContent.cmake"
-  "/usr/share/cmake/Modules/FetchContent/CMakeLists.cmake.in"
-  "/usr/share/cmake/Modules/FindGit.cmake"
-  "/usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
-  "/usr/share/cmake/Modules/FindPackageMessage.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeASMLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeASM_NASMLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
-  "/usr/share/cmake/Modules/Platform/Linker/GNU.cmake"
-  "/usr/share/cmake/Modules/Platform/Linker/Linux-C.cmake"
-  "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU-C.cmake"
-  "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU.cmake"
-  "/usr/share/cmake/Modules/Platform/Linux-GNU-C.cmake"
-  "/usr/share/cmake/Modules/Platform/Linux-GNU.cmake"
-  "/usr/share/cmake/Modules/Platform/Linux-Initialize.cmake"
-  "/usr/share/cmake/Modules/Platform/Linux.cmake"
-  "/usr/share/cmake/Modules/Platform/UnixPaths.cmake"
+  "/usr/share/cmake/Modules/Platform/Generic.cmake"
   )
 
 # The corresponding makefile is:
@@ -52,14 +38,14 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "_deps/limine-subbuild/CMakeLists.txt"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/d_objs.dir/DependInfo.cmake"
   "CMakeFiles/kernel.elf.dir/DependInfo.cmake"
+  "CMakeFiles/ovmf_vars.dir/DependInfo.cmake"
   "CMakeFiles/iso.dir/DependInfo.cmake"
-  "CMakeFiles/run.dir/DependInfo.cmake"
+  "CMakeFiles/run_bios.dir/DependInfo.cmake"
+  "CMakeFiles/run_uefi.dir/DependInfo.cmake"
   )

@@ -117,19 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named d_objs
-
-# Build rule for target.
-d_objs: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 d_objs
-.PHONY : d_objs
-
-# fast build rule for target.
-d_objs/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/d_objs.dir/build.make CMakeFiles/d_objs.dir/build
-.PHONY : d_objs/fast
-
-#=============================================================================
 # Target rules for targets named kernel.elf
 
 # Build rule for target.
@@ -141,6 +128,19 @@ kernel.elf: cmake_check_build_system
 kernel.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/build
 .PHONY : kernel.elf/fast
+
+#=============================================================================
+# Target rules for targets named ovmf_vars
+
+# Build rule for target.
+ovmf_vars: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ovmf_vars
+.PHONY : ovmf_vars
+
+# fast build rule for target.
+ovmf_vars/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ovmf_vars.dir/build.make CMakeFiles/ovmf_vars.dir/build
+.PHONY : ovmf_vars/fast
 
 #=============================================================================
 # Target rules for targets named iso
@@ -156,33 +156,46 @@ iso/fast:
 .PHONY : iso/fast
 
 #=============================================================================
-# Target rules for targets named run
+# Target rules for targets named run_bios
 
 # Build rule for target.
-run: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run
-.PHONY : run
+run_bios: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_bios
+.PHONY : run_bios
 
 # fast build rule for target.
-run/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
-.PHONY : run/fast
+run_bios/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_bios.dir/build.make CMakeFiles/run_bios.dir/build
+.PHONY : run_bios/fast
 
-boot/kernel_entry.o: boot/kernel_entry.asm.o
-.PHONY : boot/kernel_entry.o
+#=============================================================================
+# Target rules for targets named run_uefi
+
+# Build rule for target.
+run_uefi: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_uefi
+.PHONY : run_uefi
+
+# fast build rule for target.
+run_uefi/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_uefi.dir/build.make CMakeFiles/run_uefi.dir/build
+.PHONY : run_uefi/fast
+
+boot/kernel_entry.obj: boot/kernel_entry.asm.obj
+.PHONY : boot/kernel_entry.obj
 
 # target to build an object file
-boot/kernel_entry.asm.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.o
-.PHONY : boot/kernel_entry.asm.o
+boot/kernel_entry.asm.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj
+.PHONY : boot/kernel_entry.asm.obj
 
-boot/limine_requests.o: boot/limine_requests.c.o
-.PHONY : boot/limine_requests.o
+boot/limine_requests.obj: boot/limine_requests.c.obj
+.PHONY : boot/limine_requests.obj
 
 # target to build an object file
-boot/limine_requests.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/boot/limine_requests.c.o
-.PHONY : boot/limine_requests.c.o
+boot/limine_requests.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/boot/limine_requests.c.obj
+.PHONY : boot/limine_requests.c.obj
 
 boot/limine_requests.i: boot/limine_requests.c.i
 .PHONY : boot/limine_requests.i
@@ -200,13 +213,13 @@ boot/limine_requests.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/boot/limine_requests.c.s
 .PHONY : boot/limine_requests.c.s
 
-kernel/arch/x86_64/apic/ioapic.o: kernel/arch/x86_64/apic/ioapic.c.o
-.PHONY : kernel/arch/x86_64/apic/ioapic.o
+kernel/arch/x86_64/apic/ioapic.obj: kernel/arch/x86_64/apic/ioapic.c.obj
+.PHONY : kernel/arch/x86_64/apic/ioapic.obj
 
 # target to build an object file
-kernel/arch/x86_64/apic/ioapic.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/ioapic.c.o
-.PHONY : kernel/arch/x86_64/apic/ioapic.c.o
+kernel/arch/x86_64/apic/ioapic.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/ioapic.c.obj
+.PHONY : kernel/arch/x86_64/apic/ioapic.c.obj
 
 kernel/arch/x86_64/apic/ioapic.i: kernel/arch/x86_64/apic/ioapic.c.i
 .PHONY : kernel/arch/x86_64/apic/ioapic.i
@@ -224,13 +237,13 @@ kernel/arch/x86_64/apic/ioapic.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/ioapic.c.s
 .PHONY : kernel/arch/x86_64/apic/ioapic.c.s
 
-kernel/arch/x86_64/apic/lapic.o: kernel/arch/x86_64/apic/lapic.c.o
-.PHONY : kernel/arch/x86_64/apic/lapic.o
+kernel/arch/x86_64/apic/lapic.obj: kernel/arch/x86_64/apic/lapic.c.obj
+.PHONY : kernel/arch/x86_64/apic/lapic.obj
 
 # target to build an object file
-kernel/arch/x86_64/apic/lapic.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/lapic.c.o
-.PHONY : kernel/arch/x86_64/apic/lapic.c.o
+kernel/arch/x86_64/apic/lapic.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/lapic.c.obj
+.PHONY : kernel/arch/x86_64/apic/lapic.c.obj
 
 kernel/arch/x86_64/apic/lapic.i: kernel/arch/x86_64/apic/lapic.c.i
 .PHONY : kernel/arch/x86_64/apic/lapic.i
@@ -248,13 +261,13 @@ kernel/arch/x86_64/apic/lapic.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/lapic.c.s
 .PHONY : kernel/arch/x86_64/apic/lapic.c.s
 
-kernel/arch/x86_64/cpu/gdt.o: kernel/arch/x86_64/cpu/gdt.c.o
-.PHONY : kernel/arch/x86_64/cpu/gdt.o
+kernel/arch/x86_64/cpu/gdt.obj: kernel/arch/x86_64/cpu/gdt.c.obj
+.PHONY : kernel/arch/x86_64/cpu/gdt.obj
 
 # target to build an object file
-kernel/arch/x86_64/cpu/gdt.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt.c.o
-.PHONY : kernel/arch/x86_64/cpu/gdt.c.o
+kernel/arch/x86_64/cpu/gdt.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt.c.obj
+.PHONY : kernel/arch/x86_64/cpu/gdt.c.obj
 
 kernel/arch/x86_64/cpu/gdt.i: kernel/arch/x86_64/cpu/gdt.c.i
 .PHONY : kernel/arch/x86_64/cpu/gdt.i
@@ -272,13 +285,13 @@ kernel/arch/x86_64/cpu/gdt.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt.c.s
 .PHONY : kernel/arch/x86_64/cpu/gdt.c.s
 
-kernel/arch/x86_64/cpu/gdt64.o: kernel/arch/x86_64/cpu/gdt64.c.o
-.PHONY : kernel/arch/x86_64/cpu/gdt64.o
+kernel/arch/x86_64/cpu/gdt64.obj: kernel/arch/x86_64/cpu/gdt64.c.obj
+.PHONY : kernel/arch/x86_64/cpu/gdt64.obj
 
 # target to build an object file
-kernel/arch/x86_64/cpu/gdt64.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt64.c.o
-.PHONY : kernel/arch/x86_64/cpu/gdt64.c.o
+kernel/arch/x86_64/cpu/gdt64.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt64.c.obj
+.PHONY : kernel/arch/x86_64/cpu/gdt64.c.obj
 
 kernel/arch/x86_64/cpu/gdt64.i: kernel/arch/x86_64/cpu/gdt64.c.i
 .PHONY : kernel/arch/x86_64/cpu/gdt64.i
@@ -296,13 +309,13 @@ kernel/arch/x86_64/cpu/gdt64.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/gdt64.c.s
 .PHONY : kernel/arch/x86_64/cpu/gdt64.c.s
 
-kernel/arch/x86_64/cpu/idt.o: kernel/arch/x86_64/cpu/idt.c.o
-.PHONY : kernel/arch/x86_64/cpu/idt.o
+kernel/arch/x86_64/cpu/idt.obj: kernel/arch/x86_64/cpu/idt.c.obj
+.PHONY : kernel/arch/x86_64/cpu/idt.obj
 
 # target to build an object file
-kernel/arch/x86_64/cpu/idt.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/idt.c.o
-.PHONY : kernel/arch/x86_64/cpu/idt.c.o
+kernel/arch/x86_64/cpu/idt.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/idt.c.obj
+.PHONY : kernel/arch/x86_64/cpu/idt.c.obj
 
 kernel/arch/x86_64/cpu/idt.i: kernel/arch/x86_64/cpu/idt.c.i
 .PHONY : kernel/arch/x86_64/cpu/idt.i
@@ -320,13 +333,13 @@ kernel/arch/x86_64/cpu/idt.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/idt.c.s
 .PHONY : kernel/arch/x86_64/cpu/idt.c.s
 
-kernel/arch/x86_64/cpu/tss.o: kernel/arch/x86_64/cpu/tss.c.o
-.PHONY : kernel/arch/x86_64/cpu/tss.o
+kernel/arch/x86_64/cpu/tss.obj: kernel/arch/x86_64/cpu/tss.c.obj
+.PHONY : kernel/arch/x86_64/cpu/tss.obj
 
 # target to build an object file
-kernel/arch/x86_64/cpu/tss.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/tss.c.o
-.PHONY : kernel/arch/x86_64/cpu/tss.c.o
+kernel/arch/x86_64/cpu/tss.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/tss.c.obj
+.PHONY : kernel/arch/x86_64/cpu/tss.c.obj
 
 kernel/arch/x86_64/cpu/tss.i: kernel/arch/x86_64/cpu/tss.c.i
 .PHONY : kernel/arch/x86_64/cpu/tss.i
@@ -344,13 +357,13 @@ kernel/arch/x86_64/cpu/tss.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/tss.c.s
 .PHONY : kernel/arch/x86_64/cpu/tss.c.s
 
-kernel/arch/x86_64/drivers/ahci.o: kernel/arch/x86_64/drivers/ahci.c.o
-.PHONY : kernel/arch/x86_64/drivers/ahci.o
+kernel/arch/x86_64/drivers/ahci.obj: kernel/arch/x86_64/drivers/ahci.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ahci.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/ahci.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.o
-.PHONY : kernel/arch/x86_64/drivers/ahci.c.o
+kernel/arch/x86_64/drivers/ahci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ahci.c.obj
 
 kernel/arch/x86_64/drivers/ahci.i: kernel/arch/x86_64/drivers/ahci.c.i
 .PHONY : kernel/arch/x86_64/drivers/ahci.i
@@ -368,13 +381,13 @@ kernel/arch/x86_64/drivers/ahci.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.s
 .PHONY : kernel/arch/x86_64/drivers/ahci.c.s
 
-kernel/arch/x86_64/drivers/framebuffer.o: kernel/arch/x86_64/drivers/framebuffer.c.o
-.PHONY : kernel/arch/x86_64/drivers/framebuffer.o
+kernel/arch/x86_64/drivers/framebuffer.obj: kernel/arch/x86_64/drivers/framebuffer.c.obj
+.PHONY : kernel/arch/x86_64/drivers/framebuffer.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/framebuffer.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.o
-.PHONY : kernel/arch/x86_64/drivers/framebuffer.c.o
+kernel/arch/x86_64/drivers/framebuffer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.obj
+.PHONY : kernel/arch/x86_64/drivers/framebuffer.c.obj
 
 kernel/arch/x86_64/drivers/framebuffer.i: kernel/arch/x86_64/drivers/framebuffer.c.i
 .PHONY : kernel/arch/x86_64/drivers/framebuffer.i
@@ -392,13 +405,13 @@ kernel/arch/x86_64/drivers/framebuffer.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.s
 .PHONY : kernel/arch/x86_64/drivers/framebuffer.c.s
 
-kernel/arch/x86_64/drivers/hpet.o: kernel/arch/x86_64/drivers/hpet.c.o
-.PHONY : kernel/arch/x86_64/drivers/hpet.o
+kernel/arch/x86_64/drivers/hpet.obj: kernel/arch/x86_64/drivers/hpet.c.obj
+.PHONY : kernel/arch/x86_64/drivers/hpet.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/hpet.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.o
-.PHONY : kernel/arch/x86_64/drivers/hpet.c.o
+kernel/arch/x86_64/drivers/hpet.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.obj
+.PHONY : kernel/arch/x86_64/drivers/hpet.c.obj
 
 kernel/arch/x86_64/drivers/hpet.i: kernel/arch/x86_64/drivers/hpet.c.i
 .PHONY : kernel/arch/x86_64/drivers/hpet.i
@@ -416,13 +429,13 @@ kernel/arch/x86_64/drivers/hpet.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.s
 .PHONY : kernel/arch/x86_64/drivers/hpet.c.s
 
-kernel/arch/x86_64/drivers/pci.o: kernel/arch/x86_64/drivers/pci.c.o
-.PHONY : kernel/arch/x86_64/drivers/pci.o
+kernel/arch/x86_64/drivers/pci.obj: kernel/arch/x86_64/drivers/pci.c.obj
+.PHONY : kernel/arch/x86_64/drivers/pci.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/pci.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.o
-.PHONY : kernel/arch/x86_64/drivers/pci.c.o
+kernel/arch/x86_64/drivers/pci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj
+.PHONY : kernel/arch/x86_64/drivers/pci.c.obj
 
 kernel/arch/x86_64/drivers/pci.i: kernel/arch/x86_64/drivers/pci.c.i
 .PHONY : kernel/arch/x86_64/drivers/pci.i
@@ -440,13 +453,13 @@ kernel/arch/x86_64/drivers/pci.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.s
 .PHONY : kernel/arch/x86_64/drivers/pci.c.s
 
-kernel/arch/x86_64/drivers/pit.o: kernel/arch/x86_64/drivers/pit.c.o
-.PHONY : kernel/arch/x86_64/drivers/pit.o
+kernel/arch/x86_64/drivers/pit.obj: kernel/arch/x86_64/drivers/pit.c.obj
+.PHONY : kernel/arch/x86_64/drivers/pit.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/pit.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.o
-.PHONY : kernel/arch/x86_64/drivers/pit.c.o
+kernel/arch/x86_64/drivers/pit.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj
+.PHONY : kernel/arch/x86_64/drivers/pit.c.obj
 
 kernel/arch/x86_64/drivers/pit.i: kernel/arch/x86_64/drivers/pit.c.i
 .PHONY : kernel/arch/x86_64/drivers/pit.i
@@ -464,13 +477,13 @@ kernel/arch/x86_64/drivers/pit.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.s
 .PHONY : kernel/arch/x86_64/drivers/pit.c.s
 
-kernel/arch/x86_64/drivers/ps2_keyboard.o: kernel/arch/x86_64/drivers/ps2_keyboard.c.o
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.o
+kernel/arch/x86_64/drivers/ps2_keyboard.obj: kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/ps2_keyboard.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.o
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.o
+kernel/arch/x86_64/drivers/ps2_keyboard.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
+.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
 
 kernel/arch/x86_64/drivers/ps2_keyboard.i: kernel/arch/x86_64/drivers/ps2_keyboard.c.i
 .PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.i
@@ -488,13 +501,13 @@ kernel/arch/x86_64/drivers/ps2_keyboard.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.s
 .PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.s
 
-kernel/arch/x86_64/drivers/serial.o: kernel/arch/x86_64/drivers/serial.c.o
-.PHONY : kernel/arch/x86_64/drivers/serial.o
+kernel/arch/x86_64/drivers/serial.obj: kernel/arch/x86_64/drivers/serial.c.obj
+.PHONY : kernel/arch/x86_64/drivers/serial.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/serial.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.o
-.PHONY : kernel/arch/x86_64/drivers/serial.c.o
+kernel/arch/x86_64/drivers/serial.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.obj
+.PHONY : kernel/arch/x86_64/drivers/serial.c.obj
 
 kernel/arch/x86_64/drivers/serial.i: kernel/arch/x86_64/drivers/serial.c.i
 .PHONY : kernel/arch/x86_64/drivers/serial.i
@@ -512,13 +525,13 @@ kernel/arch/x86_64/drivers/serial.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.s
 .PHONY : kernel/arch/x86_64/drivers/serial.c.s
 
-kernel/arch/x86_64/drivers/vga.o: kernel/arch/x86_64/drivers/vga.c.o
-.PHONY : kernel/arch/x86_64/drivers/vga.o
+kernel/arch/x86_64/drivers/vga.obj: kernel/arch/x86_64/drivers/vga.c.obj
+.PHONY : kernel/arch/x86_64/drivers/vga.obj
 
 # target to build an object file
-kernel/arch/x86_64/drivers/vga.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.o
-.PHONY : kernel/arch/x86_64/drivers/vga.c.o
+kernel/arch/x86_64/drivers/vga.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.obj
+.PHONY : kernel/arch/x86_64/drivers/vga.c.obj
 
 kernel/arch/x86_64/drivers/vga.i: kernel/arch/x86_64/drivers/vga.c.i
 .PHONY : kernel/arch/x86_64/drivers/vga.i
@@ -536,13 +549,13 @@ kernel/arch/x86_64/drivers/vga.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.s
 .PHONY : kernel/arch/x86_64/drivers/vga.c.s
 
-kernel/arch/x86_64/interrupts/irq.o: kernel/arch/x86_64/interrupts/irq.c.o
-.PHONY : kernel/arch/x86_64/interrupts/irq.o
+kernel/arch/x86_64/interrupts/irq.obj: kernel/arch/x86_64/interrupts/irq.c.obj
+.PHONY : kernel/arch/x86_64/interrupts/irq.obj
 
 # target to build an object file
-kernel/arch/x86_64/interrupts/irq.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.o
-.PHONY : kernel/arch/x86_64/interrupts/irq.c.o
+kernel/arch/x86_64/interrupts/irq.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj
+.PHONY : kernel/arch/x86_64/interrupts/irq.c.obj
 
 kernel/arch/x86_64/interrupts/irq.i: kernel/arch/x86_64/interrupts/irq.c.i
 .PHONY : kernel/arch/x86_64/interrupts/irq.i
@@ -560,13 +573,13 @@ kernel/arch/x86_64/interrupts/irq.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.s
 .PHONY : kernel/arch/x86_64/interrupts/irq.c.s
 
-kernel/arch/x86_64/interrupts/isr.o: kernel/arch/x86_64/interrupts/isr.c.o
-.PHONY : kernel/arch/x86_64/interrupts/isr.o
+kernel/arch/x86_64/interrupts/isr.obj: kernel/arch/x86_64/interrupts/isr.c.obj
+.PHONY : kernel/arch/x86_64/interrupts/isr.obj
 
 # target to build an object file
-kernel/arch/x86_64/interrupts/isr.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.o
-.PHONY : kernel/arch/x86_64/interrupts/isr.c.o
+kernel/arch/x86_64/interrupts/isr.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.obj
+.PHONY : kernel/arch/x86_64/interrupts/isr.c.obj
 
 kernel/arch/x86_64/interrupts/isr.i: kernel/arch/x86_64/interrupts/isr.c.i
 .PHONY : kernel/arch/x86_64/interrupts/isr.i
@@ -584,13 +597,13 @@ kernel/arch/x86_64/interrupts/isr.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.s
 .PHONY : kernel/arch/x86_64/interrupts/isr.c.s
 
-kernel/arch/x86_64/mm/heap.o: kernel/arch/x86_64/mm/heap.c.o
-.PHONY : kernel/arch/x86_64/mm/heap.o
+kernel/arch/x86_64/mm/heap.obj: kernel/arch/x86_64/mm/heap.c.obj
+.PHONY : kernel/arch/x86_64/mm/heap.obj
 
 # target to build an object file
-kernel/arch/x86_64/mm/heap.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.o
-.PHONY : kernel/arch/x86_64/mm/heap.c.o
+kernel/arch/x86_64/mm/heap.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.obj
+.PHONY : kernel/arch/x86_64/mm/heap.c.obj
 
 kernel/arch/x86_64/mm/heap.i: kernel/arch/x86_64/mm/heap.c.i
 .PHONY : kernel/arch/x86_64/mm/heap.i
@@ -608,13 +621,13 @@ kernel/arch/x86_64/mm/heap.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.s
 .PHONY : kernel/arch/x86_64/mm/heap.c.s
 
-kernel/arch/x86_64/mm/paging64.o: kernel/arch/x86_64/mm/paging64.c.o
-.PHONY : kernel/arch/x86_64/mm/paging64.o
+kernel/arch/x86_64/mm/paging64.obj: kernel/arch/x86_64/mm/paging64.c.obj
+.PHONY : kernel/arch/x86_64/mm/paging64.obj
 
 # target to build an object file
-kernel/arch/x86_64/mm/paging64.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/paging64.c.o
-.PHONY : kernel/arch/x86_64/mm/paging64.c.o
+kernel/arch/x86_64/mm/paging64.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/paging64.c.obj
+.PHONY : kernel/arch/x86_64/mm/paging64.c.obj
 
 kernel/arch/x86_64/mm/paging64.i: kernel/arch/x86_64/mm/paging64.c.i
 .PHONY : kernel/arch/x86_64/mm/paging64.i
@@ -632,13 +645,13 @@ kernel/arch/x86_64/mm/paging64.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/paging64.c.s
 .PHONY : kernel/arch/x86_64/mm/paging64.c.s
 
-kernel/arch/x86_64/mm/pmm.o: kernel/arch/x86_64/mm/pmm.c.o
-.PHONY : kernel/arch/x86_64/mm/pmm.o
+kernel/arch/x86_64/mm/pmm.obj: kernel/arch/x86_64/mm/pmm.c.obj
+.PHONY : kernel/arch/x86_64/mm/pmm.obj
 
 # target to build an object file
-kernel/arch/x86_64/mm/pmm.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.o
-.PHONY : kernel/arch/x86_64/mm/pmm.c.o
+kernel/arch/x86_64/mm/pmm.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.obj
+.PHONY : kernel/arch/x86_64/mm/pmm.c.obj
 
 kernel/arch/x86_64/mm/pmm.i: kernel/arch/x86_64/mm/pmm.c.i
 .PHONY : kernel/arch/x86_64/mm/pmm.i
@@ -656,13 +669,13 @@ kernel/arch/x86_64/mm/pmm.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.s
 .PHONY : kernel/arch/x86_64/mm/pmm.c.s
 
-kernel/arch/x86_64/mm/vmm.o: kernel/arch/x86_64/mm/vmm.c.o
-.PHONY : kernel/arch/x86_64/mm/vmm.o
+kernel/arch/x86_64/mm/vmm.obj: kernel/arch/x86_64/mm/vmm.c.obj
+.PHONY : kernel/arch/x86_64/mm/vmm.obj
 
 # target to build an object file
-kernel/arch/x86_64/mm/vmm.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/vmm.c.o
-.PHONY : kernel/arch/x86_64/mm/vmm.c.o
+kernel/arch/x86_64/mm/vmm.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/vmm.c.obj
+.PHONY : kernel/arch/x86_64/mm/vmm.c.obj
 
 kernel/arch/x86_64/mm/vmm.i: kernel/arch/x86_64/mm/vmm.c.i
 .PHONY : kernel/arch/x86_64/mm/vmm.i
@@ -680,13 +693,13 @@ kernel/arch/x86_64/mm/vmm.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/vmm.c.s
 .PHONY : kernel/arch/x86_64/mm/vmm.c.s
 
-kernel/arch/x86_64/sys/syscall.o: kernel/arch/x86_64/sys/syscall.c.o
-.PHONY : kernel/arch/x86_64/sys/syscall.o
+kernel/arch/x86_64/sys/syscall.obj: kernel/arch/x86_64/sys/syscall.c.obj
+.PHONY : kernel/arch/x86_64/sys/syscall.obj
 
 # target to build an object file
-kernel/arch/x86_64/sys/syscall.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/sys/syscall.c.o
-.PHONY : kernel/arch/x86_64/sys/syscall.c.o
+kernel/arch/x86_64/sys/syscall.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/sys/syscall.c.obj
+.PHONY : kernel/arch/x86_64/sys/syscall.c.obj
 
 kernel/arch/x86_64/sys/syscall.i: kernel/arch/x86_64/sys/syscall.c.i
 .PHONY : kernel/arch/x86_64/sys/syscall.i
@@ -704,13 +717,13 @@ kernel/arch/x86_64/sys/syscall.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/sys/syscall.c.s
 .PHONY : kernel/arch/x86_64/sys/syscall.c.s
 
-kernel/arch/x86_64/util/cpuid.o: kernel/arch/x86_64/util/cpuid.c.o
-.PHONY : kernel/arch/x86_64/util/cpuid.o
+kernel/arch/x86_64/util/cpuid.obj: kernel/arch/x86_64/util/cpuid.c.obj
+.PHONY : kernel/arch/x86_64/util/cpuid.obj
 
 # target to build an object file
-kernel/arch/x86_64/util/cpuid.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/cpuid.c.o
-.PHONY : kernel/arch/x86_64/util/cpuid.c.o
+kernel/arch/x86_64/util/cpuid.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/cpuid.c.obj
+.PHONY : kernel/arch/x86_64/util/cpuid.c.obj
 
 kernel/arch/x86_64/util/cpuid.i: kernel/arch/x86_64/util/cpuid.c.i
 .PHONY : kernel/arch/x86_64/util/cpuid.i
@@ -728,13 +741,13 @@ kernel/arch/x86_64/util/cpuid.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/cpuid.c.s
 .PHONY : kernel/arch/x86_64/util/cpuid.c.s
 
-kernel/arch/x86_64/util/ports.o: kernel/arch/x86_64/util/ports.c.o
-.PHONY : kernel/arch/x86_64/util/ports.o
+kernel/arch/x86_64/util/ports.obj: kernel/arch/x86_64/util/ports.c.obj
+.PHONY : kernel/arch/x86_64/util/ports.obj
 
 # target to build an object file
-kernel/arch/x86_64/util/ports.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/ports.c.o
-.PHONY : kernel/arch/x86_64/util/ports.c.o
+kernel/arch/x86_64/util/ports.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/ports.c.obj
+.PHONY : kernel/arch/x86_64/util/ports.c.obj
 
 kernel/arch/x86_64/util/ports.i: kernel/arch/x86_64/util/ports.c.i
 .PHONY : kernel/arch/x86_64/util/ports.i
@@ -752,13 +765,13 @@ kernel/arch/x86_64/util/ports.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/ports.c.s
 .PHONY : kernel/arch/x86_64/util/ports.c.s
 
-kernel/core/kmain.o: kernel/core/kmain.c.o
-.PHONY : kernel/core/kmain.o
+kernel/core/kmain.obj: kernel/core/kmain.c.obj
+.PHONY : kernel/core/kmain.obj
 
 # target to build an object file
-kernel/core/kmain.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/kmain.c.o
-.PHONY : kernel/core/kmain.c.o
+kernel/core/kmain.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/kmain.c.obj
+.PHONY : kernel/core/kmain.c.obj
 
 kernel/core/kmain.i: kernel/core/kmain.c.i
 .PHONY : kernel/core/kmain.i
@@ -776,13 +789,13 @@ kernel/core/kmain.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/kmain.c.s
 .PHONY : kernel/core/kmain.c.s
 
-kernel/core/panic.o: kernel/core/panic.c.o
-.PHONY : kernel/core/panic.o
+kernel/core/panic.obj: kernel/core/panic.c.obj
+.PHONY : kernel/core/panic.obj
 
 # target to build an object file
-kernel/core/panic.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/panic.c.o
-.PHONY : kernel/core/panic.c.o
+kernel/core/panic.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/panic.c.obj
+.PHONY : kernel/core/panic.c.obj
 
 kernel/core/panic.i: kernel/core/panic.c.i
 .PHONY : kernel/core/panic.i
@@ -800,13 +813,13 @@ kernel/core/panic.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/panic.c.s
 .PHONY : kernel/core/panic.c.s
 
-kernel/core/process.o: kernel/core/process.c.o
-.PHONY : kernel/core/process.o
+kernel/core/process.obj: kernel/core/process.c.obj
+.PHONY : kernel/core/process.obj
 
 # target to build an object file
-kernel/core/process.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/process.c.o
-.PHONY : kernel/core/process.c.o
+kernel/core/process.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/process.c.obj
+.PHONY : kernel/core/process.c.obj
 
 kernel/core/process.i: kernel/core/process.c.i
 .PHONY : kernel/core/process.i
@@ -824,13 +837,13 @@ kernel/core/process.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/process.c.s
 .PHONY : kernel/core/process.c.s
 
-kernel/core/scheduler.o: kernel/core/scheduler.c.o
-.PHONY : kernel/core/scheduler.o
+kernel/core/scheduler.obj: kernel/core/scheduler.c.obj
+.PHONY : kernel/core/scheduler.obj
 
 # target to build an object file
-kernel/core/scheduler.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/scheduler.c.o
-.PHONY : kernel/core/scheduler.c.o
+kernel/core/scheduler.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/scheduler.c.obj
+.PHONY : kernel/core/scheduler.c.obj
 
 kernel/core/scheduler.i: kernel/core/scheduler.c.i
 .PHONY : kernel/core/scheduler.i
@@ -848,13 +861,13 @@ kernel/core/scheduler.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/scheduler.c.s
 .PHONY : kernel/core/scheduler.c.s
 
-kernel/core/shell.o: kernel/core/shell.c.o
-.PHONY : kernel/core/shell.o
+kernel/core/shell.obj: kernel/core/shell.c.obj
+.PHONY : kernel/core/shell.obj
 
 # target to build an object file
-kernel/core/shell.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/shell.c.o
-.PHONY : kernel/core/shell.c.o
+kernel/core/shell.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/shell.c.obj
+.PHONY : kernel/core/shell.c.obj
 
 kernel/core/shell.i: kernel/core/shell.c.i
 .PHONY : kernel/core/shell.i
@@ -872,13 +885,13 @@ kernel/core/shell.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/shell.c.s
 .PHONY : kernel/core/shell.c.s
 
-kernel/core/task.o: kernel/core/task.c.o
-.PHONY : kernel/core/task.o
+kernel/core/task.obj: kernel/core/task.c.obj
+.PHONY : kernel/core/task.obj
 
 # target to build an object file
-kernel/core/task.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/task.c.o
-.PHONY : kernel/core/task.c.o
+kernel/core/task.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/task.c.obj
+.PHONY : kernel/core/task.c.obj
 
 kernel/core/task.i: kernel/core/task.c.i
 .PHONY : kernel/core/task.i
@@ -896,13 +909,13 @@ kernel/core/task.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/task.c.s
 .PHONY : kernel/core/task.c.s
 
-kernel/core/timers.o: kernel/core/timers.c.o
-.PHONY : kernel/core/timers.o
+kernel/core/timers.obj: kernel/core/timers.c.obj
+.PHONY : kernel/core/timers.obj
 
 # target to build an object file
-kernel/core/timers.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/timers.c.o
-.PHONY : kernel/core/timers.c.o
+kernel/core/timers.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/timers.c.obj
+.PHONY : kernel/core/timers.c.obj
 
 kernel/core/timers.i: kernel/core/timers.c.i
 .PHONY : kernel/core/timers.i
@@ -920,13 +933,13 @@ kernel/core/timers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/timers.c.s
 .PHONY : kernel/core/timers.c.s
 
-kernel/fs/ext2.o: kernel/fs/ext2.c.o
-.PHONY : kernel/fs/ext2.o
+kernel/fs/ext2.obj: kernel/fs/ext2.c.obj
+.PHONY : kernel/fs/ext2.obj
 
 # target to build an object file
-kernel/fs/ext2.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.o
-.PHONY : kernel/fs/ext2.c.o
+kernel/fs/ext2.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj
+.PHONY : kernel/fs/ext2.c.obj
 
 kernel/fs/ext2.i: kernel/fs/ext2.c.i
 .PHONY : kernel/fs/ext2.i
@@ -944,13 +957,13 @@ kernel/fs/ext2.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.s
 .PHONY : kernel/fs/ext2.c.s
 
-kernel/fs/fat32.o: kernel/fs/fat32.c.o
-.PHONY : kernel/fs/fat32.o
+kernel/fs/fat32.obj: kernel/fs/fat32.c.obj
+.PHONY : kernel/fs/fat32.obj
 
 # target to build an object file
-kernel/fs/fat32.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.o
-.PHONY : kernel/fs/fat32.c.o
+kernel/fs/fat32.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj
+.PHONY : kernel/fs/fat32.c.obj
 
 kernel/fs/fat32.i: kernel/fs/fat32.c.i
 .PHONY : kernel/fs/fat32.i
@@ -968,13 +981,13 @@ kernel/fs/fat32.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.s
 .PHONY : kernel/fs/fat32.c.s
 
-kernel/fs/initrd.o: kernel/fs/initrd.c.o
-.PHONY : kernel/fs/initrd.o
+kernel/fs/initrd.obj: kernel/fs/initrd.c.obj
+.PHONY : kernel/fs/initrd.obj
 
 # target to build an object file
-kernel/fs/initrd.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.o
-.PHONY : kernel/fs/initrd.c.o
+kernel/fs/initrd.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj
+.PHONY : kernel/fs/initrd.c.obj
 
 kernel/fs/initrd.i: kernel/fs/initrd.c.i
 .PHONY : kernel/fs/initrd.i
@@ -992,13 +1005,13 @@ kernel/fs/initrd.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.s
 .PHONY : kernel/fs/initrd.c.s
 
-kernel/fs/vfs.o: kernel/fs/vfs.c.o
-.PHONY : kernel/fs/vfs.o
+kernel/fs/vfs.obj: kernel/fs/vfs.c.obj
+.PHONY : kernel/fs/vfs.obj
 
 # target to build an object file
-kernel/fs/vfs.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.o
-.PHONY : kernel/fs/vfs.c.o
+kernel/fs/vfs.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj
+.PHONY : kernel/fs/vfs.c.obj
 
 kernel/fs/vfs.i: kernel/fs/vfs.c.i
 .PHONY : kernel/fs/vfs.i
@@ -1016,13 +1029,13 @@ kernel/fs/vfs.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.s
 .PHONY : kernel/fs/vfs.c.s
 
-kernel/lib/math.o: kernel/lib/math.c.o
-.PHONY : kernel/lib/math.o
+kernel/lib/math.obj: kernel/lib/math.c.obj
+.PHONY : kernel/lib/math.obj
 
 # target to build an object file
-kernel/lib/math.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/math.c.o
-.PHONY : kernel/lib/math.c.o
+kernel/lib/math.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj
+.PHONY : kernel/lib/math.c.obj
 
 kernel/lib/math.i: kernel/lib/math.c.i
 .PHONY : kernel/lib/math.i
@@ -1040,13 +1053,13 @@ kernel/lib/math.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/math.c.s
 .PHONY : kernel/lib/math.c.s
 
-kernel/lib/printf.o: kernel/lib/printf.c.o
-.PHONY : kernel/lib/printf.o
+kernel/lib/printf.obj: kernel/lib/printf.c.obj
+.PHONY : kernel/lib/printf.obj
 
 # target to build an object file
-kernel/lib/printf.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.o
-.PHONY : kernel/lib/printf.c.o
+kernel/lib/printf.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj
+.PHONY : kernel/lib/printf.c.obj
 
 kernel/lib/printf.i: kernel/lib/printf.c.i
 .PHONY : kernel/lib/printf.i
@@ -1064,13 +1077,13 @@ kernel/lib/printf.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.s
 .PHONY : kernel/lib/printf.c.s
 
-kernel/lib/stdio.o: kernel/lib/stdio.c.o
-.PHONY : kernel/lib/stdio.o
+kernel/lib/stdio.obj: kernel/lib/stdio.c.obj
+.PHONY : kernel/lib/stdio.obj
 
 # target to build an object file
-kernel/lib/stdio.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.o
-.PHONY : kernel/lib/stdio.c.o
+kernel/lib/stdio.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj
+.PHONY : kernel/lib/stdio.c.obj
 
 kernel/lib/stdio.i: kernel/lib/stdio.c.i
 .PHONY : kernel/lib/stdio.i
@@ -1088,13 +1101,13 @@ kernel/lib/stdio.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.s
 .PHONY : kernel/lib/stdio.c.s
 
-kernel/lib/stdlib.o: kernel/lib/stdlib.c.o
-.PHONY : kernel/lib/stdlib.o
+kernel/lib/stdlib.obj: kernel/lib/stdlib.c.obj
+.PHONY : kernel/lib/stdlib.obj
 
 # target to build an object file
-kernel/lib/stdlib.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.o
-.PHONY : kernel/lib/stdlib.c.o
+kernel/lib/stdlib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj
+.PHONY : kernel/lib/stdlib.c.obj
 
 kernel/lib/stdlib.i: kernel/lib/stdlib.c.i
 .PHONY : kernel/lib/stdlib.i
@@ -1112,13 +1125,13 @@ kernel/lib/stdlib.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.s
 .PHONY : kernel/lib/stdlib.c.s
 
-kernel/lib/string.o: kernel/lib/string.c.o
-.PHONY : kernel/lib/string.o
+kernel/lib/string.obj: kernel/lib/string.c.obj
+.PHONY : kernel/lib/string.obj
 
 # target to build an object file
-kernel/lib/string.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/string.c.o
-.PHONY : kernel/lib/string.c.o
+kernel/lib/string.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj
+.PHONY : kernel/lib/string.c.obj
 
 kernel/lib/string.i: kernel/lib/string.c.i
 .PHONY : kernel/lib/string.i
@@ -1136,13 +1149,13 @@ kernel/lib/string.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/lib/string.c.s
 .PHONY : kernel/lib/string.c.s
 
-kernel/net/ethernet.o: kernel/net/ethernet.c.o
-.PHONY : kernel/net/ethernet.o
+kernel/net/ethernet.obj: kernel/net/ethernet.c.obj
+.PHONY : kernel/net/ethernet.obj
 
 # target to build an object file
-kernel/net/ethernet.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.o
-.PHONY : kernel/net/ethernet.c.o
+kernel/net/ethernet.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj
+.PHONY : kernel/net/ethernet.c.obj
 
 kernel/net/ethernet.i: kernel/net/ethernet.c.i
 .PHONY : kernel/net/ethernet.i
@@ -1160,13 +1173,13 @@ kernel/net/ethernet.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.s
 .PHONY : kernel/net/ethernet.c.s
 
-kernel/net/ipv4.o: kernel/net/ipv4.c.o
-.PHONY : kernel/net/ipv4.o
+kernel/net/ipv4.obj: kernel/net/ipv4.c.obj
+.PHONY : kernel/net/ipv4.obj
 
 # target to build an object file
-kernel/net/ipv4.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.o
-.PHONY : kernel/net/ipv4.c.o
+kernel/net/ipv4.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj
+.PHONY : kernel/net/ipv4.c.obj
 
 kernel/net/ipv4.i: kernel/net/ipv4.c.i
 .PHONY : kernel/net/ipv4.i
@@ -1184,13 +1197,13 @@ kernel/net/ipv4.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.s
 .PHONY : kernel/net/ipv4.c.s
 
-kernel/net/net.o: kernel/net/net.c.o
-.PHONY : kernel/net/net.o
+kernel/net/net.obj: kernel/net/net.c.obj
+.PHONY : kernel/net/net.obj
 
 # target to build an object file
-kernel/net/net.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/net.c.o
-.PHONY : kernel/net/net.c.o
+kernel/net/net.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj
+.PHONY : kernel/net/net.c.obj
 
 kernel/net/net.i: kernel/net/net.c.i
 .PHONY : kernel/net/net.i
@@ -1208,13 +1221,13 @@ kernel/net/net.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/net.c.s
 .PHONY : kernel/net/net.c.s
 
-kernel/net/tcp.o: kernel/net/tcp.c.o
-.PHONY : kernel/net/tcp.o
+kernel/net/tcp.obj: kernel/net/tcp.c.obj
+.PHONY : kernel/net/tcp.obj
 
 # target to build an object file
-kernel/net/tcp.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.o
-.PHONY : kernel/net/tcp.c.o
+kernel/net/tcp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj
+.PHONY : kernel/net/tcp.c.obj
 
 kernel/net/tcp.i: kernel/net/tcp.c.i
 .PHONY : kernel/net/tcp.i
@@ -1232,13 +1245,13 @@ kernel/net/tcp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.s
 .PHONY : kernel/net/tcp.c.s
 
-kernel/net/udp.o: kernel/net/udp.c.o
-.PHONY : kernel/net/udp.o
+kernel/net/udp.obj: kernel/net/udp.c.obj
+.PHONY : kernel/net/udp.obj
 
 # target to build an object file
-kernel/net/udp.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/udp.c.o
-.PHONY : kernel/net/udp.c.o
+kernel/net/udp.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj
+.PHONY : kernel/net/udp.c.obj
 
 kernel/net/udp.i: kernel/net/udp.c.i
 .PHONY : kernel/net/udp.i
@@ -1264,144 +1277,145 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... d_objs"
 	@echo "... iso"
-	@echo "... run"
+	@echo "... ovmf_vars"
+	@echo "... run_bios"
+	@echo "... run_uefi"
 	@echo "... kernel.elf"
-	@echo "... boot/kernel_entry.o"
-	@echo "... boot/limine_requests.o"
+	@echo "... boot/kernel_entry.obj"
+	@echo "... boot/limine_requests.obj"
 	@echo "... boot/limine_requests.i"
 	@echo "... boot/limine_requests.s"
-	@echo "... kernel/arch/x86_64/apic/ioapic.o"
+	@echo "... kernel/arch/x86_64/apic/ioapic.obj"
 	@echo "... kernel/arch/x86_64/apic/ioapic.i"
 	@echo "... kernel/arch/x86_64/apic/ioapic.s"
-	@echo "... kernel/arch/x86_64/apic/lapic.o"
+	@echo "... kernel/arch/x86_64/apic/lapic.obj"
 	@echo "... kernel/arch/x86_64/apic/lapic.i"
 	@echo "... kernel/arch/x86_64/apic/lapic.s"
-	@echo "... kernel/arch/x86_64/cpu/gdt.o"
+	@echo "... kernel/arch/x86_64/cpu/gdt.obj"
 	@echo "... kernel/arch/x86_64/cpu/gdt.i"
 	@echo "... kernel/arch/x86_64/cpu/gdt.s"
-	@echo "... kernel/arch/x86_64/cpu/gdt64.o"
+	@echo "... kernel/arch/x86_64/cpu/gdt64.obj"
 	@echo "... kernel/arch/x86_64/cpu/gdt64.i"
 	@echo "... kernel/arch/x86_64/cpu/gdt64.s"
-	@echo "... kernel/arch/x86_64/cpu/idt.o"
+	@echo "... kernel/arch/x86_64/cpu/idt.obj"
 	@echo "... kernel/arch/x86_64/cpu/idt.i"
 	@echo "... kernel/arch/x86_64/cpu/idt.s"
-	@echo "... kernel/arch/x86_64/cpu/tss.o"
+	@echo "... kernel/arch/x86_64/cpu/tss.obj"
 	@echo "... kernel/arch/x86_64/cpu/tss.i"
 	@echo "... kernel/arch/x86_64/cpu/tss.s"
-	@echo "... kernel/arch/x86_64/drivers/ahci.o"
+	@echo "... kernel/arch/x86_64/drivers/ahci.obj"
 	@echo "... kernel/arch/x86_64/drivers/ahci.i"
 	@echo "... kernel/arch/x86_64/drivers/ahci.s"
-	@echo "... kernel/arch/x86_64/drivers/framebuffer.o"
+	@echo "... kernel/arch/x86_64/drivers/framebuffer.obj"
 	@echo "... kernel/arch/x86_64/drivers/framebuffer.i"
 	@echo "... kernel/arch/x86_64/drivers/framebuffer.s"
-	@echo "... kernel/arch/x86_64/drivers/hpet.o"
+	@echo "... kernel/arch/x86_64/drivers/hpet.obj"
 	@echo "... kernel/arch/x86_64/drivers/hpet.i"
 	@echo "... kernel/arch/x86_64/drivers/hpet.s"
-	@echo "... kernel/arch/x86_64/drivers/pci.o"
+	@echo "... kernel/arch/x86_64/drivers/pci.obj"
 	@echo "... kernel/arch/x86_64/drivers/pci.i"
 	@echo "... kernel/arch/x86_64/drivers/pci.s"
-	@echo "... kernel/arch/x86_64/drivers/pit.o"
+	@echo "... kernel/arch/x86_64/drivers/pit.obj"
 	@echo "... kernel/arch/x86_64/drivers/pit.i"
 	@echo "... kernel/arch/x86_64/drivers/pit.s"
-	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.o"
+	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.obj"
 	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.i"
 	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.s"
-	@echo "... kernel/arch/x86_64/drivers/serial.o"
+	@echo "... kernel/arch/x86_64/drivers/serial.obj"
 	@echo "... kernel/arch/x86_64/drivers/serial.i"
 	@echo "... kernel/arch/x86_64/drivers/serial.s"
-	@echo "... kernel/arch/x86_64/drivers/vga.o"
+	@echo "... kernel/arch/x86_64/drivers/vga.obj"
 	@echo "... kernel/arch/x86_64/drivers/vga.i"
 	@echo "... kernel/arch/x86_64/drivers/vga.s"
-	@echo "... kernel/arch/x86_64/interrupts/irq.o"
+	@echo "... kernel/arch/x86_64/interrupts/irq.obj"
 	@echo "... kernel/arch/x86_64/interrupts/irq.i"
 	@echo "... kernel/arch/x86_64/interrupts/irq.s"
-	@echo "... kernel/arch/x86_64/interrupts/isr.o"
+	@echo "... kernel/arch/x86_64/interrupts/isr.obj"
 	@echo "... kernel/arch/x86_64/interrupts/isr.i"
 	@echo "... kernel/arch/x86_64/interrupts/isr.s"
-	@echo "... kernel/arch/x86_64/mm/heap.o"
+	@echo "... kernel/arch/x86_64/mm/heap.obj"
 	@echo "... kernel/arch/x86_64/mm/heap.i"
 	@echo "... kernel/arch/x86_64/mm/heap.s"
-	@echo "... kernel/arch/x86_64/mm/paging64.o"
+	@echo "... kernel/arch/x86_64/mm/paging64.obj"
 	@echo "... kernel/arch/x86_64/mm/paging64.i"
 	@echo "... kernel/arch/x86_64/mm/paging64.s"
-	@echo "... kernel/arch/x86_64/mm/pmm.o"
+	@echo "... kernel/arch/x86_64/mm/pmm.obj"
 	@echo "... kernel/arch/x86_64/mm/pmm.i"
 	@echo "... kernel/arch/x86_64/mm/pmm.s"
-	@echo "... kernel/arch/x86_64/mm/vmm.o"
+	@echo "... kernel/arch/x86_64/mm/vmm.obj"
 	@echo "... kernel/arch/x86_64/mm/vmm.i"
 	@echo "... kernel/arch/x86_64/mm/vmm.s"
-	@echo "... kernel/arch/x86_64/sys/syscall.o"
+	@echo "... kernel/arch/x86_64/sys/syscall.obj"
 	@echo "... kernel/arch/x86_64/sys/syscall.i"
 	@echo "... kernel/arch/x86_64/sys/syscall.s"
-	@echo "... kernel/arch/x86_64/util/cpuid.o"
+	@echo "... kernel/arch/x86_64/util/cpuid.obj"
 	@echo "... kernel/arch/x86_64/util/cpuid.i"
 	@echo "... kernel/arch/x86_64/util/cpuid.s"
-	@echo "... kernel/arch/x86_64/util/ports.o"
+	@echo "... kernel/arch/x86_64/util/ports.obj"
 	@echo "... kernel/arch/x86_64/util/ports.i"
 	@echo "... kernel/arch/x86_64/util/ports.s"
-	@echo "... kernel/core/kmain.o"
+	@echo "... kernel/core/kmain.obj"
 	@echo "... kernel/core/kmain.i"
 	@echo "... kernel/core/kmain.s"
-	@echo "... kernel/core/panic.o"
+	@echo "... kernel/core/panic.obj"
 	@echo "... kernel/core/panic.i"
 	@echo "... kernel/core/panic.s"
-	@echo "... kernel/core/process.o"
+	@echo "... kernel/core/process.obj"
 	@echo "... kernel/core/process.i"
 	@echo "... kernel/core/process.s"
-	@echo "... kernel/core/scheduler.o"
+	@echo "... kernel/core/scheduler.obj"
 	@echo "... kernel/core/scheduler.i"
 	@echo "... kernel/core/scheduler.s"
-	@echo "... kernel/core/shell.o"
+	@echo "... kernel/core/shell.obj"
 	@echo "... kernel/core/shell.i"
 	@echo "... kernel/core/shell.s"
-	@echo "... kernel/core/task.o"
+	@echo "... kernel/core/task.obj"
 	@echo "... kernel/core/task.i"
 	@echo "... kernel/core/task.s"
-	@echo "... kernel/core/timers.o"
+	@echo "... kernel/core/timers.obj"
 	@echo "... kernel/core/timers.i"
 	@echo "... kernel/core/timers.s"
-	@echo "... kernel/fs/ext2.o"
+	@echo "... kernel/fs/ext2.obj"
 	@echo "... kernel/fs/ext2.i"
 	@echo "... kernel/fs/ext2.s"
-	@echo "... kernel/fs/fat32.o"
+	@echo "... kernel/fs/fat32.obj"
 	@echo "... kernel/fs/fat32.i"
 	@echo "... kernel/fs/fat32.s"
-	@echo "... kernel/fs/initrd.o"
+	@echo "... kernel/fs/initrd.obj"
 	@echo "... kernel/fs/initrd.i"
 	@echo "... kernel/fs/initrd.s"
-	@echo "... kernel/fs/vfs.o"
+	@echo "... kernel/fs/vfs.obj"
 	@echo "... kernel/fs/vfs.i"
 	@echo "... kernel/fs/vfs.s"
-	@echo "... kernel/lib/math.o"
+	@echo "... kernel/lib/math.obj"
 	@echo "... kernel/lib/math.i"
 	@echo "... kernel/lib/math.s"
-	@echo "... kernel/lib/printf.o"
+	@echo "... kernel/lib/printf.obj"
 	@echo "... kernel/lib/printf.i"
 	@echo "... kernel/lib/printf.s"
-	@echo "... kernel/lib/stdio.o"
+	@echo "... kernel/lib/stdio.obj"
 	@echo "... kernel/lib/stdio.i"
 	@echo "... kernel/lib/stdio.s"
-	@echo "... kernel/lib/stdlib.o"
+	@echo "... kernel/lib/stdlib.obj"
 	@echo "... kernel/lib/stdlib.i"
 	@echo "... kernel/lib/stdlib.s"
-	@echo "... kernel/lib/string.o"
+	@echo "... kernel/lib/string.obj"
 	@echo "... kernel/lib/string.i"
 	@echo "... kernel/lib/string.s"
-	@echo "... kernel/net/ethernet.o"
+	@echo "... kernel/net/ethernet.obj"
 	@echo "... kernel/net/ethernet.i"
 	@echo "... kernel/net/ethernet.s"
-	@echo "... kernel/net/ipv4.o"
+	@echo "... kernel/net/ipv4.obj"
 	@echo "... kernel/net/ipv4.i"
 	@echo "... kernel/net/ipv4.s"
-	@echo "... kernel/net/net.o"
+	@echo "... kernel/net/net.obj"
 	@echo "... kernel/net/net.i"
 	@echo "... kernel/net/net.s"
-	@echo "... kernel/net/tcp.o"
+	@echo "... kernel/net/tcp.obj"
 	@echo "... kernel/net/tcp.i"
 	@echo "... kernel/net/tcp.s"
-	@echo "... kernel/net/udp.o"
+	@echo "... kernel/net/udp.obj"
 	@echo "... kernel/net/udp.i"
 	@echo "... kernel/net/udp.s"
 .PHONY : help

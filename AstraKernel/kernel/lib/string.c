@@ -1,7 +1,11 @@
 #include "string.h"
 
 void *memset(void *dest, int value, unsigned long n) {
-    return k_memset(dest, value, n);
+    unsigned char *p = (unsigned char *)dest;
+    while (n--) {
+        *p++ = (unsigned char)value;
+    }
+    return dest;
 }
 
 size_t strlen(const char *s) {
