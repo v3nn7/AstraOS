@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

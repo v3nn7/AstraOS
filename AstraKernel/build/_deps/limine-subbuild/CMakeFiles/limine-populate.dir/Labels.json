@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/limine-populate"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/limine-populate.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/CMakeFiles/limine-populate-complete.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-build.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-configure.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-download.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-install.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-patch.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-test.rule"
+		},
+		{
+			"file" : "/home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-subbuild/limine-populate-prefix/src/limine-populate-stamp/limine-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"limine-populate"
+		],
+		"name" : "limine-populate"
+	}
+}
