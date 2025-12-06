@@ -32,7 +32,33 @@ file(GLOB_RECURSE KERNEL_C
 )
 set(KERNEL_ASM boot/kernel_entry.asm)
 
-add_executable(kernel.elf ${KERNEL_C} ${KERNEL_ASM})
+# D memset (betterC) compiled with ldc2
+find_program(LDC2_EXECUTABLE ldc2)
+set(MEMSET_D ${CMAKE_SOURCE_DIR}/kernel/lib/memset.d)
+set(MEMSET_OBJ ${CMAKE_BINARY_DIR}/memset.o)
+set(MEMSET_SRC "")
+if(LDC2_EXECUTABLE)
+    add_custom_command(OUTPUT ${MEMSET_OBJ}
+        COMMAND ${LDC2_EXECUTABLE}
+            -betterC -c -O2 -release -boundscheck=off
+            -mtriple=x86_64-unknown-none
+            -of=${MEMSET_OBJ}
+            ${MEMSET_D}
+        DEPENDS ${MEMSET_D}
+        COMMENT "Compiling memset.d with ldc2"
+        VERBATIM
+    )
+    set(MEMSET_SRC ${MEMSET_OBJ})
+    add_definitions(-DHAVE_D_MEMSET)
+else()
+    message(WARNING "ldc2 not found; falling back to C memset")
+endif()
+
+add_executable(kernel.elf ${KERNEL_C} ${KERNEL_ASM} ${MEMSET_SRC})
+if(LDC2_EXECUTABLE)
+    add_custom_target(memset_obj ALL DEPENDS ${MEMSET_OBJ})
+    add_dependencies(kernel.elf memset_obj)
+endif()
 set_target_properties(kernel.elf PROPERTIES LINK_FLAGS "${LDFLAGS_KERNEL}")
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:C>:${CFLAGS_KERNEL}>)
 

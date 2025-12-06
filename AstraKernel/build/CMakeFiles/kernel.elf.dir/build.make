@@ -893,7 +893,8 @@ kernel_elf_OBJECTS = \
 "CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj"
 
 # External object files for target kernel.elf
-kernel_elf_EXTERNAL_OBJECTS =
+kernel_elf_EXTERNAL_OBJECTS = \
+"/home/v3nn7/Projects/AstraOS/AstraKernel/build/memset.o"
 
 kernel.elf: CMakeFiles/kernel.elf.dir/boot/limine_requests.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/ioapic.c.obj
@@ -950,6 +951,7 @@ kernel.elf: CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj
+kernel.elf: memset.o
 kernel.elf: CMakeFiles/kernel.elf.dir/build.make
 kernel.elf: CMakeFiles/kernel.elf.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Linking C executable kernel.elf"

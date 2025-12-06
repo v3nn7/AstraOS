@@ -16,6 +16,7 @@ static uint8_t idx = 0;
 
 static int screen_w, screen_h;
 static int last_x = -1, last_y = -1;
+static uint8_t last_buttons = 0;
 
 static const uint32_t CURSOR_COLOR = 0xFFFFFFFF;
 static const uint32_t CURSOR_BG    = 0xFF0F1115; /* matches shell background */
@@ -94,6 +95,10 @@ static void mouse_irq(interrupt_frame_t *f) {
     if (mouse_x >= screen_w) mouse_x = screen_w - 1;
     if (mouse_y >= screen_h) mouse_y = screen_h - 1;
 
+    uint8_t buttons = packet[0] & 0x07;
+
+    uint8_t prev_buttons = last_buttons;
+
     /* Restore old area, save new, draw cursor */
     if (last_x >= 0 && last_y >= 0)
         restore_bg(last_x, last_y);
@@ -101,9 +106,12 @@ static void mouse_irq(interrupt_frame_t *f) {
     draw_cursor(mouse_x, mouse_y, CURSOR_COLOR);
     last_x = mouse_x;
     last_y = mouse_y;
+    last_buttons = buttons;
 
-    uint8_t buttons = packet[0] & 0x07;
-
+    /* Push button event on change */
+    if (buttons != prev_buttons) {
+        gui_event_push_mouse_button(mouse_x, mouse_y, buttons);
+    }
     gui_event_push_mouse_move(mouse_x, mouse_y, dx, dy, buttons);
 }
 
@@ -112,6 +120,7 @@ void mouse_init(void) {
     screen_h = fb_height();
     last_x = -1;
     last_y = -1;
+    last_buttons = 0;
     saved_valid = false;
 
     /* Flush pending output bytes */
@@ -151,6 +160,7 @@ void mouse_init(void) {
     draw_cursor(mouse_x, mouse_y, CURSOR_COLOR);
     last_x = mouse_x;
     last_y = mouse_y;
+    last_buttons = 0;
 
     printf("PS2: mouse init done\n");
 }

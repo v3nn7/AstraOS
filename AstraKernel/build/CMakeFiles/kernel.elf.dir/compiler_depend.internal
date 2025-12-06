@@ -185,6 +185,7 @@ CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/ui.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/stddef.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer/installer.h

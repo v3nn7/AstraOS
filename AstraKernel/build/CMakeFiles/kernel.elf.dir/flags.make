@@ -3,13 +3,13 @@
 
 # compile ASM_NASM with /usr/bin/nasm
 # compile C with /opt/elf/bin/x86_64-elf-gcc
-ASM_NASM_DEFINES = 
+ASM_NASM_DEFINES = -DHAVE_D_MEMSET
 
 ASM_NASM_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
 
 ASM_NASM_FLAGS = -Wall
 
-C_DEFINES = 
+C_DEFINES = -DHAVE_D_MEMSET
 
 C_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
 

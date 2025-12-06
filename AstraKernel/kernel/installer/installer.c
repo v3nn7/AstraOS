@@ -4,6 +4,7 @@
 #include "ui.h"
 #include "installer.h"
 #include "string.h"
+#include <stddef.h>
 
 /* Simple workflow states */
 typedef enum {
@@ -32,16 +33,18 @@ static void draw_welcome(void) {
     ui_text(40, 80, "This will install AstraOS onto the selected disk.", 0xFFA0A0A0, 0xFF0F1115);
 }
 
-static bool screen_welcome(gui_event_t *ev) {
+static bool screen_welcome(gui_event_t *ev, bool redraw) {
     ui_button_t next = { .x = (int)fb_width() - 140, .y = (int)fb_height() - 60, .w = 120, .h = 32, .text = "Next" };
-    draw_welcome();
+    if (redraw) draw_welcome();
     return ui_button(&next, ev, 0xFF2E7D32, 0xFFFFFFFF);
 }
 
-static bool screen_disk(gui_event_t *ev) {
-    ui_clear(0xFF0F1115);
-    draw_header();
-    ui_text(40, 60, "Select target disk", 0xFFE0E0E0, 0xFF0F1115);
+static bool screen_disk(gui_event_t *ev, bool redraw) {
+    if (redraw) {
+        ui_clear(0xFF0F1115);
+        draw_header();
+        ui_text(40, 60, "Select target disk", 0xFFE0E0E0, 0xFF0F1115);
+    }
     ui_listview_t lv = { .items = disks, .count = 1, .selected = selected_disk, .scroll = 0, .visible = 5 };
     bool changed = ui_listview(&lv, ev, 40, 90, (int)fb_width() - 80, 120, 0xFF141820, 0xFF1E3A5F, 0xFFE0E0E0);
     if (changed) selected_disk = lv.selected;
@@ -54,15 +57,17 @@ static bool screen_disk(gui_event_t *ev) {
     return -1; /* stay */
 }
 
-static bool screen_confirm(gui_event_t *ev) {
-    ui_clear(0xFF0F1115);
-    draw_header();
-    ui_text(40, 60, "Confirm installation", 0xFFE0E0E0, 0xFF0F1115);
-    ui_text(40, 90, "Disk: /dev/sda", 0xFFA0A0A0, 0xFF0F1115);
-    ui_text(40, 110, "Actions:", 0xFFA0A0A0, 0xFF0F1115);
-    ui_text(60, 130, "- Create filesystem (ext2)", 0xFFA0A0A0, 0xFF0F1115);
-    ui_text(60, 145, "- Copy system image", 0xFFA0A0A0, 0xFF0F1115);
-    ui_text(60, 160, "- Install Limine (UEFI+BIOS)", 0xFFA0A0A0, 0xFF0F1115);
+static bool screen_confirm(gui_event_t *ev, bool redraw) {
+    if (redraw) {
+        ui_clear(0xFF0F1115);
+        draw_header();
+        ui_text(40, 60, "Confirm installation", 0xFFE0E0E0, 0xFF0F1115);
+        ui_text(40, 90, "Disk: /dev/sda", 0xFFA0A0A0, 0xFF0F1115);
+        ui_text(40, 110, "Actions:", 0xFFA0A0A0, 0xFF0F1115);
+        ui_text(60, 130, "- Create filesystem (ext2)", 0xFFA0A0A0, 0xFF0F1115);
+        ui_text(60, 145, "- Copy system image", 0xFFA0A0A0, 0xFF0F1115);
+        ui_text(60, 160, "- Install Limine (UEFI+BIOS)", 0xFFA0A0A0, 0xFF0F1115);
+    }
 
     ui_button_t back = { 40, (int)fb_height() - 60, 100, 32, "Back" };
     ui_button_t install = { (int)fb_width() - 180, (int)fb_height() - 60, 160, 32, "Install" };
@@ -73,16 +78,20 @@ static bool screen_confirm(gui_event_t *ev) {
     return -1;
 }
 
+static void draw_progress_screen(const char *msg, int percent) {
+    ui_clear(0xFF0F1115);
+    draw_header();
+    ui_text(40, 60, msg, 0xFFE0E0E0, 0xFF0F1115);
+    ui_progress(40, 100, (int)fb_width() - 80, 20, percent, 0xFF2E7D32, 0xFF141820, 0xFF444444);
+}
+
 static void simulate_step(const char *msg, int amount) {
     progress_msg = msg;
     for (int i = 0; i < amount; ++i) {
         if (progress < 100) progress++;
-        ui_clear(0xFF0F1115);
-        draw_header();
-        ui_text(40, 60, progress_msg, 0xFFE0E0E0, 0xFF0F1115);
-        ui_progress(40, 100, (int)fb_width() - 80, 20, progress, 0xFF2E7D32, 0xFF141820, 0xFF444444);
+        draw_progress_screen(progress_msg, progress);
         // crude delay
-        for (volatile int d = 0; d < 500000; ++d) { __asm__ volatile("nop"); }
+        for (volatile int d = 0; d < 200000; ++d) { __asm__ volatile("nop"); }
     }
 }
 
@@ -94,46 +103,57 @@ static void screen_progress(void) {
     simulate_step("Installing Limine bootloader ...", 20);
     progress = 100;
     progress_msg = "Done.";
-    ui_clear(0xFF0F1115);
-    draw_header();
-    ui_text(40, 60, "Installation complete.", 0xFFE0E0E0, 0xFF0F1115);
-    ui_progress(40, 100, (int)fb_width() - 80, 20, progress, 0xFF2E7D32, 0xFF141820, 0xFF444444);
+    draw_progress_screen("Installation complete.", progress);
 }
 
-static bool screen_done(gui_event_t *ev) {
-    ui_text(40, 140, "You can reboot now.", 0xFFA0A0A0, 0xFF0F1115);
+static bool screen_done(gui_event_t *ev, bool redraw) {
+    if (redraw) {
+        ui_clear(0xFF0F1115);
+        draw_header();
+        ui_text(40, 60, "Installation complete.", 0xFFE0E0E0, 0xFF0F1115);
+        ui_progress(40, 100, (int)fb_width() - 80, 20, progress, 0xFF2E7D32, 0xFF141820, 0xFF444444);
+        ui_text(40, 140, "You can reboot now.", 0xFFA0A0A0, 0xFF0F1115);
+    }
     ui_button_t reboot = { (int)fb_width() - 160, (int)fb_height() - 60, 140, 32, "Reboot" };
     return ui_button(&reboot, ev, 0xFF2E7D32, 0xFFFFFFFF);
 }
 
 void installer_run(void) {
     ins_state_t st = INS_WELCOME;
+    bool redraw = true;
     gui_event_t ev;
 
     for (;;) {
-        while (!gui_event_poll(&ev)) {
-            // idle
-        }
+        bool has_ev = gui_event_poll(&ev);
 
         if (st == INS_WELCOME) {
-            if (screen_welcome(&ev)) st = INS_DISK;
+            if (redraw) { screen_welcome(NULL, true); redraw = false; }
+            if (has_ev && screen_welcome(&ev, false)) { st = INS_DISK; redraw = true; }
         }
         else if (st == INS_DISK) {
-            bool res = screen_disk(&ev);
-            if (res == false) st = INS_WELCOME;
-            else if (res == true) st = INS_CONFIRM;
+            if (redraw) { screen_disk(NULL, true); redraw = false; }
+            if (has_ev) {
+                bool res = screen_disk(&ev, false);
+                if (res == false) { st = INS_WELCOME; redraw = true; }
+                else if (res == true) { st = INS_CONFIRM; redraw = true; }
+            }
         }
         else if (st == INS_CONFIRM) {
-            bool res = screen_confirm(&ev);
-            if (res == false) st = INS_DISK;
-            else if (res == true) {
-                st = INS_PROGRESS;
-                screen_progress();
-                st = INS_DONE;
+            if (redraw) { screen_confirm(NULL, true); redraw = false; }
+            if (has_ev) {
+                bool res = screen_confirm(&ev, false);
+                if (res == false) { st = INS_DISK; redraw = true; }
+                else if (res == true) {
+                    st = INS_PROGRESS;
+                    screen_progress();
+                    st = INS_DONE;
+                    redraw = true;
+                }
             }
         }
         else if (st == INS_DONE) {
-            if (screen_done(&ev)) {
+            if (redraw) { screen_done(NULL, true); redraw = false; }
+            if (has_ev && screen_done(&ev, false)) {
                 // simple halt after "reboot"
                 for(;;) __asm__ volatile("hlt");
             }

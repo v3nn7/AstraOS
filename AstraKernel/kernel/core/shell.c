@@ -131,8 +131,13 @@ static void history_load(int idx) {
 static const char *commands[] = {
     "help",
     "clear",
+    "cls",
     "about",
     "install",
+    "echo",
+    "history",
+    "ls",
+    "reboot",
     0
 };
 
@@ -162,12 +167,16 @@ static void run_command() {
     if (strcmp(cmd_buf, "help") == 0) {
         print("Commands:\n");
         print("  help     - list commands\n");
-        print("  clear    - clear screen\n");
+        print("  clear    - clear screen (alias: cls)\n");
         print("  about    - info\n");
         print("  install  - run installer\n");
+        print("  echo X   - print X\n");
+        print("  history  - show history\n");
+        print("  ls       - list stub entries\n");
+        print("  reboot   - halt (stub)\n");
     }
 
-    else if (strcmp(cmd_buf, "clear") == 0) {
+    else if (strcmp(cmd_buf, "clear") == 0 || strcmp(cmd_buf, "cls") == 0) {
         fb_fill_screen(COLOR_BG);
         header_bar();
     }
@@ -179,6 +188,27 @@ static void run_command() {
     else if (strcmp(cmd_buf, "install") == 0) {
         print("Launching AstraInstaller...\n");
         installer_run();
+    }
+
+    else if (strncmp(cmd_buf, "echo ", 5) == 0) {
+        print(cmd_buf + 5);
+        print("\n");
+    }
+
+    else if (strcmp(cmd_buf, "history") == 0) {
+        for (int i = 0; i < history_len; i++) {
+            print(history[i]);
+            print("\n");
+        }
+    }
+
+    else if (strcmp(cmd_buf, "ls") == 0) {
+        print(".\n..\nboot/\nsys/\ninitrd.img (stub)\n");
+    }
+
+    else if (strcmp(cmd_buf, "reboot") == 0) {
+        print("System halt (stub)\n");
+        for(;;) __asm__ volatile("hlt");
     }
 
     else {

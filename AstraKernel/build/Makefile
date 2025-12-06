@@ -130,6 +130,19 @@ kernel.elf/fast:
 .PHONY : kernel.elf/fast
 
 #=============================================================================
+# Target rules for targets named memset_obj
+
+# Build rule for target.
+memset_obj: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 memset_obj
+.PHONY : memset_obj
+
+# fast build rule for target.
+memset_obj/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/memset_obj.dir/build.make CMakeFiles/memset_obj.dir/build
+.PHONY : memset_obj/fast
+
+#=============================================================================
 # Target rules for targets named ovmf_vars
 
 # Build rule for target.
@@ -1494,6 +1507,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... iso"
+	@echo "... memset_obj"
 	@echo "... ovmf_vars"
 	@echo "... run_bios"
 	@echo "... run_uefi"

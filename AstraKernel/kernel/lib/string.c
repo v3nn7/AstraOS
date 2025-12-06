@@ -1,12 +1,18 @@
 #include "string.h"
 
+/* Use D implementation for performance if available */
+#ifdef HAVE_D_MEMSET
+extern void *k_memset(void *dest, int value, unsigned long n);
+void *memset(void *dest, int value, unsigned long n) {
+    return k_memset(dest, value, n);
+}
+#else
 void *memset(void *dest, int value, unsigned long n) {
     unsigned char *p = (unsigned char *)dest;
-    while (n--) {
-        *p++ = (unsigned char)value;
-    }
+    while (n--) *p++ = (unsigned char)value;
     return dest;
 }
+#endif
 
 size_t strlen(const char *s) {
     size_t n = 0;
