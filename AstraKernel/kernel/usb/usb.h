@@ -15,4 +15,5 @@ typedef struct {
 } usb_controller_t;
 
 void usb_init(void);
+int usb_controller_count(void);
 

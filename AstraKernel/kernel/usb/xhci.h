@@ -1,6 +1,6 @@
 #pragma once
-
 #include "types.h"
+#include "usb_core.h"
 
-int xhci_init_one(uint8_t bus, uint8_t slot, uint8_t func, uint16_t vendor, uint16_t device);
-
+void xhci_init(usb_controller_t *ctrl);
+void xhci_irq_handler(void);

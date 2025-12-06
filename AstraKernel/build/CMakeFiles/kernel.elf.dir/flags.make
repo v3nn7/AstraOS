@@ -3,15 +3,15 @@
 
 # compile ASM_NASM with /usr/bin/nasm
 # compile C with /opt/elf/bin/x86_64-elf-gcc
-ASM_NASM_DEFINES = -DHAVE_D_MEMSET
+ASM_NASM_DEFINES = 
 
-ASM_NASM_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
+ASM_NASM_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
 
 ASM_NASM_FLAGS = -Wall
 
-C_DEFINES = -DHAVE_D_MEMSET
+C_DEFINES = 
 
-C_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
+C_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot
 
 C_FLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -fno-omit-frame-pointer -mno-red-zone -mcmodel=kernel -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float -nostdlib -nostdinc -fno-builtin -m64 -Ikernel/include -Iboot
 

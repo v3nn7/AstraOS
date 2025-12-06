@@ -1,6 +1,5 @@
 # Hashes of file build rules.
 b82da75c12142c82e37b00b183a9ef06 CMakeFiles/iso
-3a3e315f6ab5033baa9098d1784c95a6 CMakeFiles/memset_obj
 3a3e315f6ab5033baa9098d1784c95a6 CMakeFiles/ovmf_vars
 ffcb17ff480cfbee1ed7fc9f6fda66f9 CMakeFiles/run_bios
 9bb94b727647fcd71843f2cde6cb1920 CMakeFiles/run_uefi

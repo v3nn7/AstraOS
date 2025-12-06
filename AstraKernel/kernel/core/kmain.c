@@ -20,9 +20,17 @@ static void map_framebuffer_region(struct limine_framebuffer *fb) {
     uint64_t fb_size = (uint64_t)fb->pitch * fb->height;
     uint64_t start = align_down_u64(fb_phys, PAGE_SIZE);
     uint64_t end   = align_up_u64(fb_phys + fb_size, PAGE_SIZE);
+    uint64_t fb_virt = pmm_hhdm_offset + fb_phys;
+
     for (uint64_t p = start; p < end; p += PAGE_SIZE) {
+        /* HHDM uncached mapping (primary) */
+        map_page((virt_addr_t)(pmm_hhdm_offset + p), (phys_addr_t)p, PAGE_WRITE | PAGE_CACHE_DISABLE);
+        /* Identity mapping for compatibility/debug (optional) */
         map_page((virt_addr_t)p, (phys_addr_t)p, PAGE_WRITE | PAGE_CACHE_DISABLE);
     }
+
+    /* Point framebuffer to HHDM-mapped address */
+    fb->address = (void *)fb_virt;
 }
 
 static bool init_framebuffer(void) {
@@ -50,11 +58,11 @@ void kmain(void) {
     gdt_init((uint64_t)&initial_stack_top);
     idt_init();
     irq_init();
-    paging_init((phys_addr_t)_kernel_start_physical, (phys_addr_t)_kernel_end_physical);
+    memory_subsystem_init(limine_memmap_request.response);
 
     bool fb_ok = init_framebuffer();
     if (!fb_ok) {
-        /* VGA fallback (mapping 0xB8000 jest w paging_init) */
+        /* VGA fallback (0xB8000 jest zmapowane w tozsamosci) */
         vga_init();
         vga_write("Framebuffer unavailable. VGA fallback active.\n");
         /* Bez FB nie uruchamiamy shell; czekamy w halt */

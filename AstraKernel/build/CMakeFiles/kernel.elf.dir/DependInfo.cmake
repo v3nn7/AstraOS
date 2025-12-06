@@ -27,7 +27,10 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/vga.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/vga.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/interrupts/irq.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/interrupts/isr.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/dma.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/heap.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/kmalloc.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/kmalloc.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/kmalloc.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/memory.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/memory.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/memory.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/paging64.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/paging64.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/paging64.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/pmm.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/vmm.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/vmm.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/vmm.c.obj.d"
@@ -60,8 +63,11 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/net.c" "CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/tcp.c" "CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/udp.c" "CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.c" "CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/hid.c" "CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_devices.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.c" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj.d"
   )
 

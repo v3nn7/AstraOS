@@ -130,19 +130,6 @@ kernel.elf/fast:
 .PHONY : kernel.elf/fast
 
 #=============================================================================
-# Target rules for targets named memset_obj
-
-# Build rule for target.
-memset_obj: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 memset_obj
-.PHONY : memset_obj
-
-# fast build rule for target.
-memset_obj/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/memset_obj.dir/build.make CMakeFiles/memset_obj.dir/build
-.PHONY : memset_obj/fast
-
-#=============================================================================
 # Target rules for targets named ovmf_vars
 
 # Build rule for target.
@@ -634,6 +621,30 @@ kernel/arch/x86_64/interrupts/isr.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.s
 .PHONY : kernel/arch/x86_64/interrupts/isr.c.s
 
+kernel/arch/x86_64/mm/dma.obj: kernel/arch/x86_64/mm/dma.c.obj
+.PHONY : kernel/arch/x86_64/mm/dma.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/dma.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.obj
+.PHONY : kernel/arch/x86_64/mm/dma.c.obj
+
+kernel/arch/x86_64/mm/dma.i: kernel/arch/x86_64/mm/dma.c.i
+.PHONY : kernel/arch/x86_64/mm/dma.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/dma.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.i
+.PHONY : kernel/arch/x86_64/mm/dma.c.i
+
+kernel/arch/x86_64/mm/dma.s: kernel/arch/x86_64/mm/dma.c.s
+.PHONY : kernel/arch/x86_64/mm/dma.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/dma.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.s
+.PHONY : kernel/arch/x86_64/mm/dma.c.s
+
 kernel/arch/x86_64/mm/heap.obj: kernel/arch/x86_64/mm/heap.c.obj
 .PHONY : kernel/arch/x86_64/mm/heap.obj
 
@@ -657,6 +668,54 @@ kernel/arch/x86_64/mm/heap.s: kernel/arch/x86_64/mm/heap.c.s
 kernel/arch/x86_64/mm/heap.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.s
 .PHONY : kernel/arch/x86_64/mm/heap.c.s
+
+kernel/arch/x86_64/mm/kmalloc.obj: kernel/arch/x86_64/mm/kmalloc.c.obj
+.PHONY : kernel/arch/x86_64/mm/kmalloc.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/kmalloc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/kmalloc.c.obj
+.PHONY : kernel/arch/x86_64/mm/kmalloc.c.obj
+
+kernel/arch/x86_64/mm/kmalloc.i: kernel/arch/x86_64/mm/kmalloc.c.i
+.PHONY : kernel/arch/x86_64/mm/kmalloc.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/kmalloc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/kmalloc.c.i
+.PHONY : kernel/arch/x86_64/mm/kmalloc.c.i
+
+kernel/arch/x86_64/mm/kmalloc.s: kernel/arch/x86_64/mm/kmalloc.c.s
+.PHONY : kernel/arch/x86_64/mm/kmalloc.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/kmalloc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/kmalloc.c.s
+.PHONY : kernel/arch/x86_64/mm/kmalloc.c.s
+
+kernel/arch/x86_64/mm/memory.obj: kernel/arch/x86_64/mm/memory.c.obj
+.PHONY : kernel/arch/x86_64/mm/memory.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/memory.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/memory.c.obj
+.PHONY : kernel/arch/x86_64/mm/memory.c.obj
+
+kernel/arch/x86_64/mm/memory.i: kernel/arch/x86_64/mm/memory.c.i
+.PHONY : kernel/arch/x86_64/mm/memory.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/memory.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/memory.c.i
+.PHONY : kernel/arch/x86_64/mm/memory.c.i
+
+kernel/arch/x86_64/mm/memory.s: kernel/arch/x86_64/mm/memory.c.s
+.PHONY : kernel/arch/x86_64/mm/memory.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/memory.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/memory.c.s
+.PHONY : kernel/arch/x86_64/mm/memory.c.s
 
 kernel/arch/x86_64/mm/paging64.obj: kernel/arch/x86_64/mm/paging64.c.obj
 .PHONY : kernel/arch/x86_64/mm/paging64.obj
@@ -1426,6 +1485,30 @@ kernel/net/udp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/udp.c.s
 .PHONY : kernel/net/udp.c.s
 
+kernel/tests/memory_tests.obj: kernel/tests/memory_tests.c.obj
+.PHONY : kernel/tests/memory_tests.obj
+
+# target to build an object file
+kernel/tests/memory_tests.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj
+.PHONY : kernel/tests/memory_tests.c.obj
+
+kernel/tests/memory_tests.i: kernel/tests/memory_tests.c.i
+.PHONY : kernel/tests/memory_tests.i
+
+# target to preprocess a source file
+kernel/tests/memory_tests.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.i
+.PHONY : kernel/tests/memory_tests.c.i
+
+kernel/tests/memory_tests.s: kernel/tests/memory_tests.c.s
+.PHONY : kernel/tests/memory_tests.s
+
+# target to generate assembly for a file
+kernel/tests/memory_tests.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.s
+.PHONY : kernel/tests/memory_tests.c.s
+
 kernel/usb/hid.obj: kernel/usb/hid.c.obj
 .PHONY : kernel/usb/hid.obj
 
@@ -1474,6 +1557,54 @@ kernel/usb/usb.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.s
 .PHONY : kernel/usb/usb.c.s
 
+kernel/usb/usb_core.obj: kernel/usb/usb_core.c.obj
+.PHONY : kernel/usb/usb_core.obj
+
+# target to build an object file
+kernel/usb/usb_core.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj
+.PHONY : kernel/usb/usb_core.c.obj
+
+kernel/usb/usb_core.i: kernel/usb/usb_core.c.i
+.PHONY : kernel/usb/usb_core.i
+
+# target to preprocess a source file
+kernel/usb/usb_core.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.i
+.PHONY : kernel/usb/usb_core.c.i
+
+kernel/usb/usb_core.s: kernel/usb/usb_core.c.s
+.PHONY : kernel/usb/usb_core.s
+
+# target to generate assembly for a file
+kernel/usb/usb_core.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.s
+.PHONY : kernel/usb/usb_core.c.s
+
+kernel/usb/usb_devices.obj: kernel/usb/usb_devices.c.obj
+.PHONY : kernel/usb/usb_devices.obj
+
+# target to build an object file
+kernel/usb/usb_devices.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj
+.PHONY : kernel/usb/usb_devices.c.obj
+
+kernel/usb/usb_devices.i: kernel/usb/usb_devices.c.i
+.PHONY : kernel/usb/usb_devices.i
+
+# target to preprocess a source file
+kernel/usb/usb_devices.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.i
+.PHONY : kernel/usb/usb_devices.c.i
+
+kernel/usb/usb_devices.s: kernel/usb/usb_devices.c.s
+.PHONY : kernel/usb/usb_devices.s
+
+# target to generate assembly for a file
+kernel/usb/usb_devices.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.s
+.PHONY : kernel/usb/usb_devices.c.s
+
 kernel/usb/xhci.obj: kernel/usb/xhci.c.obj
 .PHONY : kernel/usb/xhci.obj
 
@@ -1507,7 +1638,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... iso"
-	@echo "... memset_obj"
 	@echo "... ovmf_vars"
 	@echo "... run_bios"
 	@echo "... run_uefi"
@@ -1567,9 +1697,18 @@ help:
 	@echo "... kernel/arch/x86_64/interrupts/isr.obj"
 	@echo "... kernel/arch/x86_64/interrupts/isr.i"
 	@echo "... kernel/arch/x86_64/interrupts/isr.s"
+	@echo "... kernel/arch/x86_64/mm/dma.obj"
+	@echo "... kernel/arch/x86_64/mm/dma.i"
+	@echo "... kernel/arch/x86_64/mm/dma.s"
 	@echo "... kernel/arch/x86_64/mm/heap.obj"
 	@echo "... kernel/arch/x86_64/mm/heap.i"
 	@echo "... kernel/arch/x86_64/mm/heap.s"
+	@echo "... kernel/arch/x86_64/mm/kmalloc.obj"
+	@echo "... kernel/arch/x86_64/mm/kmalloc.i"
+	@echo "... kernel/arch/x86_64/mm/kmalloc.s"
+	@echo "... kernel/arch/x86_64/mm/memory.obj"
+	@echo "... kernel/arch/x86_64/mm/memory.i"
+	@echo "... kernel/arch/x86_64/mm/memory.s"
 	@echo "... kernel/arch/x86_64/mm/paging64.obj"
 	@echo "... kernel/arch/x86_64/mm/paging64.i"
 	@echo "... kernel/arch/x86_64/mm/paging64.s"
@@ -1666,12 +1805,21 @@ help:
 	@echo "... kernel/net/udp.obj"
 	@echo "... kernel/net/udp.i"
 	@echo "... kernel/net/udp.s"
+	@echo "... kernel/tests/memory_tests.obj"
+	@echo "... kernel/tests/memory_tests.i"
+	@echo "... kernel/tests/memory_tests.s"
 	@echo "... kernel/usb/hid.obj"
 	@echo "... kernel/usb/hid.i"
 	@echo "... kernel/usb/hid.s"
 	@echo "... kernel/usb/usb.obj"
 	@echo "... kernel/usb/usb.i"
 	@echo "... kernel/usb/usb.s"
+	@echo "... kernel/usb/usb_core.obj"
+	@echo "... kernel/usb/usb_core.i"
+	@echo "... kernel/usb/usb_core.s"
+	@echo "... kernel/usb/usb_devices.obj"
+	@echo "... kernel/usb/usb_devices.i"
+	@echo "... kernel/usb/usb_devices.s"
 	@echo "... kernel/usb/xhci.obj"
 	@echo "... kernel/usb/xhci.i"
 	@echo "... kernel/usb/xhci.s"

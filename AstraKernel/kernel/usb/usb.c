@@ -4,6 +4,7 @@
 #include "interrupts.h"
 
 #define MAX_USB_CTRLS 8
+#define MAX_PCI_BUS   32  /* limit scan to first 32 buses to avoid HW hangs */
 static usb_controller_t ctrls[MAX_USB_CTRLS];
 static int ctrl_count = 0;
 
@@ -28,8 +29,8 @@ void usb_init(void) {
         return;
     }
     ctrl_count = 0;
-    printf("USB: scanning for EHCI/XHCI...\n");
-    for (uint8_t bus = 0; bus < 256; ++bus) {
+    printf("USB: scanning for EHCI/XHCI (buses 0-%d)...\n", MAX_PCI_BUS - 1);
+    for (uint8_t bus = 0; bus < MAX_PCI_BUS; ++bus) {
         for (uint8_t slot = 0; slot < 32; ++slot) {
             uint16_t vendor = (uint16_t)(pci_cfg_read(bus, slot, 0, 0x00) & 0xFFFF);
             if (vendor == 0xFFFF) continue;
@@ -59,5 +60,9 @@ void usb_init(void) {
         return;
     }
     printf("USB: controllers found=%d (XHCI/EHCI init stub; HID not active yet)\n", ctrl_count);
+}
+
+int usb_controller_count(void) {
+    return ctrl_count;
 }
 
