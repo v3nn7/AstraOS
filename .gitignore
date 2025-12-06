@@ -1,0 +1,23 @@
+# Ignore child build outputs and common artifacts
+AstraKernel/build/
+AstraKernel/qemu.log
+AstraKernel/*.iso
+AstraKernel/*.elf
+
+# Generic
+*.o
+*.obj
+*.a
+*.log
+*.tmp
+
+# CMake
+AstraKernel/CMakeCache.txt
+AstraKernel/CMakeFiles/
+AstraKernel/cmake_install.cmake
+AstraKernel/Makefile
+
+# IDE
+.vscode/
+.idea/
+

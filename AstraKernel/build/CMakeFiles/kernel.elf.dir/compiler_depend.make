@@ -95,6 +95,7 @@ CMakeFiles/kernel.elf.dir/kernel/core/shell.c.o: /home/v3nn7/Projects/AstraOS/As
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
 CMakeFiles/kernel.elf.dir/kernel/core/task.c.o: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/task.c
@@ -142,8 +143,6 @@ CMakeFiles/kernel.elf.dir/kernel/net/udp.c.o: /home/v3nn7/Projects/AstraOS/Astra
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ipv4.c:
 
-/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h:
-
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ethernet.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/string.c:
@@ -153,6 +152,8 @@ CMakeFiles/kernel.elf.dir/kernel/net/udp.c.o: /home/v3nn7/Projects/AstraOS/Astra
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/fat32.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/task.c:
+
+/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/udp.c:
 

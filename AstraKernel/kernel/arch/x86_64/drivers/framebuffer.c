@@ -162,3 +162,25 @@ void fb_draw_text(uint32_t x, uint32_t y, const char *text, uint32_t fg, uint32_
         ++text;
     }
 }
+
+void fb_scroll_up(uint32_t pixels, uint32_t bg) {
+    if (!fb) return;
+    if (pixels == 0 || pixels >= fb_h) {
+        fb_fill_screen(bg);
+        return;
+    }
+    uint32_t row_bytes = fb_pitch; /* already in dwords */
+    uint32_t start = pixels;
+    for (uint32_t y = 0; y + start < fb_h; ++y) {
+        uint32_t *dst = fb + y * row_bytes;
+        uint32_t *src = fb + (y + start) * row_bytes;
+        for (uint32_t x = 0; x < fb_w; ++x) {
+            dst[x] = src[x];
+        }
+    }
+    /* Clear the freed area at bottom */
+    for (uint32_t y = fb_h - pixels; y < fb_h; ++y) {
+        uint32_t *row = fb + y * row_bytes;
+        for (uint32_t x = 0; x < fb_w; ++x) row[x] = bg;
+    }
+}
