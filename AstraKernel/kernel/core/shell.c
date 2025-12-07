@@ -239,13 +239,85 @@ void shell_run() {
     cmd_len = 0;
     history_pos = -1;
 
+    /* Test: draw a test pixel to verify framebuffer works */
+    {
+        extern void fb_putpixel(uint32_t x, uint32_t y, uint32_t color);
+        for (int i = 0; i < 100; i++) {
+            fb_putpixel((uint32_t)(50 + i), 50, 0xFFFFFFFF); /* White line */
+        }
+        printf("shell: test white line drawn at y=50\n");
+    }
+    
+    /* Test: draw a big white square where cursor should be */
+    {
+        extern void fb_putpixel(uint32_t x, uint32_t y, uint32_t color);
+        extern uint32_t fb_width(void);
+        extern uint32_t fb_height(void);
+        uint32_t w = fb_width();
+        uint32_t h = fb_height();
+        int cx = w / 2;
+        int cy = h / 2;
+        printf("shell: drawing test square at center (%d,%d)\n", cx, cy);
+        for (int dy = -10; dy <= 10; dy++) {
+            for (int dx = -10; dx <= 10; dx++) {
+                int px = cx + dx;
+                int py = cy + dy;
+                if (px >= 0 && px < (int)w && py >= 0 && py < (int)h) {
+                    fb_putpixel((uint32_t)px, (uint32_t)py, 0xFFFF0000); /* Red square */
+                }
+            }
+        }
+    }
+    
+    /* Track previous mouse position to avoid unnecessary updates */
+    static int prev_mx = -1;
+    static int prev_my = -1;
+    
+    /* Poll counter to reduce USB polling frequency */
+    static uint32_t poll_counter = 0;
+    
     while (1) {
+        /* Poll USB HID devices more frequently for better responsiveness */
+        poll_counter++;
+        if (poll_counter % 5 == 0) { /* Poll every 5 iterations instead of 10 */
+            extern void usb_hid_poll_mouse(void);
+            extern void usb_hid_poll_keyboard(void);
+            extern bool usb_hid_mouse_available(void);
+            extern bool usb_hid_keyboard_available(void);
+            
+            /* Only poll if devices are available */
+            if (usb_hid_keyboard_available()) {
+                usb_hid_poll_keyboard();
+            }
+            if (usb_hid_mouse_available()) {
+                usb_hid_poll_mouse();
+            }
+        }
+        
+        /* Update mouse cursor only when position changed (every 5 iterations) */
+        if (poll_counter % 5 == 0) {
+            extern void mouse_cursor_update(void);
+            extern bool mouse_cursor_needs_redraw(void);
+            extern int mouse_get_x(void);
+            extern int mouse_get_y(void);
+            
+            int mx = mouse_get_x();
+            int my = mouse_get_y();
+            
+            /* Update cursor only if position changed or needs redraw */
+            if ((mx != prev_mx || my != prev_my || mouse_cursor_needs_redraw()) && mx >= 0 && my >= 0) {
+                mouse_cursor_update();
+                prev_mx = mx;
+                prev_my = my;
+            }
+        }
+        
         char ch;
         
-        /* Read from keyboard buffer (IRQ-driven) */
+        /* Read from keyboard buffer (IRQ-driven PS/2 or USB HID) */
         if (!keyboard_read_char(&ch)) {
             /* No input available - small delay to avoid busy loop */
-            for (volatile int i = 0; i < 1000; i++);
+            for (volatile int i = 0; i < 10000; i++);
             continue;
         }
 

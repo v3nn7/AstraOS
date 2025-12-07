@@ -74,10 +74,10 @@ CMakeFiles/iso: kernel.elf
 	python3 /home/v3nn7/Projects/AstraOS/AstraKernel/tools/generate_initrd.py --output /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/initrd.img --assets-dir /home/v3nn7/Projects/AstraOS/AstraKernel/assets
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine.conf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/limine.conf
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/limine-bios.sys /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios.sys
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/limine-bios-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios-cd.bin
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/limine-uefi-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-uefi-cd.bin
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/BOOTX64.EFI /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT/BOOTX64.EFI
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-bios.sys /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios.sys
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-bios-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios-cd.bin
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-uefi-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-uefi-cd.bin
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/BOOTX64.EFI /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT/BOOTX64.EFI
 	xorriso -as mkisofs -b boot/limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot boot/limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root -o /home/v3nn7/Projects/AstraOS/AstraKernel/build/AstraOS.iso
 
 CMakeFiles/iso.dir/codegen:

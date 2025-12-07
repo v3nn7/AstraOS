@@ -24,12 +24,18 @@ static void set_gate(uint8_t vec, void *handler, uint8_t flags) {
     uint64_t addr = (uint64_t)handler;
 
     idt[vec].offset_low  = addr & 0xFFFF;
-    idt[vec].selector    = 0x08;
-    idt[vec].ist         = 0;
+    idt[vec].selector    = 0x08;  /* Kernel code segment */
+    idt[vec].ist         = 0;     /* Use RSP0 from TSS, not IST */
     idt[vec].type_attr   = flags;
     idt[vec].offset_mid  = (addr >> 16) & 0xFFFF;
     idt[vec].offset_high = (addr >> 32) & 0xFFFFFFFF;
     idt[vec].zero        = 0;
+    
+    /* Debug: log critical IRQ entries */
+    if (vec == 0x21 || vec == 0x2C) {
+        printf("idt: set_gate vector=0x%02X handler=%p selector=0x%02X flags=0x%02X\n",
+               vec, handler, idt[vec].selector, flags);
+    }
 }
 
 extern void isr0(interrupt_frame_t *);  extern void isr1(interrupt_frame_t *);
@@ -88,8 +94,12 @@ void idt_init(void) {
     set_gate(20, isr20, trap); set_gate(30, isr30, trap);
 
     // IRQ (APIC)
+    // IRQ0 (Timer) -> vector 32 (0x20)
     set_gate(32, irq32, intr);
+    // IRQ1 (Keyboard) -> vector 33 (0x21)
     set_gate(33, irq33, intr);
+    printf("idt: IRQ1 (keyboard) -> vector 33 (0x21) handler=%p\n", irq33);
+    
     set_gate(34, irq34, intr);
     set_gate(35, irq35, intr);
     set_gate(36, irq36, intr);
@@ -100,7 +110,12 @@ void idt_init(void) {
     set_gate(41, irq41, intr);
     set_gate(42, irq42, intr);
     set_gate(43, irq43, intr);
+    
+    // IRQ12 (Mouse) -> vector 44 (0x2C)
+    printf("idt: Setting up IRQ12 (mouse) -> vector 44 (0x2C) handler=%p\n", (void *)irq44);
     set_gate(44, irq44, intr);
+    printf("idt: IRQ12 (mouse) -> vector 44 (0x2C) handler=%p [REGISTERED]\n", (void *)irq44);
+    
     set_gate(45, irq45, intr);
     set_gate(46, irq46, intr);
     set_gate(47, irq47, intr);

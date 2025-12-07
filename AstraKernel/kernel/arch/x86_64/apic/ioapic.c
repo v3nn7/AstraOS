@@ -2,6 +2,7 @@
 #include "mmio.h"
 #include "memory.h"
 #include "klog.h"
+#include "kernel.h"
 
 #define IOAPIC_DEFAULT_PHYS 0xFEC00000
 
@@ -33,7 +34,25 @@ void ioapic_init(void) {
 }
 
 void ioapic_redirect_irq(uint8_t irq, uint8_t vector) {
+    /* DIAGNOSTIC: Print before redirect */
+    printf("IOAPIC: routing IRQ%u to vector %u\n", irq, vector);
+    
     uint8_t reg = 0x10 + irq * 2;
-    ioapic_write(reg, vector);
-    ioapic_write(reg + 1, 0); /* deliver to lapic 0 */
+    
+    /* Low 32 bits: vector + delivery mode */
+    uint32_t low = vector | (1 << 13); /* Level-triggered, active low */
+    
+    /* High 32 bits: destination LAPIC ID (0 = BSP) */
+    uint32_t high = 0;
+    
+    printf("IOAPIC: writing reg=0x%02x low=0x%08x high=0x%08x\n", reg, low, high);
+    ioapic_write(reg, low);
+    ioapic_write(reg + 1, high);
+    
+    /* Verify write */
+    uint32_t verify_low = ioapic_read(reg);
+    uint32_t verify_high = ioapic_read(reg + 1);
+    printf("IOAPIC: verified reg=0x%02x low=0x%08x high=0x%08x\n", reg, verify_low, verify_high);
+    
+    klog_printf(KLOG_INFO, "ioapic: redirected IRQ%u -> vector %u (reg=0x%02x)", irq, vector, reg);
 }

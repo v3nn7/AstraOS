@@ -31,6 +31,8 @@ void vga_write(const char *s);
 void mouse_init(void);
 int mouse_get_x(void);
 int mouse_get_y(void);
+bool mouse_cursor_needs_redraw(void);
+void mouse_cursor_update(void);
 
 /* Mouse cursor (PNG-based) */
 int mouse_cursor_load_from_file(const char *path);

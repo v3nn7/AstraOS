@@ -5,6 +5,9 @@
 #include "kernel.h"
 #include "string.h"
 
+/* Forward declaration */
+extern uint32_t fb_get_bpp(void);
+
 /* Custom allocators for lodepng to use kernel memory */
 #define LODEPNG_NO_COMPILE_ALLOCATORS
 #define LODEPNG_NO_COMPILE_CPP  /* Disable C++ wrapper */
@@ -142,12 +145,14 @@ void mouse_cursor_get_size(unsigned *w, unsigned *h) {
 /**
  * Draw cursor at position (x, y) on framebuffer
  * Supports alpha blending (transparency)
+ * Note: Background should be saved before calling this function
  */
 void mouse_cursor_draw(int x, int y) {
     if (!cursor_loaded || !cursor_image) return;
 
     uint32_t fb_w = fb_width();
     uint32_t fb_h = fb_height();
+    uint32_t bpp = fb_get_bpp();
 
     for (unsigned py = 0; py < cursor_height; py++) {
         for (unsigned px = 0; px < cursor_width; px++) {
@@ -170,24 +175,51 @@ void mouse_cursor_draw(int x, int y) {
 
             uint32_t color;
 
-            /* Simple alpha blending: if not fully opaque, blend with background */
-            if (a < 255 && a > 0) {
-                /* Get background pixel */
-                uint32_t bg = fb_getpixel((uint32_t)screen_x, (uint32_t)screen_y);
-                uint8_t bg_r = (bg >> 16) & 0xFF;
-                uint8_t bg_g = (bg >> 8) & 0xFF;
-                uint8_t bg_b = bg & 0xFF;
+            /* Get background pixel for alpha blending */
+            uint32_t bg = fb_getpixel((uint32_t)screen_x, (uint32_t)screen_y);
+            
+            /* Extract background color based on BPP */
+            uint8_t bg_r, bg_g, bg_b;
+            if (bpp == 32) {
+                /* 32-bit: ARGB or RGBA format - check actual format */
+                /* Most framebuffers use ARGB (0xAARRGGBB) or XRGB (0x00RRGGBB) */
+                bg_r = (bg >> 16) & 0xFF;
+                bg_g = (bg >> 8) & 0xFF;
+                bg_b = bg & 0xFF;
+            } else if (bpp == 24) {
+                /* 24-bit: RGB */
+                bg_r = (bg >> 16) & 0xFF;
+                bg_g = (bg >> 8) & 0xFF;
+                bg_b = bg & 0xFF;
+            } else {
+                /* Fallback: assume RGB */
+                bg_r = (bg >> 16) & 0xFF;
+                bg_g = (bg >> 8) & 0xFF;
+                bg_b = bg & 0xFF;
+            }
 
-                /* Blend: result = alpha * foreground + (1-alpha) * background */
-                uint8_t alpha = a;
-                uint8_t inv_alpha = 255 - alpha;
+            /* Alpha blending: blend foreground with background */
+            if (a < 255) {
+                /* Blend: result = (alpha * foreground + (255-alpha) * background) / 255 */
+                uint16_t alpha = a;
+                uint16_t inv_alpha = 255 - alpha;
                 uint8_t blend_r = ((uint16_t)r * alpha + (uint16_t)bg_r * inv_alpha) / 255;
                 uint8_t blend_g = ((uint16_t)g * alpha + (uint16_t)bg_g * inv_alpha) / 255;
                 uint8_t blend_b = ((uint16_t)b * alpha + (uint16_t)bg_b * inv_alpha) / 255;
-                color = (blend_r << 16) | (blend_g << 8) | blend_b;
+                
+                /* Format color for framebuffer (0xFFRRGGBB for 32-bit) */
+                if (bpp == 32) {
+                    color = 0xFF000000 | (blend_r << 16) | (blend_g << 8) | blend_b;
+                } else {
+                    color = (blend_r << 16) | (blend_g << 8) | blend_b;
+                }
             } else {
                 /* Fully opaque - use foreground color directly */
-                color = (r << 16) | (g << 8) | b;
+                if (bpp == 32) {
+                    color = 0xFF000000 | (r << 16) | (g << 8) | b;
+                } else {
+                    color = (r << 16) | (g << 8) | b;
+                }
             }
 
             fb_putpixel((uint32_t)screen_x, (uint32_t)screen_y, color);

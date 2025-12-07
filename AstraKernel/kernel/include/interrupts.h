@@ -16,6 +16,7 @@ void gdt_init(uint64_t stack_top);
 void idt_init(void);
 void irq_init(void);
 void irq_register_handler(uint8_t irq, irq_handler_t handler);
+void interrupt_handler(uint8_t vector, interrupt_frame_t *frame);
 
 static inline void outb(uint16_t port, uint8_t val) {
     __asm__ volatile ("outb %0, %1" :: "a"(val), "Nd"(port));

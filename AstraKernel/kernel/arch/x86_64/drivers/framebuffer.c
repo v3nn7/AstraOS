@@ -122,7 +122,22 @@ uint32_t fb_get_bpp(void) { return fb_bpp; }
 
 uint32_t fb_getpixel(uint32_t x, uint32_t y) {
     if (!fb || x >= fb_w || y >= fb_h) return 0;
-    return fb[y * fb_pitch + x];
+    
+    /* fb_pitch is in dwords, so we can index directly */
+    /* For 32-bit: return pixel directly */
+    if (fb_bpp == 32) {
+        return fb[y * fb_pitch + x];
+    } else if (fb_bpp == 24) {
+        /* For 24-bit: read RGB bytes and convert to 32-bit format */
+        uint8_t *row = (uint8_t *)fb + (size_t)y * (size_t)fb_pitch * 4;
+        uint8_t *pix = row + (size_t)x * 3;
+        uint8_t b = pix[0];
+        uint8_t g = pix[1];
+        uint8_t r = pix[2];
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
+    } else {
+        return 0; /* Unsupported format */
+    }
 }
 
 void fb_putpixel(uint32_t x, uint32_t y, uint32_t color) {

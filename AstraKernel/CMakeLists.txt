@@ -46,11 +46,14 @@ file(GLOB_RECURSE KERNEL_C
 file(GLOB_RECURSE KERNEL_CPP
     "kernel/arch/x86_64/mm/*.cpp"
     "kernel/core/*.cpp"
+    "kernel/drivers/usb/hid/parser/*.cpp"
+    "kernel/drivers/usb/hid/hid_driver.cpp"
 )
 # Ensure new memory subsystem entry point is always compiled
 list(APPEND KERNEL_C
     "kernel/arch/x86_64/mm/memory.c"
     "kernel/arch/x86_64/drivers/load_cursor.c"
+    "kernel/drivers/usb/hid/hid_usb_driver.c"
 )
 
 # Newly added core/subsystems
@@ -97,7 +100,8 @@ target_include_directories(kernel.elf PRIVATE
 )
 
 # Limine 10.4.0 (pre-downloaded)
-set(LIMINE_BIN_DIR ${CMAKE_BINARY_DIR}/_deps/limine-src)
+# After cloning and building, binaries are in bin/ subdirectory
+set(LIMINE_BIN_DIR ${CMAKE_BINARY_DIR}/_deps/limine-src/bin)
 
 set(OVMF_CODE_CAND
     "/usr/share/ovmf/x64/OVMF_CODE.fd"
@@ -181,7 +185,7 @@ add_custom_target(iso ALL
 
 add_custom_target(run_bios
     COMMAND qemu-system-x86_64
-        -machine pc -device i8042
+        -machine pc
         -vga virtio
         -display sdl
         -m 4096M
@@ -189,6 +193,9 @@ add_custom_target(run_bios
         -no-reboot -no-shutdown
         -cdrom ${CMAKE_BINARY_DIR}/AstraOS.iso
         -boot d
+        -device qemu-xhci,id=xhci
+        -device usb-kbd
+        -device usb-mouse
     DEPENDS iso
 )
 
@@ -196,13 +203,16 @@ if(OVMF_CODE AND OVMF_VARS_SRC)
     add_custom_target(run_uefi
         COMMAND qemu-system-x86_64
             -machine q35
+            -cpu qemu64
+            -m 2048M
+            -device qemu-xhci,id=xhci,p2=8,p3=8
+            -device usb-kbd
+            -device usb-mouse
             -vga virtio
             -display sdl
-            -m 4096M
             -drive if=pflash,format=raw,readonly=on,file=${OVMF_CODE}
             -drive if=pflash,format=raw,file=${OVMF_VARS}
-            -drive file=${CMAKE_BINARY_DIR}/AstraOS.iso,if=ide,media=cdrom,format=raw
-            -boot d
+            -drive format=raw,file=${CMAKE_BINARY_DIR}/AstraOS.iso
             -serial stdio
             -no-reboot -no-shutdown
         DEPENDS iso ovmf_vars

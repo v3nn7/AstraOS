@@ -573,54 +573,6 @@ kernel/arch/x86_64/drivers/pit.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.s
 .PHONY : kernel/arch/x86_64/drivers/pit.c.s
 
-kernel/arch/x86_64/drivers/ps2_keyboard.obj: kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.obj
-
-# target to build an object file
-kernel/arch/x86_64/drivers/ps2_keyboard.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
-
-kernel/arch/x86_64/drivers/ps2_keyboard.i: kernel/arch/x86_64/drivers/ps2_keyboard.c.i
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.i
-
-# target to preprocess a source file
-kernel/arch/x86_64/drivers/ps2_keyboard.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.i
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.i
-
-kernel/arch/x86_64/drivers/ps2_keyboard.s: kernel/arch/x86_64/drivers/ps2_keyboard.c.s
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.s
-
-# target to generate assembly for a file
-kernel/arch/x86_64/drivers/ps2_keyboard.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.s
-.PHONY : kernel/arch/x86_64/drivers/ps2_keyboard.c.s
-
-kernel/arch/x86_64/drivers/ps2_mouse.obj: kernel/arch/x86_64/drivers/ps2_mouse.c.obj
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.obj
-
-# target to build an object file
-kernel/arch/x86_64/drivers/ps2_mouse.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.obj
-
-kernel/arch/x86_64/drivers/ps2_mouse.i: kernel/arch/x86_64/drivers/ps2_mouse.c.i
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.i
-
-# target to preprocess a source file
-kernel/arch/x86_64/drivers/ps2_mouse.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.i
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.i
-
-kernel/arch/x86_64/drivers/ps2_mouse.s: kernel/arch/x86_64/drivers/ps2_mouse.c.s
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.s
-
-# target to generate assembly for a file
-kernel/arch/x86_64/drivers/ps2_mouse.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.s
-.PHONY : kernel/arch/x86_64/drivers/ps2_mouse.c.s
-
 kernel/arch/x86_64/drivers/serial.obj: kernel/arch/x86_64/drivers/serial.c.obj
 .PHONY : kernel/arch/x86_64/drivers/serial.obj
 
@@ -1317,6 +1269,702 @@ kernel/dev/tty.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/tty.c.s
 .PHONY : kernel/dev/tty.c.s
 
+kernel/drivers/input/input_core.obj: kernel/drivers/input/input_core.c.obj
+.PHONY : kernel/drivers/input/input_core.obj
+
+# target to build an object file
+kernel/drivers/input/input_core.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/input/input_core.c.obj
+.PHONY : kernel/drivers/input/input_core.c.obj
+
+kernel/drivers/input/input_core.i: kernel/drivers/input/input_core.c.i
+.PHONY : kernel/drivers/input/input_core.i
+
+# target to preprocess a source file
+kernel/drivers/input/input_core.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/input/input_core.c.i
+.PHONY : kernel/drivers/input/input_core.c.i
+
+kernel/drivers/input/input_core.s: kernel/drivers/input/input_core.c.s
+.PHONY : kernel/drivers/input/input_core.s
+
+# target to generate assembly for a file
+kernel/drivers/input/input_core.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/input/input_core.c.s
+.PHONY : kernel/drivers/input/input_core.c.s
+
+kernel/drivers/usb/core/usb_core.obj: kernel/drivers/usb/core/usb_core.c.obj
+.PHONY : kernel/drivers/usb/core/usb_core.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_core.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_core.c.obj
+.PHONY : kernel/drivers/usb/core/usb_core.c.obj
+
+kernel/drivers/usb/core/usb_core.i: kernel/drivers/usb/core/usb_core.c.i
+.PHONY : kernel/drivers/usb/core/usb_core.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_core.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_core.c.i
+.PHONY : kernel/drivers/usb/core/usb_core.c.i
+
+kernel/drivers/usb/core/usb_core.s: kernel/drivers/usb/core/usb_core.c.s
+.PHONY : kernel/drivers/usb/core/usb_core.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_core.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_core.c.s
+.PHONY : kernel/drivers/usb/core/usb_core.c.s
+
+kernel/drivers/usb/core/usb_descriptors.obj: kernel/drivers/usb/core/usb_descriptors.c.obj
+.PHONY : kernel/drivers/usb/core/usb_descriptors.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_descriptors.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_descriptors.c.obj
+.PHONY : kernel/drivers/usb/core/usb_descriptors.c.obj
+
+kernel/drivers/usb/core/usb_descriptors.i: kernel/drivers/usb/core/usb_descriptors.c.i
+.PHONY : kernel/drivers/usb/core/usb_descriptors.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_descriptors.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_descriptors.c.i
+.PHONY : kernel/drivers/usb/core/usb_descriptors.c.i
+
+kernel/drivers/usb/core/usb_descriptors.s: kernel/drivers/usb/core/usb_descriptors.c.s
+.PHONY : kernel/drivers/usb/core/usb_descriptors.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_descriptors.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_descriptors.c.s
+.PHONY : kernel/drivers/usb/core/usb_descriptors.c.s
+
+kernel/drivers/usb/core/usb_device.obj: kernel/drivers/usb/core/usb_device.c.obj
+.PHONY : kernel/drivers/usb/core/usb_device.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_device.c.obj
+.PHONY : kernel/drivers/usb/core/usb_device.c.obj
+
+kernel/drivers/usb/core/usb_device.i: kernel/drivers/usb/core/usb_device.c.i
+.PHONY : kernel/drivers/usb/core/usb_device.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_device.c.i
+.PHONY : kernel/drivers/usb/core/usb_device.c.i
+
+kernel/drivers/usb/core/usb_device.s: kernel/drivers/usb/core/usb_device.c.s
+.PHONY : kernel/drivers/usb/core/usb_device.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_device.c.s
+.PHONY : kernel/drivers/usb/core/usb_device.c.s
+
+kernel/drivers/usb/core/usb_enumeration.obj: kernel/drivers/usb/core/usb_enumeration.c.obj
+.PHONY : kernel/drivers/usb/core/usb_enumeration.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_enumeration.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_enumeration.c.obj
+.PHONY : kernel/drivers/usb/core/usb_enumeration.c.obj
+
+kernel/drivers/usb/core/usb_enumeration.i: kernel/drivers/usb/core/usb_enumeration.c.i
+.PHONY : kernel/drivers/usb/core/usb_enumeration.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_enumeration.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_enumeration.c.i
+.PHONY : kernel/drivers/usb/core/usb_enumeration.c.i
+
+kernel/drivers/usb/core/usb_enumeration.s: kernel/drivers/usb/core/usb_enumeration.c.s
+.PHONY : kernel/drivers/usb/core/usb_enumeration.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_enumeration.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_enumeration.c.s
+.PHONY : kernel/drivers/usb/core/usb_enumeration.c.s
+
+kernel/drivers/usb/core/usb_init.obj: kernel/drivers/usb/core/usb_init.c.obj
+.PHONY : kernel/drivers/usb/core/usb_init.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_init.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_init.c.obj
+.PHONY : kernel/drivers/usb/core/usb_init.c.obj
+
+kernel/drivers/usb/core/usb_init.i: kernel/drivers/usb/core/usb_init.c.i
+.PHONY : kernel/drivers/usb/core/usb_init.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_init.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_init.c.i
+.PHONY : kernel/drivers/usb/core/usb_init.c.i
+
+kernel/drivers/usb/core/usb_init.s: kernel/drivers/usb/core/usb_init.c.s
+.PHONY : kernel/drivers/usb/core/usb_init.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_init.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_init.c.s
+.PHONY : kernel/drivers/usb/core/usb_init.c.s
+
+kernel/drivers/usb/core/usb_manager.obj: kernel/drivers/usb/core/usb_manager.c.obj
+.PHONY : kernel/drivers/usb/core/usb_manager.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_manager.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_manager.c.obj
+.PHONY : kernel/drivers/usb/core/usb_manager.c.obj
+
+kernel/drivers/usb/core/usb_manager.i: kernel/drivers/usb/core/usb_manager.c.i
+.PHONY : kernel/drivers/usb/core/usb_manager.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_manager.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_manager.c.i
+.PHONY : kernel/drivers/usb/core/usb_manager.c.i
+
+kernel/drivers/usb/core/usb_manager.s: kernel/drivers/usb/core/usb_manager.c.s
+.PHONY : kernel/drivers/usb/core/usb_manager.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_manager.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_manager.c.s
+.PHONY : kernel/drivers/usb/core/usb_manager.c.s
+
+kernel/drivers/usb/core/usb_transfer.obj: kernel/drivers/usb/core/usb_transfer.c.obj
+.PHONY : kernel/drivers/usb/core/usb_transfer.obj
+
+# target to build an object file
+kernel/drivers/usb/core/usb_transfer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_transfer.c.obj
+.PHONY : kernel/drivers/usb/core/usb_transfer.c.obj
+
+kernel/drivers/usb/core/usb_transfer.i: kernel/drivers/usb/core/usb_transfer.c.i
+.PHONY : kernel/drivers/usb/core/usb_transfer.i
+
+# target to preprocess a source file
+kernel/drivers/usb/core/usb_transfer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_transfer.c.i
+.PHONY : kernel/drivers/usb/core/usb_transfer.c.i
+
+kernel/drivers/usb/core/usb_transfer.s: kernel/drivers/usb/core/usb_transfer.c.s
+.PHONY : kernel/drivers/usb/core/usb_transfer.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/core/usb_transfer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_transfer.c.s
+.PHONY : kernel/drivers/usb/core/usb_transfer.c.s
+
+kernel/drivers/usb/hid/hid_driver.obj: kernel/drivers/usb/hid/hid_driver.cpp.obj
+.PHONY : kernel/drivers/usb/hid/hid_driver.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/hid_driver.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj
+.PHONY : kernel/drivers/usb/hid/hid_driver.cpp.obj
+
+kernel/drivers/usb/hid/hid_driver.i: kernel/drivers/usb/hid/hid_driver.cpp.i
+.PHONY : kernel/drivers/usb/hid/hid_driver.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/hid_driver.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.i
+.PHONY : kernel/drivers/usb/hid/hid_driver.cpp.i
+
+kernel/drivers/usb/hid/hid_driver.s: kernel/drivers/usb/hid/hid_driver.cpp.s
+.PHONY : kernel/drivers/usb/hid/hid_driver.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/hid_driver.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.s
+.PHONY : kernel/drivers/usb/hid/hid_driver.cpp.s
+
+kernel/drivers/usb/hid/hid_keyboard.obj: kernel/drivers/usb/hid/hid_keyboard.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/hid_keyboard.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_keyboard.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.c.obj
+
+kernel/drivers/usb/hid/hid_keyboard.i: kernel/drivers/usb/hid/hid_keyboard.c.i
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/hid_keyboard.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_keyboard.c.i
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.c.i
+
+kernel/drivers/usb/hid/hid_keyboard.s: kernel/drivers/usb/hid/hid_keyboard.c.s
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/hid_keyboard.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_keyboard.c.s
+.PHONY : kernel/drivers/usb/hid/hid_keyboard.c.s
+
+kernel/drivers/usb/hid/hid_mouse.obj: kernel/drivers/usb/hid/hid_mouse.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_mouse.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/hid_mouse.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_mouse.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_mouse.c.obj
+
+kernel/drivers/usb/hid/hid_mouse.i: kernel/drivers/usb/hid/hid_mouse.c.i
+.PHONY : kernel/drivers/usb/hid/hid_mouse.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/hid_mouse.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_mouse.c.i
+.PHONY : kernel/drivers/usb/hid/hid_mouse.c.i
+
+kernel/drivers/usb/hid/hid_mouse.s: kernel/drivers/usb/hid/hid_mouse.c.s
+.PHONY : kernel/drivers/usb/hid/hid_mouse.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/hid_mouse.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_mouse.c.s
+.PHONY : kernel/drivers/usb/hid/hid_mouse.c.s
+
+kernel/drivers/usb/hid/hid_usb_driver.obj: kernel/drivers/usb/hid/hid_usb_driver.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/hid_usb_driver.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_usb_driver.c.obj
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.c.obj
+
+kernel/drivers/usb/hid/hid_usb_driver.i: kernel/drivers/usb/hid/hid_usb_driver.c.i
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/hid_usb_driver.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_usb_driver.c.i
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.c.i
+
+kernel/drivers/usb/hid/hid_usb_driver.s: kernel/drivers/usb/hid/hid_usb_driver.c.s
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/hid_usb_driver.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_usb_driver.c.s
+.PHONY : kernel/drivers/usb/hid/hid_usb_driver.c.s
+
+kernel/drivers/usb/hid/parser/hid_parser.obj: kernel/drivers/usb/hid/parser/hid_parser.cpp.obj
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/parser/hid_parser.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.cpp.obj
+
+kernel/drivers/usb/hid/parser/hid_parser.i: kernel/drivers/usb/hid/parser/hid_parser.cpp.i
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/parser/hid_parser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.i
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.cpp.i
+
+kernel/drivers/usb/hid/parser/hid_parser.s: kernel/drivers/usb/hid/parser/hid_parser.cpp.s
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/parser/hid_parser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.s
+.PHONY : kernel/drivers/usb/hid/parser/hid_parser.cpp.s
+
+kernel/drivers/usb/hid/parser/hid_report_descriptor.obj: kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.obj
+
+# target to build an object file
+kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj
+
+kernel/drivers/usb/hid/parser/hid_report_descriptor.i: kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.i
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.i
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.i
+
+kernel/drivers/usb/hid/parser/hid_report_descriptor.s: kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.s
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.s
+.PHONY : kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.s
+
+kernel/drivers/usb/host/ehci.obj: kernel/drivers/usb/host/ehci.c.obj
+.PHONY : kernel/drivers/usb/host/ehci.obj
+
+# target to build an object file
+kernel/drivers/usb/host/ehci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci.c.obj
+.PHONY : kernel/drivers/usb/host/ehci.c.obj
+
+kernel/drivers/usb/host/ehci.i: kernel/drivers/usb/host/ehci.c.i
+.PHONY : kernel/drivers/usb/host/ehci.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/ehci.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci.c.i
+.PHONY : kernel/drivers/usb/host/ehci.c.i
+
+kernel/drivers/usb/host/ehci.s: kernel/drivers/usb/host/ehci.c.s
+.PHONY : kernel/drivers/usb/host/ehci.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/ehci.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci.c.s
+.PHONY : kernel/drivers/usb/host/ehci.c.s
+
+kernel/drivers/usb/host/ehci_qh.obj: kernel/drivers/usb/host/ehci_qh.c.obj
+.PHONY : kernel/drivers/usb/host/ehci_qh.obj
+
+# target to build an object file
+kernel/drivers/usb/host/ehci_qh.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_qh.c.obj
+.PHONY : kernel/drivers/usb/host/ehci_qh.c.obj
+
+kernel/drivers/usb/host/ehci_qh.i: kernel/drivers/usb/host/ehci_qh.c.i
+.PHONY : kernel/drivers/usb/host/ehci_qh.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/ehci_qh.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_qh.c.i
+.PHONY : kernel/drivers/usb/host/ehci_qh.c.i
+
+kernel/drivers/usb/host/ehci_qh.s: kernel/drivers/usb/host/ehci_qh.c.s
+.PHONY : kernel/drivers/usb/host/ehci_qh.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/ehci_qh.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_qh.c.s
+.PHONY : kernel/drivers/usb/host/ehci_qh.c.s
+
+kernel/drivers/usb/host/ehci_td.obj: kernel/drivers/usb/host/ehci_td.c.obj
+.PHONY : kernel/drivers/usb/host/ehci_td.obj
+
+# target to build an object file
+kernel/drivers/usb/host/ehci_td.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.obj
+.PHONY : kernel/drivers/usb/host/ehci_td.c.obj
+
+kernel/drivers/usb/host/ehci_td.i: kernel/drivers/usb/host/ehci_td.c.i
+.PHONY : kernel/drivers/usb/host/ehci_td.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/ehci_td.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.i
+.PHONY : kernel/drivers/usb/host/ehci_td.c.i
+
+kernel/drivers/usb/host/ehci_td.s: kernel/drivers/usb/host/ehci_td.c.s
+.PHONY : kernel/drivers/usb/host/ehci_td.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/ehci_td.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.s
+.PHONY : kernel/drivers/usb/host/ehci_td.c.s
+
+kernel/drivers/usb/host/ohci.obj: kernel/drivers/usb/host/ohci.c.obj
+.PHONY : kernel/drivers/usb/host/ohci.obj
+
+# target to build an object file
+kernel/drivers/usb/host/ohci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.obj
+.PHONY : kernel/drivers/usb/host/ohci.c.obj
+
+kernel/drivers/usb/host/ohci.i: kernel/drivers/usb/host/ohci.c.i
+.PHONY : kernel/drivers/usb/host/ohci.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/ohci.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.i
+.PHONY : kernel/drivers/usb/host/ohci.c.i
+
+kernel/drivers/usb/host/ohci.s: kernel/drivers/usb/host/ohci.c.s
+.PHONY : kernel/drivers/usb/host/ohci.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/ohci.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.s
+.PHONY : kernel/drivers/usb/host/ohci.c.s
+
+kernel/drivers/usb/host/pci_msi.obj: kernel/drivers/usb/host/pci_msi.c.obj
+.PHONY : kernel/drivers/usb/host/pci_msi.obj
+
+# target to build an object file
+kernel/drivers/usb/host/pci_msi.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_msi.c.obj
+.PHONY : kernel/drivers/usb/host/pci_msi.c.obj
+
+kernel/drivers/usb/host/pci_msi.i: kernel/drivers/usb/host/pci_msi.c.i
+.PHONY : kernel/drivers/usb/host/pci_msi.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/pci_msi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_msi.c.i
+.PHONY : kernel/drivers/usb/host/pci_msi.c.i
+
+kernel/drivers/usb/host/pci_msi.s: kernel/drivers/usb/host/pci_msi.c.s
+.PHONY : kernel/drivers/usb/host/pci_msi.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/pci_msi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_msi.c.s
+.PHONY : kernel/drivers/usb/host/pci_msi.c.s
+
+kernel/drivers/usb/host/pci_usb_detect.obj: kernel/drivers/usb/host/pci_usb_detect.c.obj
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.obj
+
+# target to build an object file
+kernel/drivers/usb/host/pci_usb_detect.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.obj
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.c.obj
+
+kernel/drivers/usb/host/pci_usb_detect.i: kernel/drivers/usb/host/pci_usb_detect.c.i
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/pci_usb_detect.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.i
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.c.i
+
+kernel/drivers/usb/host/pci_usb_detect.s: kernel/drivers/usb/host/pci_usb_detect.c.s
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/pci_usb_detect.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.s
+.PHONY : kernel/drivers/usb/host/pci_usb_detect.c.s
+
+kernel/drivers/usb/host/uhci.obj: kernel/drivers/usb/host/uhci.c.obj
+.PHONY : kernel/drivers/usb/host/uhci.obj
+
+# target to build an object file
+kernel/drivers/usb/host/uhci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/uhci.c.obj
+.PHONY : kernel/drivers/usb/host/uhci.c.obj
+
+kernel/drivers/usb/host/uhci.i: kernel/drivers/usb/host/uhci.c.i
+.PHONY : kernel/drivers/usb/host/uhci.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/uhci.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/uhci.c.i
+.PHONY : kernel/drivers/usb/host/uhci.c.i
+
+kernel/drivers/usb/host/uhci.s: kernel/drivers/usb/host/uhci.c.s
+.PHONY : kernel/drivers/usb/host/uhci.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/uhci.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/uhci.c.s
+.PHONY : kernel/drivers/usb/host/uhci.c.s
+
+kernel/drivers/usb/host/xhci.obj: kernel/drivers/usb/host/xhci.c.obj
+.PHONY : kernel/drivers/usb/host/xhci.obj
+
+# target to build an object file
+kernel/drivers/usb/host/xhci.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.obj
+.PHONY : kernel/drivers/usb/host/xhci.c.obj
+
+kernel/drivers/usb/host/xhci.i: kernel/drivers/usb/host/xhci.c.i
+.PHONY : kernel/drivers/usb/host/xhci.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/xhci.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.i
+.PHONY : kernel/drivers/usb/host/xhci.c.i
+
+kernel/drivers/usb/host/xhci.s: kernel/drivers/usb/host/xhci.c.s
+.PHONY : kernel/drivers/usb/host/xhci.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/xhci.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.s
+.PHONY : kernel/drivers/usb/host/xhci.c.s
+
+kernel/drivers/usb/host/xhci_irq.obj: kernel/drivers/usb/host/xhci_irq.c.obj
+.PHONY : kernel/drivers/usb/host/xhci_irq.obj
+
+# target to build an object file
+kernel/drivers/usb/host/xhci_irq.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.obj
+.PHONY : kernel/drivers/usb/host/xhci_irq.c.obj
+
+kernel/drivers/usb/host/xhci_irq.i: kernel/drivers/usb/host/xhci_irq.c.i
+.PHONY : kernel/drivers/usb/host/xhci_irq.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/xhci_irq.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.i
+.PHONY : kernel/drivers/usb/host/xhci_irq.c.i
+
+kernel/drivers/usb/host/xhci_irq.s: kernel/drivers/usb/host/xhci_irq.c.s
+.PHONY : kernel/drivers/usb/host/xhci_irq.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/xhci_irq.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.s
+.PHONY : kernel/drivers/usb/host/xhci_irq.c.s
+
+kernel/drivers/usb/hub/usb_hub.obj: kernel/drivers/usb/hub/usb_hub.c.obj
+.PHONY : kernel/drivers/usb/hub/usb_hub.obj
+
+# target to build an object file
+kernel/drivers/usb/hub/usb_hub.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.obj
+.PHONY : kernel/drivers/usb/hub/usb_hub.c.obj
+
+kernel/drivers/usb/hub/usb_hub.i: kernel/drivers/usb/hub/usb_hub.c.i
+.PHONY : kernel/drivers/usb/hub/usb_hub.i
+
+# target to preprocess a source file
+kernel/drivers/usb/hub/usb_hub.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.i
+.PHONY : kernel/drivers/usb/hub/usb_hub.c.i
+
+kernel/drivers/usb/hub/usb_hub.s: kernel/drivers/usb/hub/usb_hub.c.s
+.PHONY : kernel/drivers/usb/hub/usb_hub.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/hub/usb_hub.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.s
+.PHONY : kernel/drivers/usb/hub/usb_hub.c.s
+
+kernel/drivers/usb/util/usb_debug.obj: kernel/drivers/usb/util/usb_debug.c.obj
+.PHONY : kernel/drivers/usb/util/usb_debug.obj
+
+# target to build an object file
+kernel/drivers/usb/util/usb_debug.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.obj
+.PHONY : kernel/drivers/usb/util/usb_debug.c.obj
+
+kernel/drivers/usb/util/usb_debug.i: kernel/drivers/usb/util/usb_debug.c.i
+.PHONY : kernel/drivers/usb/util/usb_debug.i
+
+# target to preprocess a source file
+kernel/drivers/usb/util/usb_debug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.i
+.PHONY : kernel/drivers/usb/util/usb_debug.c.i
+
+kernel/drivers/usb/util/usb_debug.s: kernel/drivers/usb/util/usb_debug.c.s
+.PHONY : kernel/drivers/usb/util/usb_debug.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/util/usb_debug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.s
+.PHONY : kernel/drivers/usb/util/usb_debug.c.s
+
+kernel/drivers/usb/util/usb_helpers.obj: kernel/drivers/usb/util/usb_helpers.c.obj
+.PHONY : kernel/drivers/usb/util/usb_helpers.obj
+
+# target to build an object file
+kernel/drivers/usb/util/usb_helpers.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.obj
+.PHONY : kernel/drivers/usb/util/usb_helpers.c.obj
+
+kernel/drivers/usb/util/usb_helpers.i: kernel/drivers/usb/util/usb_helpers.c.i
+.PHONY : kernel/drivers/usb/util/usb_helpers.i
+
+# target to preprocess a source file
+kernel/drivers/usb/util/usb_helpers.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.i
+.PHONY : kernel/drivers/usb/util/usb_helpers.c.i
+
+kernel/drivers/usb/util/usb_helpers.s: kernel/drivers/usb/util/usb_helpers.c.s
+.PHONY : kernel/drivers/usb/util/usb_helpers.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/util/usb_helpers.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.s
+.PHONY : kernel/drivers/usb/util/usb_helpers.c.s
+
+kernel/drivers/usb/xhci/xhci_doorbell.obj: kernel/drivers/usb/xhci/xhci_doorbell.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_doorbell.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.c.obj
+
+kernel/drivers/usb/xhci/xhci_doorbell.i: kernel/drivers/usb/xhci/xhci_doorbell.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_doorbell.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.c.i
+
+kernel/drivers/usb/xhci/xhci_doorbell.s: kernel/drivers/usb/xhci/xhci_doorbell.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_doorbell.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_doorbell.c.s
+
+kernel/drivers/usb/xhci/xhci_ring.obj: kernel/drivers/usb/xhci/xhci_ring.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_ring.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.c.obj
+
+kernel/drivers/usb/xhci/xhci_ring.i: kernel/drivers/usb/xhci/xhci_ring.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_ring.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.c.i
+
+kernel/drivers/usb/xhci/xhci_ring.s: kernel/drivers/usb/xhci/xhci_ring.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_ring.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_ring.c.s
+
+kernel/drivers/usb/xhci/xhci_transfer.obj: kernel/drivers/usb/xhci/xhci_transfer.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_transfer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.c.obj
+
+kernel/drivers/usb/xhci/xhci_transfer.i: kernel/drivers/usb/xhci/xhci_transfer.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_transfer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.c.i
+
+kernel/drivers/usb/xhci/xhci_transfer.s: kernel/drivers/usb/xhci/xhci_transfer.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_transfer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_transfer.c.s
+
 kernel/fs/devfs.obj: kernel/fs/devfs.c.obj
 .PHONY : kernel/fs/devfs.obj
 
@@ -1893,126 +2541,6 @@ kernel/tests/memory_tests.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.s
 .PHONY : kernel/tests/memory_tests.c.s
 
-kernel/usb/hid.obj: kernel/usb/hid.c.obj
-.PHONY : kernel/usb/hid.obj
-
-# target to build an object file
-kernel/usb/hid.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj
-.PHONY : kernel/usb/hid.c.obj
-
-kernel/usb/hid.i: kernel/usb/hid.c.i
-.PHONY : kernel/usb/hid.i
-
-# target to preprocess a source file
-kernel/usb/hid.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.i
-.PHONY : kernel/usb/hid.c.i
-
-kernel/usb/hid.s: kernel/usb/hid.c.s
-.PHONY : kernel/usb/hid.s
-
-# target to generate assembly for a file
-kernel/usb/hid.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.s
-.PHONY : kernel/usb/hid.c.s
-
-kernel/usb/usb.obj: kernel/usb/usb.c.obj
-.PHONY : kernel/usb/usb.obj
-
-# target to build an object file
-kernel/usb/usb.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj
-.PHONY : kernel/usb/usb.c.obj
-
-kernel/usb/usb.i: kernel/usb/usb.c.i
-.PHONY : kernel/usb/usb.i
-
-# target to preprocess a source file
-kernel/usb/usb.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.i
-.PHONY : kernel/usb/usb.c.i
-
-kernel/usb/usb.s: kernel/usb/usb.c.s
-.PHONY : kernel/usb/usb.s
-
-# target to generate assembly for a file
-kernel/usb/usb.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.s
-.PHONY : kernel/usb/usb.c.s
-
-kernel/usb/usb_core.obj: kernel/usb/usb_core.c.obj
-.PHONY : kernel/usb/usb_core.obj
-
-# target to build an object file
-kernel/usb/usb_core.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj
-.PHONY : kernel/usb/usb_core.c.obj
-
-kernel/usb/usb_core.i: kernel/usb/usb_core.c.i
-.PHONY : kernel/usb/usb_core.i
-
-# target to preprocess a source file
-kernel/usb/usb_core.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.i
-.PHONY : kernel/usb/usb_core.c.i
-
-kernel/usb/usb_core.s: kernel/usb/usb_core.c.s
-.PHONY : kernel/usb/usb_core.s
-
-# target to generate assembly for a file
-kernel/usb/usb_core.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.s
-.PHONY : kernel/usb/usb_core.c.s
-
-kernel/usb/usb_devices.obj: kernel/usb/usb_devices.c.obj
-.PHONY : kernel/usb/usb_devices.obj
-
-# target to build an object file
-kernel/usb/usb_devices.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj
-.PHONY : kernel/usb/usb_devices.c.obj
-
-kernel/usb/usb_devices.i: kernel/usb/usb_devices.c.i
-.PHONY : kernel/usb/usb_devices.i
-
-# target to preprocess a source file
-kernel/usb/usb_devices.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.i
-.PHONY : kernel/usb/usb_devices.c.i
-
-kernel/usb/usb_devices.s: kernel/usb/usb_devices.c.s
-.PHONY : kernel/usb/usb_devices.s
-
-# target to generate assembly for a file
-kernel/usb/usb_devices.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.s
-.PHONY : kernel/usb/usb_devices.c.s
-
-kernel/usb/xhci.obj: kernel/usb/xhci.c.obj
-.PHONY : kernel/usb/xhci.obj
-
-# target to build an object file
-kernel/usb/xhci.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj
-.PHONY : kernel/usb/xhci.c.obj
-
-kernel/usb/xhci.i: kernel/usb/xhci.c.i
-.PHONY : kernel/usb/xhci.i
-
-# target to preprocess a source file
-kernel/usb/xhci.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.i
-.PHONY : kernel/usb/xhci.c.i
-
-kernel/usb/xhci.s: kernel/usb/xhci.c.s
-.PHONY : kernel/usb/xhci.s
-
-# target to generate assembly for a file
-kernel/usb/xhci.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.s
-.PHONY : kernel/usb/xhci.c.s
-
 lodepng/lodepng/lodepng.obj: lodepng/lodepng/lodepng.cpp.obj
 .PHONY : lodepng/lodepng/lodepng.obj
 
@@ -2099,12 +2627,6 @@ help:
 	@echo "... kernel/arch/x86_64/drivers/pit.obj"
 	@echo "... kernel/arch/x86_64/drivers/pit.i"
 	@echo "... kernel/arch/x86_64/drivers/pit.s"
-	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.obj"
-	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.i"
-	@echo "... kernel/arch/x86_64/drivers/ps2_keyboard.s"
-	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.obj"
-	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.i"
-	@echo "... kernel/arch/x86_64/drivers/ps2_mouse.s"
 	@echo "... kernel/arch/x86_64/drivers/serial.obj"
 	@echo "... kernel/arch/x86_64/drivers/serial.i"
 	@echo "... kernel/arch/x86_64/drivers/serial.s"
@@ -2192,6 +2714,93 @@ help:
 	@echo "... kernel/dev/tty.obj"
 	@echo "... kernel/dev/tty.i"
 	@echo "... kernel/dev/tty.s"
+	@echo "... kernel/drivers/input/input_core.obj"
+	@echo "... kernel/drivers/input/input_core.i"
+	@echo "... kernel/drivers/input/input_core.s"
+	@echo "... kernel/drivers/usb/core/usb_core.obj"
+	@echo "... kernel/drivers/usb/core/usb_core.i"
+	@echo "... kernel/drivers/usb/core/usb_core.s"
+	@echo "... kernel/drivers/usb/core/usb_descriptors.obj"
+	@echo "... kernel/drivers/usb/core/usb_descriptors.i"
+	@echo "... kernel/drivers/usb/core/usb_descriptors.s"
+	@echo "... kernel/drivers/usb/core/usb_device.obj"
+	@echo "... kernel/drivers/usb/core/usb_device.i"
+	@echo "... kernel/drivers/usb/core/usb_device.s"
+	@echo "... kernel/drivers/usb/core/usb_enumeration.obj"
+	@echo "... kernel/drivers/usb/core/usb_enumeration.i"
+	@echo "... kernel/drivers/usb/core/usb_enumeration.s"
+	@echo "... kernel/drivers/usb/core/usb_init.obj"
+	@echo "... kernel/drivers/usb/core/usb_init.i"
+	@echo "... kernel/drivers/usb/core/usb_init.s"
+	@echo "... kernel/drivers/usb/core/usb_manager.obj"
+	@echo "... kernel/drivers/usb/core/usb_manager.i"
+	@echo "... kernel/drivers/usb/core/usb_manager.s"
+	@echo "... kernel/drivers/usb/core/usb_transfer.obj"
+	@echo "... kernel/drivers/usb/core/usb_transfer.i"
+	@echo "... kernel/drivers/usb/core/usb_transfer.s"
+	@echo "... kernel/drivers/usb/hid/hid_driver.obj"
+	@echo "... kernel/drivers/usb/hid/hid_driver.i"
+	@echo "... kernel/drivers/usb/hid/hid_driver.s"
+	@echo "... kernel/drivers/usb/hid/hid_keyboard.obj"
+	@echo "... kernel/drivers/usb/hid/hid_keyboard.i"
+	@echo "... kernel/drivers/usb/hid/hid_keyboard.s"
+	@echo "... kernel/drivers/usb/hid/hid_mouse.obj"
+	@echo "... kernel/drivers/usb/hid/hid_mouse.i"
+	@echo "... kernel/drivers/usb/hid/hid_mouse.s"
+	@echo "... kernel/drivers/usb/hid/hid_usb_driver.obj"
+	@echo "... kernel/drivers/usb/hid/hid_usb_driver.i"
+	@echo "... kernel/drivers/usb/hid/hid_usb_driver.s"
+	@echo "... kernel/drivers/usb/hid/parser/hid_parser.obj"
+	@echo "... kernel/drivers/usb/hid/parser/hid_parser.i"
+	@echo "... kernel/drivers/usb/hid/parser/hid_parser.s"
+	@echo "... kernel/drivers/usb/hid/parser/hid_report_descriptor.obj"
+	@echo "... kernel/drivers/usb/hid/parser/hid_report_descriptor.i"
+	@echo "... kernel/drivers/usb/hid/parser/hid_report_descriptor.s"
+	@echo "... kernel/drivers/usb/host/ehci.obj"
+	@echo "... kernel/drivers/usb/host/ehci.i"
+	@echo "... kernel/drivers/usb/host/ehci.s"
+	@echo "... kernel/drivers/usb/host/ehci_qh.obj"
+	@echo "... kernel/drivers/usb/host/ehci_qh.i"
+	@echo "... kernel/drivers/usb/host/ehci_qh.s"
+	@echo "... kernel/drivers/usb/host/ehci_td.obj"
+	@echo "... kernel/drivers/usb/host/ehci_td.i"
+	@echo "... kernel/drivers/usb/host/ehci_td.s"
+	@echo "... kernel/drivers/usb/host/ohci.obj"
+	@echo "... kernel/drivers/usb/host/ohci.i"
+	@echo "... kernel/drivers/usb/host/ohci.s"
+	@echo "... kernel/drivers/usb/host/pci_msi.obj"
+	@echo "... kernel/drivers/usb/host/pci_msi.i"
+	@echo "... kernel/drivers/usb/host/pci_msi.s"
+	@echo "... kernel/drivers/usb/host/pci_usb_detect.obj"
+	@echo "... kernel/drivers/usb/host/pci_usb_detect.i"
+	@echo "... kernel/drivers/usb/host/pci_usb_detect.s"
+	@echo "... kernel/drivers/usb/host/uhci.obj"
+	@echo "... kernel/drivers/usb/host/uhci.i"
+	@echo "... kernel/drivers/usb/host/uhci.s"
+	@echo "... kernel/drivers/usb/host/xhci.obj"
+	@echo "... kernel/drivers/usb/host/xhci.i"
+	@echo "... kernel/drivers/usb/host/xhci.s"
+	@echo "... kernel/drivers/usb/host/xhci_irq.obj"
+	@echo "... kernel/drivers/usb/host/xhci_irq.i"
+	@echo "... kernel/drivers/usb/host/xhci_irq.s"
+	@echo "... kernel/drivers/usb/hub/usb_hub.obj"
+	@echo "... kernel/drivers/usb/hub/usb_hub.i"
+	@echo "... kernel/drivers/usb/hub/usb_hub.s"
+	@echo "... kernel/drivers/usb/util/usb_debug.obj"
+	@echo "... kernel/drivers/usb/util/usb_debug.i"
+	@echo "... kernel/drivers/usb/util/usb_debug.s"
+	@echo "... kernel/drivers/usb/util/usb_helpers.obj"
+	@echo "... kernel/drivers/usb/util/usb_helpers.i"
+	@echo "... kernel/drivers/usb/util/usb_helpers.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_ring.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_ring.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_ring.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_transfer.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_transfer.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_transfer.s"
 	@echo "... kernel/fs/devfs.obj"
 	@echo "... kernel/fs/devfs.i"
 	@echo "... kernel/fs/devfs.s"
@@ -2264,21 +2873,6 @@ help:
 	@echo "... kernel/tests/memory_tests.obj"
 	@echo "... kernel/tests/memory_tests.i"
 	@echo "... kernel/tests/memory_tests.s"
-	@echo "... kernel/usb/hid.obj"
-	@echo "... kernel/usb/hid.i"
-	@echo "... kernel/usb/hid.s"
-	@echo "... kernel/usb/usb.obj"
-	@echo "... kernel/usb/usb.i"
-	@echo "... kernel/usb/usb.s"
-	@echo "... kernel/usb/usb_core.obj"
-	@echo "... kernel/usb/usb_core.i"
-	@echo "... kernel/usb/usb_core.s"
-	@echo "... kernel/usb/usb_devices.obj"
-	@echo "... kernel/usb/usb_devices.i"
-	@echo "... kernel/usb/usb_devices.s"
-	@echo "... kernel/usb/xhci.obj"
-	@echo "... kernel/usb/xhci.i"
-	@echo "... kernel/usb/xhci.s"
 	@echo "... lodepng/lodepng/lodepng.obj"
 	@echo "... lodepng/lodepng/lodepng.i"
 	@echo "... lodepng/lodepng/lodepng.s"

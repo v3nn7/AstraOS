@@ -45,3 +45,9 @@ void gui_event_push_mouse_button(int x, int y, uint8_t buttons) {
     push(ev);
 }
 
+void gui_event_push_mouse_scroll(int x, int y, int scroll) {
+    gui_event_t ev = { .type = GUI_EVENT_MOUSE_SCROLL };
+    ev.mouse.x = x; ev.mouse.y = y; ev.mouse.dx = scroll; ev.mouse.dy = 0; ev.mouse.buttons = 0;
+    push(ev);
+}
+

@@ -34,7 +34,7 @@ static struct PACKED {
 } gdt_table;
 
 static gdt_ptr_t gdt_ptr;
-static tss_t tss;
+tss_t tss; /* Make TSS visible to tss.c - must match tss_t in tss.c */
 
 static void set_entry(int idx, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
     gdt_entry_t *e = &gdt_table.entries[idx];
@@ -61,6 +61,9 @@ static void set_tss_descriptor(void) {
 }
 
 void gdt_init(uint64_t stack_top) {
+    /* Import TSS init function */
+    extern void tss_init(uint64_t kernel_stack_top);
+    
     for (int i = 0; i < 5; ++i) {
         gdt_table.entries[i] = (gdt_entry_t){0};
     }
@@ -71,9 +74,8 @@ void gdt_init(uint64_t stack_top) {
     set_entry(3, 0, 0, 0xFA, 0x20); /* user code */
     set_entry(4, 0, 0, 0xF2, 0x00); /* user data */
 
-    tss = (tss_t){0};
-    tss.rsp0 = stack_top;
-    tss.io_map_base = sizeof(tss_t);
+    /* Initialize TSS properly */
+    tss_init(stack_top);
     set_tss_descriptor();
 
     gdt_ptr.limit = sizeof(gdt_table) - 1;

@@ -13,6 +13,8 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/apic/ioapic.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/apic/ioapic.c
  /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/apic.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/memory.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
@@ -45,6 +47,10 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/idt.c.obj
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/tss.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/cpu/tss.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ahci.c
@@ -99,22 +105,6 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pit.c
 
-CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_keyboard.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
-
-CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_mouse.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
-
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/serial.c
 
@@ -128,6 +118,8 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/interrupts/irq.c
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/apic.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.obj
@@ -184,6 +176,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mm/metadata.hpp
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mm/slab.hpp
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/stddef.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
@@ -366,6 +359,381 @@ CMakeFiles/kernel.elf.dir/kernel/dev/tty.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/tty.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
+CMakeFiles/kernel.elf.dir/kernel/drivers/input/input_core.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/input/input_core.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/input/input_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_core.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_core.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_descriptors.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_descriptors.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_device.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_device.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_enumeration.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_enumeration.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_init.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_init.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_hid.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_manager.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_manager.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/core/usb_transfer.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_transfer.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_driver.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/input/input_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_field.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_parser.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_report_descriptor.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_usage.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_hid.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_keyboard.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_keyboard.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_hid.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_mouse.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_mouse.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_hid.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_usb_driver.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_usb_driver.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_hid.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_parser.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_field.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_parser.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_report_descriptor.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_usage.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_field.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_report_descriptor.hpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/hid/hid_usage.hpp
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ehci.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_qh.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ehci_qh.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ehci_td.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ohci.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_msi.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/pci_msi.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/apic.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/pci_usb_detect.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/memory.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pci_msi.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/uhci.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/uhci.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/xhci.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/xhci_irq.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hub/usb_hub.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_descriptors.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/util/usb_debug.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_helpers.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_log.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/util/usb_helpers.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_bits.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_helpers.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_log.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_doorbell.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_ring.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+
 CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/devfs.c
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h
@@ -518,42 +886,6 @@ CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.h
-
-CMakeFiles/kernel.elf.dir/kernel/usb/hid.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/hid.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/hid.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb.h
-
-CMakeFiles/kernel.elf.dir/kernel/usb/usb.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb.h
-
-CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.h
-
-CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_devices.c
-
-CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.h
 
 CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.cpp

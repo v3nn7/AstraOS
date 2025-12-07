@@ -36,9 +36,22 @@ static const uint32_t lapic_divider_code = 0x7; /* divide by 128 */
 
 void lapic_init(void) {
     if (!apic_lapic_base) apic_mock_set_bases(NULL, apic_ioapic_base);
+    
+    /* Read current spurious interrupt register */
     uint32_t svr = lapic_read(REG_LAPIC_SPURIOUS);
-    lapic_write(REG_LAPIC_SPURIOUS, svr | 0x100 | 0xFF);
-    klog_printf(KLOG_INFO, "lapic: id=%x base=%p", lapic_read(REG_LAPIC_ID) >> 24, apic_lapic_base);
+    
+    /* Enable APIC globally: bit 8 = APIC Software Enable */
+    /* Set spurious vector to 0xFF (or any value >= 0x20) */
+    lapic_write(REG_LAPIC_SPURIOUS, (svr & ~0xFF) | 0x100 | 0xFF);
+    
+    /* Verify APIC is enabled */
+    uint32_t svr_after = lapic_read(REG_LAPIC_SPURIOUS);
+    if (!(svr_after & 0x100)) {
+        klog_printf(KLOG_WARN, "lapic: WARNING - APIC Software Enable bit not set!");
+    }
+    
+    klog_printf(KLOG_INFO, "lapic: id=%x base=%p enabled=%d", 
+                lapic_read(REG_LAPIC_ID) >> 24, apic_lapic_base, (svr_after & 0x100) != 0);
 }
 
 void lapic_eoi(void) {

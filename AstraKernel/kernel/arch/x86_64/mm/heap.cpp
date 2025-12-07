@@ -8,6 +8,14 @@
 #include "memory.h"
 #include "pmm.h"
 #include "vmm.h"
+#include "stddef.h"
+
+/* C++ new/delete operators - nothrow_t and size_t definitions */
+namespace std {
+    struct nothrow_t {};
+    extern const nothrow_t nothrow;
+    typedef ::size_t size_t;
+}
 
 using namespace mm;
 
@@ -175,6 +183,39 @@ extern "C" void *heap_realloc(void *ptr, size_t new_size) {
 
 extern "C" void heap_stats(void) {
     printf("heap: stats not implemented yet\n");
+}
+
+/* C++ new/delete operators */
+void* operator new(unsigned long size) {
+    return heap_alloc(size, 16, HEAP_TAG_SLAB);
+}
+
+void* operator new(unsigned long size, const std::nothrow_t&) noexcept {
+    return heap_alloc(size, 16, HEAP_TAG_SLAB);
+}
+
+void* operator new[](unsigned long size) {
+    return heap_alloc(size, 16, HEAP_TAG_SLAB);
+}
+
+void* operator new[](unsigned long size, const std::nothrow_t&) noexcept {
+    return heap_alloc(size, 16, HEAP_TAG_SLAB);
+}
+
+void operator delete(void* ptr) noexcept {
+    heap_free(ptr);
+}
+
+void operator delete(void* ptr, unsigned long) noexcept {
+    heap_free(ptr);
+}
+
+void operator delete[](void* ptr) noexcept {
+    heap_free(ptr);
+}
+
+void operator delete[](void* ptr, unsigned long) noexcept {
+    heap_free(ptr);
 }
 
 

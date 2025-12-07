@@ -6,7 +6,8 @@ typedef enum {
     GUI_EVENT_NONE = 0,
     GUI_EVENT_KEY_CHAR,
     GUI_EVENT_MOUSE_MOVE,
-    GUI_EVENT_MOUSE_BUTTON
+    GUI_EVENT_MOUSE_BUTTON,
+    GUI_EVENT_MOUSE_SCROLL
 } gui_event_type_t;
 
 typedef struct {
@@ -24,4 +25,5 @@ bool gui_event_poll(gui_event_t *out);
 void gui_event_push_keychar(char c);
 void gui_event_push_mouse_move(int x, int y, int dx, int dy, uint8_t buttons);
 void gui_event_push_mouse_button(int x, int y, uint8_t buttons);
+void gui_event_push_mouse_scroll(int x, int y, int scroll);
 

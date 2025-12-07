@@ -18,3 +18,15 @@ static inline void mmio_write32(volatile uint32_t *addr, uint32_t val) {
     memory_fence();
 }
 
+static inline uint64_t mmio_read64(volatile uint64_t *addr) {
+    uint64_t val = *addr;
+    memory_fence();
+    return val;
+}
+
+static inline void mmio_write64(volatile uint64_t *addr, uint64_t val) {
+    memory_fence();
+    *addr = val;
+    memory_fence();
+}
+
