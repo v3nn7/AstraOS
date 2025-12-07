@@ -7,6 +7,7 @@
 
 #include "usb/usb_core.h"
 #include "usb/xhci.h"
+#include "usb/pci_usb_routing.h"
 #include "pci_msi.h"
 #include "interrupts.h"
 #include "kmalloc.h"
@@ -281,6 +282,18 @@ int usb_pci_detect(void) {
                         
                         /* Set XHCI operations */
                         hc->ops = &xhci_ops;
+                        
+                        /* CRITICAL: Force USB port routing to XHCI before initialization
+                         * This ensures that USB ports are routed to XHCI controller,
+                         * preventing Enable Slot TRB timeouts.
+                         */
+                        pci_device_t pci_dev = {
+                            .bus = bus,
+                            .slot = slot,
+                            .func = func,
+                            .prog_if = prog_if
+                        };
+                        xhci_force_port_routing(&pci_dev);
                         
                         /* Register XHCI controller (this will also initialize it via ops->init) */
                         if (usb_host_register(hc) == 0) {

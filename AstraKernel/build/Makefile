@@ -1749,6 +1749,30 @@ kernel/drivers/usb/host/pci_usb_detect.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.s
 .PHONY : kernel/drivers/usb/host/pci_usb_detect.c.s
 
+kernel/drivers/usb/host/pci_usb_routing.obj: kernel/drivers/usb/host/pci_usb_routing.c.obj
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.obj
+
+# target to build an object file
+kernel/drivers/usb/host/pci_usb_routing.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_routing.c.obj
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.c.obj
+
+kernel/drivers/usb/host/pci_usb_routing.i: kernel/drivers/usb/host/pci_usb_routing.c.i
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.i
+
+# target to preprocess a source file
+kernel/drivers/usb/host/pci_usb_routing.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_routing.c.i
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.c.i
+
+kernel/drivers/usb/host/pci_usb_routing.s: kernel/drivers/usb/host/pci_usb_routing.c.s
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/host/pci_usb_routing.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_routing.c.s
+.PHONY : kernel/drivers/usb/host/pci_usb_routing.c.s
+
 kernel/drivers/usb/host/uhci.obj: kernel/drivers/usb/host/uhci.c.obj
 .PHONY : kernel/drivers/usb/host/uhci.obj
 
@@ -1988,6 +2012,30 @@ kernel/drivers/usb/xhci/xhci_doorbell.s: kernel/drivers/usb/xhci/xhci_doorbell.c
 kernel/drivers/usb/xhci/xhci_doorbell.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.s
 .PHONY : kernel/drivers/usb/xhci/xhci_doorbell.c.s
+
+kernel/drivers/usb/xhci/xhci_init_complete.obj: kernel/drivers/usb/xhci/xhci_init_complete.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_init_complete.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_init_complete.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.c.obj
+
+kernel/drivers/usb/xhci/xhci_init_complete.i: kernel/drivers/usb/xhci/xhci_init_complete.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_init_complete.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_init_complete.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.c.i
+
+kernel/drivers/usb/xhci/xhci_init_complete.s: kernel/drivers/usb/xhci/xhci_init_complete.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_init_complete.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_init_complete.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_init_complete.c.s
 
 kernel/drivers/usb/xhci/xhci_ring.obj: kernel/drivers/usb/xhci/xhci_ring.c.obj
 .PHONY : kernel/drivers/usb/xhci/xhci_ring.obj
@@ -2846,6 +2894,9 @@ help:
 	@echo "... kernel/drivers/usb/host/pci_usb_detect.obj"
 	@echo "... kernel/drivers/usb/host/pci_usb_detect.i"
 	@echo "... kernel/drivers/usb/host/pci_usb_detect.s"
+	@echo "... kernel/drivers/usb/host/pci_usb_routing.obj"
+	@echo "... kernel/drivers/usb/host/pci_usb_routing.i"
+	@echo "... kernel/drivers/usb/host/pci_usb_routing.s"
 	@echo "... kernel/drivers/usb/host/uhci.obj"
 	@echo "... kernel/drivers/usb/host/uhci.i"
 	@echo "... kernel/drivers/usb/host/uhci.s"
@@ -2876,6 +2927,9 @@ help:
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.obj"
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.i"
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_init_complete.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_init_complete.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_init_complete.s"
 	@echo "... kernel/drivers/usb/xhci/xhci_ring.obj"
 	@echo "... kernel/drivers/usb/xhci/xhci_ring.i"
 	@echo "... kernel/drivers/usb/xhci/xhci_ring.s"

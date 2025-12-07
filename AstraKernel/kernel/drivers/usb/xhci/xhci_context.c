@@ -20,9 +20,7 @@
 #define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
 
-/* Context Entry Masks */
-#define XHCI_CTX_ENTRY_SLOT     (1 << 0)
-#define XHCI_CTX_ENTRY_EP(n)    (1 << (n + 1))
+/* Context Entry Masks are now in xhci_context.h */
 
 /* Slot Context Fields */
 #define XHCI_SLOT_CTX_ROUTE_SHIFT    0
@@ -100,44 +98,26 @@ void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uin
     if (!ctx) return;
     
     /* Clear slot context */
-    k_memset(ctx->slot_context, 0, sizeof(ctx->slot_context));
+    k_memset(&ctx->slot, 0, sizeof(xhci_slot_context_t));
     
     /* Set Add Context Flag for Slot */
-    ctx->add_context_flags |= XHCI_CTX_ENTRY_SLOT;
+    ctx->control.add_context_flags |= XHCI_CTX_ENTRY_SLOT;
     
-    /* Slot Context Word 0: Route String, Speed, MTT, Hub, Context Entries */
-    uint32_t word0 = 0;
-    word0 |= (speed & 0xF) << XHCI_SLOT_CTX_SPEED_SHIFT;
-    word0 |= (hub ? 1 : 0) << XHCI_SLOT_CTX_HUB_SHIFT;
-    word0 |= (1 << XHCI_SLOT_CTX_ENTRIES_SHIFT); /* 1 endpoint (EP0) */
-    ctx->slot_context[0] = word0;
-    
-    /* Slot Context Word 1: Max Exit Latency */
-    ctx->slot_context[1] = 0; /* Not used for non-hub devices */
-    
-    /* Slot Context Word 2: Root Hub Port Number, Number of Ports */
-    uint32_t word2 = 0;
-    word2 |= (root_port & 0xFF) << XHCI_SLOT_CTX_PORT_SHIFT;
-    ctx->slot_context[2] = word2;
-    
-    /* Slot Context Word 3: Parent Hub Slot ID, Parent Port Number */
-    uint32_t word3 = 0;
-    if (hub) {
-        word3 |= (parent_slot & 0xFF) << XHCI_SLOT_CTX_PARENT_SLOT_SHIFT;
-        word3 |= (parent_port & 0xFF) << XHCI_SLOT_CTX_PARENT_PORT_SHIFT;
-    }
-    ctx->slot_context[3] = word3;
-    
-    /* Slot Context Word 4: TTT, Reserved, Interrupter Target */
-    uint32_t word4 = 0;
-    word4 |= (0 & 0x3FF) << XHCI_SLOT_CTX_INTERRUPTER_SHIFT; /* Interrupter 0 */
-    ctx->slot_context[4] = word4;
-    
-    /* Slot Context Word 5: USB Device Address, Reserved, Slot State */
-    uint32_t word5 = 0;
-    word5 |= (address & 0xFF) << XHCI_SLOT_CTX_ADDRESS_SHIFT;
-    word5 |= (1 << XHCI_SLOT_CTX_STATE_SHIFT); /* Enabled state */
-    ctx->slot_context[5] = word5;
+    /* Fill Slot Context structure */
+    ctx->slot.route_string = 0; /* Root hub port - no routing for SuperSpeed */
+    ctx->slot.speed = speed & 0xF;
+    ctx->slot.mtt = 0;
+    ctx->slot.hub = hub ? 1 : 0;
+    ctx->slot.context_entries = 1; /* 1 endpoint (EP0) */
+    ctx->slot.max_exit_latency = 0;
+    ctx->slot.root_hub_port_number = root_port;
+    ctx->slot.num_ports = 0;
+    ctx->slot.parent_hub_slot_id = hub ? parent_slot : 0;
+    ctx->slot.parent_port_number = hub ? parent_port : 0;
+    ctx->slot.ttt = 0;
+    ctx->slot.interrupter_target = 0;
+    ctx->slot.usb_device_address = address;
+    ctx->slot.slot_state = XHCI_SLOT_STATE_ENABLED;
     
     klog_printf(KLOG_DEBUG, "xhci_context: slot context set: slot=%u port=%u speed=%u addr=%u hub=%d",
                 slot_id, root_port, speed, address, hub ? 1 : 0);
@@ -146,58 +126,38 @@ void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uin
 /**
  * Set Endpoint 0 Context in Input Context
  */
-void xhci_input_context_set_ep0(xhci_input_context_t *ctx, xhci_transfer_ring_t *transfer_ring,
+void xhci_input_context_set_ep0(xhci_input_context_t *ctx, struct xhci_transfer_ring *transfer_ring,
                                  uint16_t max_packet_size) {
+    /* Cast to xhci_transfer_ring_t for internal use */
+    xhci_transfer_ring_t *ring = (xhci_transfer_ring_t *)transfer_ring;
     if (!ctx || !transfer_ring) return;
     
     /* Clear endpoint 0 context */
-    k_memset(ctx->endpoint_context[0], 0, sizeof(ctx->endpoint_context[0]));
+    k_memset(&ctx->endpoints[0], 0, sizeof(xhci_endpoint_context_t));
     
     /* Set Add Context Flag for Endpoint 0 */
-    ctx->add_context_flags |= XHCI_CTX_ENTRY_EP(0);
+    ctx->control.add_context_flags |= XHCI_CTX_ENTRY_EP(0);
     
     /* Get physical address of transfer ring */
-    uint64_t tr_dequeue = transfer_ring->phys_addr;
-    uint32_t cycle_state = transfer_ring->cycle_state ? 1 : 0;
+    uint64_t tr_dequeue = ring->phys_addr;
+    uint32_t cycle_state = ring->cycle_state ? 1 : 0;
     
-    /* Endpoint Context Word 0: EP State, Reserved, Mult, Max P-Streams, LSA, Interval */
-    uint32_t word0 = 0;
-    word0 |= (XHCI_EP_STATE_RUNNING & 0x7) << XHCI_EP_CTX_STATE_SHIFT;
-    word0 |= (0 & 0x3) << XHCI_EP_CTX_MULT_SHIFT; /* Mult = 0 */
-    word0 |= (0 & 0x1F) << XHCI_EP_CTX_MAX_PSTREAMS_SHIFT; /* No streams */
-    word0 |= (0 & 0x1) << XHCI_EP_CTX_LSA_SHIFT; /* Linear Stream Array = 0 */
-    word0 |= (0 & 0xFF) << XHCI_EP_CTX_INTERVAL_SHIFT; /* Interval = 0 for control */
-    ctx->endpoint_context[0][0] = word0;
-    
-    /* Endpoint Context Word 1: Max ESIT Payload Hi, Error Count, EP Type, Reserved, Max Packet Size */
-    uint32_t word1 = 0;
-    word1 |= (0 & 0x3) << XHCI_EP_CTX_ERROR_COUNT_SHIFT; /* Error count = 0 */
-    word1 |= (USB_ENDPOINT_XFER_CONTROL & 0x7) << XHCI_EP_CTX_EP_TYPE_SHIFT; /* Control endpoint */
-    word1 |= (max_packet_size & 0xFFFF) << XHCI_EP_CTX_MAX_PACKET_SHIFT;
-    ctx->endpoint_context[0][1] = word1;
-    
-    /* Endpoint Context Word 2: Max Burst Size, Reserved, Max ESIT Payload Lo */
-    uint32_t word2 = 0;
-    word2 |= (0 & 0xFF) << XHCI_EP_CTX_MAX_BURST_SHIFT; /* Max burst = 0 */
-    ctx->endpoint_context[0][2] = word2;
-    
-    /* Endpoint Context Word 3: Reserved, Average TRB Length */
-    ctx->endpoint_context[0][3] = 0;
-    
-    /* Endpoint Context Word 4-5: TR Dequeue Pointer (64-bit) */
-    ctx->endpoint_context[0][4] = (uint32_t)(tr_dequeue & 0xFFFFFFFF);
-    ctx->endpoint_context[0][5] = (uint32_t)((tr_dequeue >> 32) & 0xFFFFFFFF);
-    
-    /* Endpoint Context Word 6: Reserved, Interrupter Target */
-    uint32_t word6 = 0;
-    word6 |= (0 & 0x3FF) << XHCI_EP_CTX_INTERRUPTER_SHIFT; /* Interrupter 0 */
-    ctx->endpoint_context[0][6] = word6;
-    
-    /* Endpoint Context Word 7: Reserved */
-    ctx->endpoint_context[0][7] = 0;
-    
-    /* Set DCS bit (Dequeue Cycle State) in TR Dequeue Pointer */
-    ctx->endpoint_context[0][4] |= (cycle_state & 1) << 0;
+    /* Fill Endpoint 0 Context structure */
+    ctx->endpoints[0].ep_state = XHCI_EP_STATE_RUNNING;
+    ctx->endpoints[0].mult = 0;
+    ctx->endpoints[0].max_pstreams = 0;
+    ctx->endpoints[0].lsa = 0;
+    ctx->endpoints[0].interval = 0; /* Interval = 0 for control */
+    ctx->endpoints[0].max_esit_payload_hi = 0;
+    ctx->endpoints[0].error_count = 0;
+    ctx->endpoints[0].ep_type = XHCI_EP_TYPE_CONTROL; /* Control Endpoint, bidirectional */
+    ctx->endpoints[0].max_packet_size = max_packet_size;
+    ctx->endpoints[0].max_burst_size = 0;
+    ctx->endpoints[0].max_esit_payload_lo = 0;
+    ctx->endpoints[0].average_trb_length = 0;
+    /* Set dequeue pointer with DCS bit */
+    ctx->endpoints[0].dequeue_pointer = tr_dequeue | (cycle_state & 1);
+    ctx->endpoints[0].interrupter_target = 0;
     
     klog_printf(KLOG_DEBUG, "xhci_context: EP0 context set: max_packet=%u tr_dequeue=0x%016llx cycle=%u",
                 max_packet_size, (unsigned long long)tr_dequeue, cycle_state);

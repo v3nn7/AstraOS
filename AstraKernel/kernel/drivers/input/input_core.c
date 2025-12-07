@@ -212,7 +212,11 @@ void input_mouse_button(input_device_t *dev, uint8_t button, bool pressed) {
     input_event_t event;
     k_memset(&event, 0, sizeof(event));
     event.type = INPUT_EVENT_MOUSE_BUTTON;
-    event.mouse.buttons = button;
+    if (pressed) {
+        event.mouse.buttons |= button;
+    } else {
+        event.mouse.buttons &= ~button;
+    }
     input_event_submit(dev, &event);
 }
 

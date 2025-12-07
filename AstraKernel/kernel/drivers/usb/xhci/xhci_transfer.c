@@ -347,11 +347,17 @@ int xhci_process_events(xhci_controller_t *xhci) {
             klog_printf(KLOG_DEBUG, "xhci: event type=%u code=%u", event_type, completion_code);
         }
         
-<<<<<<< Current (Your changes)
-        /* Note: ERDP is already updated by xhci_event_ring_dequeue() above */
-=======
         /* Note: ERDP and EHB are already updated by xhci_event_ring_dequeue() */
->>>>>>> Incoming (Background Agent changes)
+    }
+    
+    /* CRITICAL: Clear IP (Interrupt Pending) bit in IMAN after processing events
+     * IP is a "write 1 to clear" bit - we must clear it so HC can generate new interrupts
+     * Without this, the HC may stop generating interrupts
+     */
+    if (events_processed > 0) {
+        uint32_t iman = XHCI_READ32(xhci->rt_regs, XHCI_IMAN(0));
+        XHCI_WRITE32(xhci->rt_regs, XHCI_IMAN(0), iman | (1 << 0)); /* Clear IP by writing 1 */
+        __asm__ volatile("mfence" ::: "memory");
     }
     
     return events_processed;

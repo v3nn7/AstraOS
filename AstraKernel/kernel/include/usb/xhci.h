@@ -2,6 +2,7 @@
 
 #include "usb/usb_core.h"
 #include "usb/xhci_regs.h"  /* Register structures */
+#include "usb/xhci_context.h"  /* Context structures */
 #include "types.h"
 #include "pmm.h"
 #include <stddef.h>  /* For offsetof */
@@ -223,67 +224,7 @@ typedef struct {
     void *segment_table;
 } xhci_event_ring_t;
 
-/* Device Context */
-typedef struct PACKED {
-    uint64_t in_context;
-    uint64_t out_context;
-} xhci_device_context_t;
-
-/* Input Context */
-typedef struct PACKED {
-    uint32_t drop_context_flags;
-    uint32_t add_context_flags;
-    uint32_t reserved[6];
-    /* Slot Context */
-    uint32_t slot_context[8];
-    /* Endpoint Contexts (up to 31) */
-    uint32_t endpoint_context[31][8];
-} xhci_input_context_t;
-
-/* Slot Context */
-typedef struct PACKED {
-    uint32_t route_string:20;
-    uint32_t speed:4;
-    uint32_t reserved:1;
-    uint32_t mtt:1;
-    uint32_t hub:1;
-    uint32_t context_entries:5;
-    uint32_t max_exit_latency:16;
-    uint32_t root_hub_port_number:8;
-    uint32_t num_ports:8;
-    uint32_t parent_hub_slot_id:8;
-    uint32_t parent_port_number:8;
-    uint32_t ttt:2;
-    uint32_t reserved2:4;
-    uint32_t interrupter_target:10;
-    uint32_t usb_device_address:8;
-    uint32_t reserved3:19;
-    uint32_t slot_state:5;
-} xhci_slot_context_t;
-
-/* Endpoint Context */
-typedef struct PACKED {
-    uint32_t ep_state:3;
-    uint32_t reserved:5;
-    uint32_t mult:2;
-    uint32_t max_pstreams:5;
-    uint32_t lsa:1;
-    uint32_t interval:8;
-    uint32_t max_esit_payload_hi:8;
-    uint32_t reserved2:1;
-    uint32_t error_count:2;
-    uint32_t ep_type:3;
-    uint32_t reserved3:1;
-    uint32_t max_packet_size:16;
-    uint32_t max_burst_size:8;
-    uint32_t max_esit_payload_lo:8;
-    uint32_t reserved4:4;
-    uint32_t average_trb_length:16;
-    uint64_t dequeue_pointer;
-    uint32_t reserved5:16;
-    uint32_t interrupter_target:10;
-    uint32_t reserved6:6;
-} xhci_endpoint_context_t;
+/* Context structures are now in xhci_context.h */
 
 /* XHCI Controller Private Data */
 typedef struct {
@@ -291,6 +232,7 @@ typedef struct {
     xhci_op_regs_t *op_regs;            // Operational Registers (MMIO mapped)
     xhci_rt_regs_t *rt_regs;            // Runtime Registers (MMIO mapped)
     xhci_doorbell_regs_t *doorbell_regs; // Doorbell Registers (MMIO mapped)
+    xhci_interrupter_regs_t *intr0;     // Interrupter 0 registers (convenience pointer)
     uint32_t cap_length;
     uint32_t hci_version;
     uint32_t num_slots;
@@ -314,6 +256,7 @@ typedef struct {
 
 /* XHCI Functions */
 int xhci_init(usb_host_controller_t *hc);
+int xhci_init_complete(usb_host_controller_t *hc); /* Complete spec-accurate initialization */
 int xhci_reset(usb_host_controller_t *hc);
 int xhci_reset_port(usb_host_controller_t *hc, uint8_t port);
 int xhci_transfer_control(usb_host_controller_t *hc, usb_transfer_t *transfer);
@@ -341,25 +284,24 @@ void xhci_build_link_trb(xhci_trb_t *trb, uint64_t next_ring_addr, uint8_t toggl
 int xhci_submit_control_transfer(xhci_controller_t *xhci, usb_transfer_t *transfer);
 int xhci_process_events(xhci_controller_t *xhci);
 
-/* XHCI Context Functions */
-xhci_input_context_t *xhci_input_context_alloc(void);
-void xhci_input_context_free(xhci_input_context_t *ctx);
-void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uint8_t root_port,
-                                  uint8_t speed, uint8_t address, bool hub, uint8_t parent_slot,
-                                  uint8_t parent_port);
-void xhci_input_context_set_ep0(xhci_input_context_t *ctx, xhci_transfer_ring_t *transfer_ring,
-                                 uint16_t max_packet_size);
-phys_addr_t xhci_input_context_get_phys(xhci_input_context_t *ctx);
+/* XHCI Context Functions - declared in xhci_context.h */
 
 /* XHCI Device Functions */
-uint32_t xhci_enable_slot(xhci_controller_t *xhci);
+uint32_t xhci_enable_slot(xhci_controller_t *xhci, usb_device_t *dev, uint8_t speed);
 int xhci_address_device(xhci_controller_t *xhci, uint32_t slot_id, xhci_input_context_t *input_ctx,
                         uint64_t input_ctx_phys);
 void xhci_handle_command_completion(xhci_controller_t *xhci, xhci_event_trb_t *event);
 
+/* XHCI Utility Functions */
+void xhci_flush_cache(void *addr, size_t sz);
+
 /* XHCI Doorbell Functions */
 void xhci_ring_cmd_doorbell(xhci_controller_t *xhci);
 void xhci_ring_doorbell(xhci_controller_t *xhci, uint8_t slot, uint8_t endpoint, uint16_t stream_id);
+
+/* XHCI Helper Functions */
+int xhci_post_command(xhci_controller_t *xhci, xhci_trb_t *trb);
+int xhci_poll_event(xhci_controller_t *xhci, xhci_event_trb_t *event);
 
 /* XHCI Interrupt Functions */
 void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector);

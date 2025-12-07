@@ -102,8 +102,15 @@ int usb_device_enumerate(usb_device_t *dev) {
             }
             
             /* Step 0: Enable Slot */
-            extern uint32_t xhci_enable_slot(xhci_controller_t *xhci);
-            uint32_t slot_id = xhci_enable_slot(xhci);
+            /* Determine speed code for XHCI */
+            uint8_t xhci_speed = XHCI_SPEED_HIGH;
+            if (dev->speed == USB_SPEED_FULL) xhci_speed = XHCI_SPEED_FULL;
+            else if (dev->speed == USB_SPEED_LOW) xhci_speed = XHCI_SPEED_LOW;
+            else if (dev->speed == USB_SPEED_SUPER) xhci_speed = XHCI_SPEED_SUPER;
+            else if (dev->speed == USB_SPEED_SUPER_PLUS) xhci_speed = XHCI_SPEED_SUPER;
+            
+            extern uint32_t xhci_enable_slot(xhci_controller_t *xhci, usb_device_t *dev, uint8_t speed);
+            uint32_t slot_id = xhci_enable_slot(xhci, dev, xhci_speed);
             if (slot_id == 0) {
                 klog_printf(KLOG_ERROR, "usb_device: failed to enable slot");
                 return -1;
@@ -117,72 +124,112 @@ int usb_device_enumerate(usb_device_t *dev) {
     if (dev->controller->type == USB_CONTROLLER_XHCI && dev->slot_id > 0) {
         xhci_controller_t *xhci = (xhci_controller_t *)dev->controller->private_data;
         if (xhci) {
-            /* Allocate Input Context */
-            extern xhci_input_context_t *xhci_input_context_alloc(void);
-            extern void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uint8_t root_port,
-                                                    uint8_t speed, uint8_t address, bool hub, uint8_t parent_slot,
-                                                    uint8_t parent_port);
-            extern void xhci_input_context_set_ep0(xhci_input_context_t *ctx, xhci_transfer_ring_t *transfer_ring,
-                                                    uint16_t max_packet_size);
-            extern phys_addr_t xhci_input_context_get_phys(xhci_input_context_t *ctx);
             extern int xhci_address_device(xhci_controller_t *xhci, uint32_t slot_id, xhci_input_context_t *input_ctx,
                                             uint64_t input_ctx_phys);
+            extern phys_addr_t xhci_input_context_get_phys(xhci_input_context_t *ctx);
             
-            xhci_input_context_t *input_ctx = xhci_input_context_alloc();
-            if (!input_ctx) {
-                klog_printf(KLOG_ERROR, "usb_device: failed to allocate input context");
-                return -1;
-            }
+            xhci_input_context_t *input_ctx = NULL;
+            phys_addr_t input_ctx_phys = 0;
             
-            /* Determine speed (default to High Speed for now) */
-            uint8_t speed = XHCI_SPEED_HIGH;
-            if (dev->speed == USB_SPEED_FULL) speed = XHCI_SPEED_FULL;
-            else if (dev->speed == USB_SPEED_LOW) speed = XHCI_SPEED_LOW;
-            else if (dev->speed == USB_SPEED_SUPER) speed = XHCI_SPEED_SUPER;
-            
-            /* Set Slot Context */
-            xhci_input_context_set_slot(input_ctx, dev->slot_id, dev->port, speed, 0, false, 0, 0);
-            
-            /* Initialize transfer ring for EP0 */
-            extern int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
-            if (xhci_transfer_ring_init(xhci, dev->slot_id, 0) < 0) {
-                klog_printf(KLOG_ERROR, "usb_device: failed to init transfer ring for EP0");
-                extern void xhci_input_context_free(xhci_input_context_t *ctx);
-                xhci_input_context_free(input_ctx);
-                return -1;
-            }
-            
-            xhci_transfer_ring_t *transfer_ring = xhci->transfer_rings[dev->slot_id][0];
-            if (!transfer_ring) {
-                klog_printf(KLOG_ERROR, "usb_device: transfer ring not initialized");
-                extern void xhci_input_context_free(xhci_input_context_t *ctx);
-                xhci_input_context_free(input_ctx);
-                return -1;
-            }
-            
-            /* Set EP0 Context */
-            xhci_input_context_set_ep0(input_ctx, transfer_ring, 64); /* Max packet size 64 for control */
-            
-            /* Get physical address */
-            phys_addr_t input_ctx_phys = xhci_input_context_get_phys(input_ctx);
-            if (input_ctx_phys == 0) {
-                klog_printf(KLOG_ERROR, "usb_device: failed to get physical address for input context");
-                extern void xhci_input_context_free(xhci_input_context_t *ctx);
-                xhci_input_context_free(input_ctx);
-                return -1;
+            /* For USB 3.0, Input Context was already prepared in xhci_enable_slot */
+            if (dev->speed == USB_SPEED_SUPER || dev->speed == USB_SPEED_SUPER_PLUS) {
+                if (dev->driver_data) {
+                    /* driver_data contains xhci_device_contexts_t structure */
+                    typedef struct {
+                        xhci_input_context_t *input_ctx;
+                        xhci_device_context_t *output_ctx;
+                        uint64_t output_ctx_phys;
+                        xhci_transfer_ring_t *ep0_ring;
+                    } xhci_device_contexts_t;
+                    
+                    xhci_device_contexts_t *ctxs = (xhci_device_contexts_t *)dev->driver_data;
+                    input_ctx = ctxs->input_ctx;
+                    input_ctx_phys = xhci_input_context_get_phys(input_ctx);
+                    
+                    klog_printf(KLOG_INFO, "usb_device: using pre-prepared Input Context for USB 3.0");
+                } else {
+                    klog_printf(KLOG_ERROR, "usb_device: USB 3.0 device missing Input Context");
+                    return -1;
+                }
+            } else {
+                /* USB 2.0: Prepare Input Context now */
+                extern xhci_input_context_t *xhci_input_context_alloc(void);
+                extern void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uint8_t root_port,
+                                                        uint8_t speed, uint8_t address, bool hub, uint8_t parent_slot,
+                                                        uint8_t parent_port);
+                extern void xhci_input_context_set_ep0(xhci_input_context_t *ctx, struct xhci_transfer_ring *transfer_ring,
+                                                    uint16_t max_packet_size);
+                
+                input_ctx = xhci_input_context_alloc();
+                if (!input_ctx) {
+                    klog_printf(KLOG_ERROR, "usb_device: failed to allocate input context");
+                    return -1;
+                }
+                
+                /* Determine speed from device */
+                uint8_t speed = XHCI_SPEED_HIGH;
+                if (dev->speed == USB_SPEED_FULL) speed = XHCI_SPEED_FULL;
+                else if (dev->speed == USB_SPEED_LOW) speed = XHCI_SPEED_LOW;
+                
+                klog_printf(KLOG_INFO, "usb_device: enumerating with speed=%u (USB speed=%d)", speed, dev->speed);
+                
+                /* Set Slot Context */
+                xhci_input_context_set_slot(input_ctx, dev->slot_id, dev->port, speed, 0, false, 0, 0);
+                
+                /* Initialize transfer ring for EP0 */
+                extern int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
+                if (xhci_transfer_ring_init(xhci, dev->slot_id, 0) < 0) {
+                    klog_printf(KLOG_ERROR, "usb_device: failed to init transfer ring for EP0");
+                    extern void xhci_input_context_free(xhci_input_context_t *ctx);
+                    xhci_input_context_free(input_ctx);
+                    return -1;
+                }
+                
+                xhci_transfer_ring_t *transfer_ring = xhci->transfer_rings[dev->slot_id][0];
+                if (!transfer_ring) {
+                    klog_printf(KLOG_ERROR, "usb_device: transfer ring not initialized");
+                    extern void xhci_input_context_free(xhci_input_context_t *ctx);
+                    xhci_input_context_free(input_ctx);
+                    return -1;
+                }
+                
+                /* Set EP0 Context with correct max packet size */
+                uint16_t max_packet_size = 64; /* Default for High Speed */
+                if (speed == XHCI_SPEED_FULL || speed == XHCI_SPEED_LOW) max_packet_size = 8;
+                xhci_input_context_set_ep0(input_ctx, (struct xhci_transfer_ring *)transfer_ring, max_packet_size);
+                
+                klog_printf(KLOG_INFO, "usb_device: EP0 max_packet_size=%u for speed=%u", max_packet_size, speed);
+                
+                /* Get physical address */
+                input_ctx_phys = xhci_input_context_get_phys(input_ctx);
+                if (input_ctx_phys == 0) {
+                    klog_printf(KLOG_ERROR, "usb_device: failed to get physical address for input context");
+                    extern void xhci_input_context_free(xhci_input_context_t *ctx);
+                    xhci_input_context_free(input_ctx);
+                    return -1;
+                }
+                
+                /* Flush cache */
+                extern void xhci_flush_cache(void *addr, size_t sz);
+                xhci_flush_cache(input_ctx, sizeof(xhci_input_context_t));
             }
             
             /* Send Address Device command */
             if (xhci_address_device(xhci, dev->slot_id, input_ctx, input_ctx_phys) < 0) {
                 klog_printf(KLOG_ERROR, "usb_device: Address Device command failed");
-                extern void xhci_input_context_free(xhci_input_context_t *ctx);
-                xhci_input_context_free(input_ctx);
+                /* Don't free input_ctx for USB 3.0 - it's part of driver_data structure */
+                if (dev->speed != USB_SPEED_SUPER && dev->speed != USB_SPEED_SUPER_PLUS) {
+                    extern void xhci_input_context_free(xhci_input_context_t *ctx);
+                    xhci_input_context_free(input_ctx);
+                }
                 return -1;
             }
             
-            /* Free input context (no longer needed after Address Device) */
-            extern void xhci_input_context_free(xhci_input_context_t *ctx);
-            xhci_input_context_free(input_ctx);
+            /* Free input context for USB 2.0 (USB 3.0 context is part of driver_data, will be freed later) */
+            if (dev->speed != USB_SPEED_SUPER && dev->speed != USB_SPEED_SUPER_PLUS) {
+                extern void xhci_input_context_free(xhci_input_context_t *ctx);
+                xhci_input_context_free(input_ctx);
+            }
             
             klog_printf(KLOG_INFO, "usb_device: Address Device completed, EP0 is now active");
         }

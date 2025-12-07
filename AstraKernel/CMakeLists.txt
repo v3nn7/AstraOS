@@ -54,6 +54,8 @@ list(APPEND KERNEL_C
     "kernel/arch/x86_64/mm/memory.c"
     "kernel/arch/x86_64/drivers/load_cursor.c"
     "kernel/drivers/usb/hid/hid_usb_driver.c"
+    "kernel/drivers/usb/host/pci_usb_routing.c"
+    "kernel/drivers/usb/xhci/xhci_init_complete.c"
 )
 
 # Newly added core/subsystems

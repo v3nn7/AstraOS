@@ -74,6 +74,17 @@ static int usb_scan_root_ports(usb_host_controller_t *hc) {
                     if (port_enabled) {
                         klog_printf(KLOG_INFO, "usb: port %u enabled, enumerating device...", port);
                         
+                        /* Read speed from PORTSC */
+                        uint32_t speed_code = (portsc >> XHCI_PORTSC_SPEED_SHIFT) & 0xF;
+                        usb_speed_t dev_speed = USB_SPEED_UNKNOWN;
+                        if (speed_code == 1) dev_speed = USB_SPEED_FULL;
+                        else if (speed_code == 2) dev_speed = USB_SPEED_LOW;
+                        else if (speed_code == 3) dev_speed = USB_SPEED_HIGH;
+                        else if (speed_code == 4) dev_speed = USB_SPEED_SUPER;
+                        else if (speed_code == 5) dev_speed = USB_SPEED_SUPER_PLUS;
+                        
+                        klog_printf(KLOG_INFO, "usb: port %u speed code=%u (USB speed=%d)", port, speed_code, dev_speed);
+                        
                         /* Create device for enumeration */
                         extern usb_device_t *usb_device_alloc(void);
                         usb_device_t *dev = usb_device_alloc();

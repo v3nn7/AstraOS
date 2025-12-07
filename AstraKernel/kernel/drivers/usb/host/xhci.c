@@ -31,7 +31,7 @@
 #define XHCI_WRITE64(r, off, v) mmio_write64((volatile uint64_t *)((uintptr_t)(r) + (off)), v)
 
 /* DMA-safe flush for TRB regions (DCBAAP, Rings, etc) */
-static void xhci_flush_cache(void *addr, size_t sz) {
+void xhci_flush_cache(void *addr, size_t sz) {
     uintptr_t s = (uintptr_t)addr;
     uintptr_t e = s + sz;
     s &= ~((uintptr_t)63);
@@ -103,8 +103,11 @@ int xhci_init(usb_host_controller_t *hc) {
     xhci->cap_length = caplen;
     xhci->op_regs = (xhci_op_regs_t *)((uintptr_t)mmio_base + caplen);
     
-    uint32_t rtsoff = cap->RTSOFF & ~0x1F;   // remove lowest 5 bits
+    uint32_t rtsoff = cap->RTSOFF & 0xFFFFFFE0;   // ALIGN 32 BYTES
     xhci->rt_regs = (xhci_rt_regs_t *)((uintptr_t)mmio_base + rtsoff);
+    
+    // interrupter 0
+    xhci->intr0 = &xhci->rt_regs->ir[0];
     
     uint32_t dboff = cap->DBOFF & ~0x3;   // remove lowest 2 bits
     xhci->doorbell_regs = (xhci_doorbell_regs_t *)((uintptr_t)mmio_base + dboff);
@@ -218,6 +221,10 @@ int xhci_init(usb_host_controller_t *hc) {
     }
 
     klog_printf(KLOG_INFO,"xhci: init OK");
+    
+    /* Set number of ports in host controller structure */
+    hc->num_ports = xhci->num_ports;
+    
     return 0;
 }
 
@@ -287,23 +294,8 @@ int xhci_transfer_control(usb_host_controller_t *hc, usb_transfer_t *xfer) {
     if (!xhci) return -1;
     if (xfer->buffer && xfer->length > 0)
         xhci_flush_cache(xfer->buffer, xfer->length);
-<<<<<<< Current (Your changes)
-<<<<<<< Current (Your changes)
-<<<<<<< Current (Your changes)
-    if (xfer->is_control && xfer->setup)
-        xhci_flush_cache(xfer->setup, sizeof(*xfer->setup));
-=======
     if (xfer->is_control)
         xhci_flush_cache(xfer->setup, sizeof(xfer->setup));
->>>>>>> Incoming (Background Agent changes)
-=======
-    if (xfer->is_control)
-        xhci_flush_cache(xfer->setup, sizeof(xfer->setup));
->>>>>>> Incoming (Background Agent changes)
-=======
-    if (xfer->is_control)
-        xhci_flush_cache(xfer->setup, sizeof(xfer->setup));
->>>>>>> Incoming (Background Agent changes)
     extern int xhci_submit_control_transfer(xhci_controller_t*, usb_transfer_t*);
     return xhci_submit_control_transfer(xhci, xfer);
 }
