@@ -1676,8 +1676,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G"
-      binary: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G"
+      source: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e"
+      binary: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -1686,13 +1686,13 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G'
+        Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c6c34/fast
-        /usr/bin/make  -f CMakeFiles/cmTC_c6c34.dir/build.make CMakeFiles/cmTC_c6c34.dir/build
-        make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G'
-        Building C object CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj
-        /opt/elf/bin/x86_64-elf-gcc   -v -o CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_15001/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_15001.dir/build.make CMakeFiles/cmTC_15001.dir/build
+        make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e'
+        Building C object CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj
+        /opt/elf/bin/x86_64-elf-gcc   -v -o CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/opt/elf/bin/x86_64-elf-gcc
         Target: x86_64-elf
@@ -1700,8 +1700,8 @@ events:
         Thread model: single
         Supported LTO compression algorithms: zlib zstd
         gcc version 15.2.0 (GCC) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/'
-         /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1 -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_c6c34.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/ccp1RFBP.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/'
+         /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1 -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_15001.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/ccWxzicN.s
         GNU C23 (GCC) version 15.2.0 (x86_64-elf)
         	compiled by GNU C version 13.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
@@ -1718,17 +1718,17 @@ events:
          /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/include-fixed
         End of search list.
         Compiler executable checksum: aa19db085d9dddc6123aea4bbae8654e
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/'
-         /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj /tmp/ccp1RFBP.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/'
+         /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj /tmp/ccWxzicN.s
         COMPILER_PATH=/opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../libexec/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/
         LIBRARY_PATH=/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../lib/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.'
-        Linking C static library libcmTC_c6c34.a
-        /usr/bin/cmake -P CMakeFiles/cmTC_c6c34.dir/cmake_clean_target.cmake
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c6c34.dir/link.txt --verbose=1
-        /opt/elf/bin/x86_64-elf-ar qc libcmTC_c6c34.a CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj
-        /opt/elf/bin/x86_64-elf-ranlib libcmTC_c6c34.a
-        make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.'
+        Linking C static library libcmTC_15001.a
+        /usr/bin/cmake -P CMakeFiles/cmTC_15001.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_15001.dir/link.txt --verbose=1
+        /opt/elf/bin/x86_64-elf-ar qc libcmTC_15001.a CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj
+        /opt/elf/bin/x86_64-elf-ranlib libcmTC_15001.a
+        make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e'
         
       exitCode: 0
   -
@@ -1759,13 +1759,13 @@ events:
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G']
+        ignore line: [Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e']
         ignore line: []
-        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c6c34/fast]
-        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_c6c34.dir/build.make CMakeFiles/cmTC_c6c34.dir/build]
-        ignore line: [make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G']
-        ignore line: [Building C object CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj]
-        ignore line: [/opt/elf/bin/x86_64-elf-gcc   -v -o CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_15001/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_15001.dir/build.make CMakeFiles/cmTC_15001.dir/build]
+        ignore line: [make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e']
+        ignore line: [Building C object CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj]
+        ignore line: [/opt/elf/bin/x86_64-elf-gcc   -v -o CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/opt/elf/bin/x86_64-elf-gcc]
         ignore line: [Target: x86_64-elf]
@@ -1773,8 +1773,8 @@ events:
         ignore line: [Thread model: single]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 15.2.0 (GCC) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/']
-        ignore line: [ /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1 -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_c6c34.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/ccp1RFBP.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/']
+        ignore line: [ /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1 -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_15001.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/ccWxzicN.s]
         ignore line: [GNU C23 (GCC) version 15.2.0 (x86_64-elf)]
         ignore line: [	compiled by GNU C version 13.3.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
@@ -1791,17 +1791,17 @@ events:
         ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/include-fixed]
         ignore line: [End of search list.]
         ignore line: [Compiler executable checksum: aa19db085d9dddc6123aea4bbae8654e]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/']
-        ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj /tmp/ccp1RFBP.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/']
+        ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj /tmp/ccWxzicN.s]
         ignore line: [COMPILER_PATH=/opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../libexec/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/]
         ignore line: [LIBRARY_PATH=/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../lib/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.']
-        ignore line: [Linking C static library libcmTC_c6c34.a]
-        ignore line: [/usr/bin/cmake -P CMakeFiles/cmTC_c6c34.dir/cmake_clean_target.cmake]
-        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c6c34.dir/link.txt --verbose=1]
-        ignore line: [/opt/elf/bin/x86_64-elf-ar qc libcmTC_c6c34.a CMakeFiles/cmTC_c6c34.dir/CMakeCCompilerABI.c.obj]
-        ignore line: [/opt/elf/bin/x86_64-elf-ranlib libcmTC_c6c34.a]
-        ignore line: [make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-SqEm0G']
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C static library libcmTC_15001.a]
+        ignore line: [/usr/bin/cmake -P CMakeFiles/cmTC_15001.dir/cmake_clean_target.cmake]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_15001.dir/link.txt --verbose=1]
+        ignore line: [/opt/elf/bin/x86_64-elf-ar qc libcmTC_15001.a CMakeFiles/cmTC_15001.dir/CMakeCCompilerABI.c.obj]
+        ignore line: [/opt/elf/bin/x86_64-elf-ranlib libcmTC_15001.a]
+        ignore line: [make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-r5EO0e']
         ignore line: []
         ignore line: []
         implicit libs: []
@@ -1819,8 +1819,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2"
-      binary: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2"
+      source: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an"
+      binary: "/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -1830,13 +1830,13 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2'
+        Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7dad8/fast
-        /usr/bin/make  -f CMakeFiles/cmTC_7dad8.dir/build.make CMakeFiles/cmTC_7dad8.dir/build
-        make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2'
-        Building CXX object CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj
-        /opt/elf/bin/x86_64-elf-g++   -v -o CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_18673/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_18673.dir/build.make CMakeFiles/cmTC_18673.dir/build
+        make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an'
+        Building CXX object CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj
+        /opt/elf/bin/x86_64-elf-g++   -v -o CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         Using built-in specs.
         COLLECT_GCC=/opt/elf/bin/x86_64-elf-g++
         Target: x86_64-elf
@@ -1844,8 +1844,8 @@ events:
         Thread model: single
         Supported LTO compression algorithms: zlib zstd
         gcc version 15.2.0 (GCC) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/'
-         /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1plus -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_7dad8.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/ccSs1O5B.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/'
+         /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1plus -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_18673.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/ccZ1nuhX.s
         GNU C++17 (GCC) version 15.2.0 (x86_64-elf)
         	compiled by GNU C version 13.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
@@ -1868,17 +1868,17 @@ events:
          /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/include-fixed
         End of search list.
         Compiler executable checksum: 3054c9e8f69bd4c40184a49e4b9a24e7
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/'
-         /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj /tmp/ccSs1O5B.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/'
+         /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj /tmp/ccZ1nuhX.s
         COMPILER_PATH=/opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../libexec/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/
         LIBRARY_PATH=/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../lib/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.'
-        Linking CXX static library libcmTC_7dad8.a
-        /usr/bin/cmake -P CMakeFiles/cmTC_7dad8.dir/cmake_clean_target.cmake
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7dad8.dir/link.txt --verbose=1
-        /opt/elf/bin/x86_64-elf-ar qc libcmTC_7dad8.a CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj
-        /opt/elf/bin/x86_64-elf-ranlib libcmTC_7dad8.a
-        make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX static library libcmTC_18673.a
+        /usr/bin/cmake -P CMakeFiles/cmTC_18673.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_18673.dir/link.txt --verbose=1
+        /opt/elf/bin/x86_64-elf-ar qc libcmTC_18673.a CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj
+        /opt/elf/bin/x86_64-elf-ranlib libcmTC_18673.a
+        make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an'
         
       exitCode: 0
   -
@@ -1909,13 +1909,13 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2']
+        ignore line: [Change Dir: '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an']
         ignore line: []
-        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7dad8/fast]
-        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_7dad8.dir/build.make CMakeFiles/cmTC_7dad8.dir/build]
-        ignore line: [make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2']
-        ignore line: [Building CXX object CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj]
-        ignore line: [/opt/elf/bin/x86_64-elf-g++   -v -o CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_18673/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_18673.dir/build.make CMakeFiles/cmTC_18673.dir/build]
+        ignore line: [make[1]: Entering directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an']
+        ignore line: [Building CXX object CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [/opt/elf/bin/x86_64-elf-g++   -v -o CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/opt/elf/bin/x86_64-elf-g++]
         ignore line: [Target: x86_64-elf]
@@ -1923,8 +1923,8 @@ events:
         ignore line: [Thread model: single]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 15.2.0 (GCC) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/']
-        ignore line: [ /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1plus -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_7dad8.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/ccSs1O5B.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/']
+        ignore line: [ /opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/cc1plus -quiet -v -iprefix /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/ /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_18673.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/ccZ1nuhX.s]
         ignore line: [GNU C++17 (GCC) version 15.2.0 (x86_64-elf)]
         ignore line: [	compiled by GNU C version 13.3.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
@@ -1947,17 +1947,17 @@ events:
         ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/include-fixed]
         ignore line: [End of search list.]
         ignore line: [Compiler executable checksum: 3054c9e8f69bd4c40184a49e4b9a24e7]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/']
-        ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj /tmp/ccSs1O5B.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/']
+        ignore line: [ /opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/as -o CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj /tmp/ccZ1nuhX.s]
         ignore line: [COMPILER_PATH=/opt/elf/bin/../libexec/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../libexec/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/bin/]
         ignore line: [LIBRARY_PATH=/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/:/opt/elf/bin/../lib/gcc/:/opt/elf/bin/../lib/gcc/x86_64-elf/15.2.0/../../../../x86_64-elf/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.']
-        ignore line: [Linking CXX static library libcmTC_7dad8.a]
-        ignore line: [/usr/bin/cmake -P CMakeFiles/cmTC_7dad8.dir/cmake_clean_target.cmake]
-        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7dad8.dir/link.txt --verbose=1]
-        ignore line: [/opt/elf/bin/x86_64-elf-ar qc libcmTC_7dad8.a CMakeFiles/cmTC_7dad8.dir/CMakeCXXCompilerABI.cpp.obj]
-        ignore line: [/opt/elf/bin/x86_64-elf-ranlib libcmTC_7dad8.a]
-        ignore line: [make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-8IcRK2']
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj' '-c' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX static library libcmTC_18673.a]
+        ignore line: [/usr/bin/cmake -P CMakeFiles/cmTC_18673.dir/cmake_clean_target.cmake]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_18673.dir/link.txt --verbose=1]
+        ignore line: [/opt/elf/bin/x86_64-elf-ar qc libcmTC_18673.a CMakeFiles/cmTC_18673.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [/opt/elf/bin/x86_64-elf-ranlib libcmTC_18673.a]
+        ignore line: [make[1]: Leaving directory '/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/CMakeScratch/TryCompile-Or22an']
         ignore line: []
         ignore line: []
         implicit libs: []

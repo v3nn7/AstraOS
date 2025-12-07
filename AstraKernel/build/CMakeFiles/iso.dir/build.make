@@ -73,7 +73,8 @@ CMakeFiles/iso: /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine
 	/usr/bin/cmake -E make_directory /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT
 	/usr/bin/cmake -E copy kernel.elf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/kernel.elf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine.conf
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/limine.conf
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine.cfg
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/limine.cfg
 	python3 /home/v3nn7/Projects/AstraOS/AstraKernel/tools/generate_initrd.py --output /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/initrd.img --assets-dir /home/v3nn7/Projects/AstraOS/AstraKernel/assets
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/BOOTX64.EFI /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT/BOOTX64.EFI
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine-uefi-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-uefi-cd.bin

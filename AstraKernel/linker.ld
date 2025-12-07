@@ -6,81 +6,75 @@
 
 ENTRY(_start)
 
-/* Virtual and physical mappings */
 KERNEL_VMA = 0xFFFFFFFF80000000;
 KERNEL_LMA = 0x00100000;
 
 SECTIONS
 {
-    /* Load address = physical + virtual offset */
-    . = KERNEL_VMA + KERNEL_LMA;
-
-    _kernel_start           = .;
-    _kernel_start_physical  = KERNEL_LMA;
-
-    /* -------------------------------------------
-       LIMINE REQUESTS (start, body, end)
-    ------------------------------------------- */
-    .limine_requests ALIGN(8) : AT(ADDR(.limine_requests) - KERNEL_VMA)
+    /* Load at 1MiB physical, map to higher half */
+    . = KERNEL_LMA;
+    
+    __kernel_phys_start = .;
+    
+    /* LIMINE HEADER (MUST BE AT BEGINNING!) */
+    .limine_hdr : AT(ADDR(.limine_hdr))
     {
-        KEEP(*(.limine_requests_start))
-        KEEP(*(.limine_requests))
-        KEEP(*(.limine_requests_end))
+        KEEP(*(.limine_hdr))
     }
-
-    /* -------------------------------------------
-       TEXT SECTION
-    ------------------------------------------- */
-    .text ALIGN(0x1000) : AT(ADDR(.text) - KERNEL_VMA)
+    
+    . += KERNEL_VMA;
+    
+    __kernel_virt_start = .;
+    
+    /* Stivale2 header must be kept and placed early */
+    .stivale2hdr ALIGN(16) : AT(ADDR(.stivale2hdr) - KERNEL_VMA)
     {
-        KEEP(*(.text.start))
-        KEEP(*(.text._start))
-        KEEP(*(.init))
+        KEEP(*(.stivale2hdr))
+    }
+    
+    /* Text section */
+    .text ALIGN(4K) : AT(ADDR(.text) - KERNEL_VMA)
+    {
+        *(.text.start)
+        *(.text._start)
         *(.text*)
         *(.rodata*)
     }
-
-    /* -------------------------------------------
-       INITCALL TABLE
-    ------------------------------------------- */
-    .initcalls ALIGN(0x1000) : AT(ADDR(.initcalls) - KERNEL_VMA)
+    
+    /* Initcall descriptors */
+    .initcalls ALIGN(8) : AT(ADDR(.initcalls) - KERNEL_VMA)
     {
         __start_initcalls = .;
         KEEP(*(.initcalls))
         __stop_initcalls = .;
     }
-
-    /* -------------------------------------------
-       DATA SECTION
-    ------------------------------------------- */
-    .data ALIGN(0x1000) : AT(ADDR(.data) - KERNEL_VMA)
+    
+    /* Data section */
+    .data ALIGN(4K) : AT(ADDR(.data) - KERNEL_VMA)
     {
         *(.data*)
         *(.sdata*)
     }
-
-    /* -------------------------------------------
-       BSS SECTION
-    ------------------------------------------- */
-    .bss ALIGN(0x1000) : AT(ADDR(.bss) - KERNEL_VMA)
+    
+    /* BSS section */
+    .bss ALIGN(4K) : AT(ADDR(.bss) - KERNEL_VMA)
     {
         *(COMMON)
         *(.bss*)
         *(.sbss*)
     }
-
-    /* Mark kernel end */
-    _kernel_end          = .;
-    _kernel_end_physical = _kernel_end - KERNEL_VMA;
-
-    /* -------------------------------------------
-       REMOVE USELESS SECTIONS
-    ------------------------------------------- */
+    
+    __kernel_virt_end = .;
+    __kernel_phys_end = . - KERNEL_VMA;
+    /* Public kernel bounds for C code */
+    _kernel_start = __kernel_virt_start;
+    _kernel_end   = __kernel_virt_end;
+    
+    /* Discard unnecessary sections */
     /DISCARD/ :
     {
         *(.eh_frame*)
         *(.comment*)
         *(.note*)
-        *(.note.*)
     }
 }

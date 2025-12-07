@@ -102,7 +102,9 @@ add_custom_target(iso ALL
 
     COMMAND ${CMAKE_COMMAND} -E copy kernel.elf ${ISO_ROOT}/boot/kernel.elf
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/boot/limine.conf
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/limine.conf
+    # Limine prefers limine.cfg; provide both names to avoid parse errors
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/boot/limine.cfg
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/limine.cfg
 
     COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/generate_initrd.py
             --output ${ISO_ROOT}/boot/initrd.img
