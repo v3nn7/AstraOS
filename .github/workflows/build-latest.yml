@@ -2,42 +2,42 @@ name: Build AstraOS Kernel
 
 on:
   push:
-    branches: [ "main", "master" ]
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository (no submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential \
-          nasm \
-          xorriso \
-          gcc \
-          g++ \
-          cmake \
-          python3 \
-          zip
+      - name: Try to init/update submodules (safe)
+        run: |
+          # synchronise submodule config if any, ignore errors
+          git submodule sync --recursive || true
+          # attempt init/update but don't fail the job if .gitmodules is broken
+          git submodule update --init --recursive || true
 
-    - name: Configure CMake
-      working-directory: AstraKernel
-      run: |
-        cmake -B build .
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build
 
-    - name: Build Kernel (make build)
-      working-directory: AstraKernel
-      run: |
-        make -C build build
+      - name: Clean previous CMake cache / build dir
+        working-directory: AstraKernel
+        run: |
+          rm -rf build CMakeCache.txt CMakeFiles
 
-    - name: Move artifacts
-      run: |
-        mkdir -p dist
-        cp AstraKernel/build/kernel.elf dist/kernel.elf
-        echo "Kernel built and saved to dist/"
+      - name: Configure CMake
+        working-directory: AstraKernel
+        run: cmake -S . -B build
+
+      - name: Build
+        working-directory: AstraKernel
+        run: cmake --build build -- -j$(nproc)
