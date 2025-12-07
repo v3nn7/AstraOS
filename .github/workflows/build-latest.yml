@@ -2,42 +2,36 @@ name: Build AstraOS Kernel
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository (no submodules)
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
+          submodules: 'recursive'
           fetch-depth: 0
-          submodules: false
 
-      - name: Try to init/update submodules (safe)
+      - name: Ensure git submodules are synced
         run: |
-          # synchronise submodule config if any, ignore errors
           git submodule sync --recursive || true
-          # attempt init/update but don't fail the job if .gitmodules is broken
           git submodule update --init --recursive || true
 
       - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build
-
-      - name: Clean previous CMake cache / build dir
-        working-directory: AstraKernel
-        run: |
-          rm -rf build CMakeCache.txt CMakeFiles
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake nasm pkg-config git ninja-build
 
       - name: Configure CMake
-        working-directory: AstraKernel
-        run: cmake -S . -B build
+        run: |
+          rm -rf build/CMakeCache.txt build/CMakeFiles
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -G Ninja
 
       - name: Build
-        working-directory: AstraKernel
-        run: cmake --build build -- -j$(nproc)
+        run: |
+          cd build
+          cmake --build . -- -j$(nproc)
