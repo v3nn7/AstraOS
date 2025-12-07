@@ -3,28 +3,30 @@
 
 # compile ASM_NASM with /usr/bin/nasm
 # compile C with /opt/elf/bin/x86_64-elf-gcc
-# compile CXX with /opt/elf/bin/x86_64-elf-c++
+# compile CXX with /opt/elf/bin/x86_64-elf-g++
 ASM_NASM_DEFINES = 
 
-ASM_NASM_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng -I/home/v3nn7/Projects/AstraOS/AstraKernel/assets
+ASM_NASM_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui
 
-ASM_NASM_FLAGS = -Wall
+ASM_NASM_FLAGS = 
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng -I/home/v3nn7/Projects/AstraOS/AstraKernel/assets
+C_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui
 
-C_FLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -fno-omit-frame-pointer -fno-pic -fno-pie -mno-red-zone -mcmodel=kernel -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float -nostdlib -nostdinc -fno-builtin -m64 -Ikernel/include -Iboot
+C_FLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra -fno-stack-protector -fno-omit-frame-pointer -fno-pic -fno-pie -mno-red-zone -mcmodel=kernel -nostdlib -nostdinc -fno-builtin -m64
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng -I/home/v3nn7/Projects/AstraOS/AstraKernel/assets
+CXX_INCLUDES = -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include -I/home/v3nn7/Projects/AstraOS/AstraKernel/boot -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer -I/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui
 
-CXX_FLAGS = -std=c++17 -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-stack-protector -fno-omit-frame-pointer -fno-pic -fno-pie -mno-red-zone -mcmodel=kernel -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float -nostdlib -nostdinc -fno-builtin -m64 -Ikernel/include -Iboot -Ikernel/arch/x86_64/mm
+CXX_FLAGS = -std=c++20 -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-stack-protector -fno-omit-frame-pointer -fno-pic -fno-pie -mno-red-zone -mcmodel=kernel -nostdlib -nostdinc -fno-builtin -m64
 
-# Custom flags: CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj_FLAGS = -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include
+# Custom flags: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/cpu/idt.c.obj_FLAGS = -mno-80387 -mno-sse -mno-mmx
 
-# Custom flags: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj_FLAGS = -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include
+# Custom flags: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/irq.c.obj_FLAGS = -mno-80387 -mno-sse -mno-mmx
 
-# Custom flags: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj_FLAGS = -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include
+# Custom flags: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.obj_FLAGS = -mno-80387 -mno-sse -mno-mmx
+
+# Custom flags: CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj_FLAGS = -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS
 

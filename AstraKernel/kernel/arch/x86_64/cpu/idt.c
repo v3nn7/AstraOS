@@ -20,6 +20,34 @@ typedef struct PACKED {
 static idt_entry_t idt[256];
 static idt_ptr_t idtr;
 
+// Simple serial output for interrupt handlers (no SIMD/FPU instructions)
+#pragma GCC push_options
+#pragma GCC target("no-sse,no-mmx")
+__attribute__((target("no-sse,no-mmx")))
+static void serial_putc_simple(char c) {
+    // Wait for transmit buffer to be empty
+    while (!(inb(0x3F8 + 5) & 0x20)) { }
+    outb(0x3F8, (uint8_t)c);
+}
+
+__attribute__((target("no-sse,no-mmx")))
+static void serial_puts_simple(const char *s) {
+    while (*s) {
+        serial_putc_simple(*s++);
+    }
+}
+
+__attribute__((target("no-sse,no-mmx")))
+static void serial_puthex64_simple(uint64_t val) {
+    const char hex[] = "0123456789abcdef";
+    serial_putc_simple('0');
+    serial_putc_simple('x');
+    for (int i = 60; i >= 0; i -= 4) {
+        serial_putc_simple(hex[(val >> i) & 0xF]);
+    }
+}
+#pragma GCC pop_options
+
 static void set_gate(uint8_t vec, void *handler, uint8_t flags) {
     uint64_t addr = (uint64_t)handler;
 
@@ -67,11 +95,17 @@ extern void irq45(interrupt_frame_t *);
 extern void irq46(interrupt_frame_t *);
 extern void irq47(interrupt_frame_t *);
 
+#pragma GCC push_options
+#pragma GCC target("no-sse,no-mmx")
 __attribute__((interrupt))
+__attribute__((target("no-sse,no-mmx")))
 static void default_handler(interrupt_frame_t *f) {
-    printf("Unhandled interrupt RIP=%p\n", (void *)f->rip);
+    serial_puts_simple("Unhandled interrupt RIP=");
+    serial_puthex64_simple(f->rip);
+    serial_putc_simple('\n');
     while (1) __asm__("cli; hlt");
 }
+#pragma GCC pop_options
 
 void idt_init(void) {
     uint8_t trap = 0x8F;

@@ -254,9 +254,7 @@ CMakeFiles/kernel.elf.dir/kernel/core/kmain.c.obj: /home/v3nn7/Projects/AstraOS/
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/tty.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vfs.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/kernel_tests.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/core/panic.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/panic.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h \
@@ -909,6 +907,8 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.h:
 
+/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.h:
+
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/kernel_tests.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ethernet.c:
@@ -936,8 +936,6 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/initrd.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/fat32.c:
-
-/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/initcall.h:
 
@@ -1095,10 +1093,6 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/dev/tty.c:
 
-/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_descriptors.c:
-
-/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.h:
-
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/process.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/util/cpuid.c:
@@ -1140,6 +1134,8 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/interrupts/isr.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h:
+
+/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_descriptors.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/core/usb_enumeration.c:
 
@@ -1184,6 +1180,8 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ehci_qh.c:
+
+/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c:
 
 /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/driver_manager.h:
 

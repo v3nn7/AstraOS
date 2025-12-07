@@ -293,8 +293,6 @@ CMakeFiles/kernel.elf.dir/kernel/core/kmain.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vfs.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/kernel_tests.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.h
 
 CMakeFiles/kernel.elf.dir/kernel/core/panic.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/panic.c

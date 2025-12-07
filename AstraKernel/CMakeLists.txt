@@ -1,230 +1,149 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Cross-compiler settings BEFORE project()
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(CMAKE_C_COMPILER /opt/elf/bin/x86_64-elf-gcc)
+set(CMAKE_CXX_COMPILER /opt/elf/bin/x86_64-elf-g++)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 project(AstraOS C CXX ASM_NASM)
 
 enable_language(ASM_NASM)
-set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
-
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
-set(CMAKE_ASM_NASM_FLAGS "-Wall")
 
 set(CFLAGS_KERNEL
     -std=gnu99 -ffreestanding -O2 -Wall -Wextra
     -fno-stack-protector -fno-omit-frame-pointer
     -fno-pic -fno-pie
     -mno-red-zone -mcmodel=kernel
-    -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float
     -nostdlib -nostdinc -fno-builtin -m64
-    -Ikernel/include -Iboot
 )
 
 set(CXXFLAGS_KERNEL
-    -std=c++17 -ffreestanding -O2 -Wall -Wextra
-    -fno-exceptions -fno-rtti -fno-stack-protector -fno-omit-frame-pointer
-    -fno-pic -fno-pie
+    -std=c++20 -ffreestanding -O2 -Wall -Wextra
+    -fno-exceptions -fno-rtti -fno-stack-protector
+    -fno-omit-frame-pointer -fno-pic -fno-pie
     -mno-red-zone -mcmodel=kernel
-    -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float
     -nostdlib -nostdinc -fno-builtin -m64
-    -Ikernel/include -Iboot -Ikernel/arch/x86_64/mm
 )
 
 set(LDFLAGS_KERNEL "-nostdlib -z max-page-size=0x1000 -no-pie -T ${CMAKE_SOURCE_DIR}/linker.ld")
 
-file(GLOB_RECURSE KERNEL_C
-    "kernel/*.c"
-    "kernel/*/*.c"
-    "kernel/*/*/*.c"
-    "boot/limine_requests.c"
-)
-# Add C++ sources explicitly (no globs from C list)
-file(GLOB_RECURSE KERNEL_CPP
-    "kernel/arch/x86_64/mm/*.cpp"
-    "kernel/core/*.cpp"
-    "kernel/drivers/usb/hid/parser/*.cpp"
-    "kernel/drivers/usb/hid/hid_driver.cpp"
-)
-# Ensure new memory subsystem entry point is always compiled
-list(APPEND KERNEL_C
-    "kernel/arch/x86_64/mm/memory.c"
-    "kernel/arch/x86_64/drivers/load_cursor.c"
-    "kernel/drivers/usb/hid/hid_usb_driver.c"
-    "kernel/drivers/usb/host/pci_usb_routing.c"
-    "kernel/drivers/usb/xhci/xhci_init_complete.c"
-)
-
-# Newly added core/subsystems
-list(APPEND KERNEL_C
-    "kernel/core/klog.c"
-    "kernel/core/shell.c"
-    "kernel/dev/driver_manager.c"
-    "kernel/dev/tty.c"
-    "kernel/fs/devfs.c"
-    "kernel/fs/ramfs.c"
-    "kernel/fs/initrd.c"
-    "kernel/ipc/ipc.c"
-    "kernel/tests/kernel_tests.c"
-)
+file(GLOB_RECURSE KERNEL_C "kernel/**/*.c")
+file(GLOB_RECURSE KERNEL_CPP "kernel/**/*.cpp")
 set(KERNEL_ASM boot/kernel_entry.asm)
+set(BOOT_C boot/limine_requests.c)
+set(LODEPNG_CPP lodepng/lodepng/lodepng.cpp)
 
-# D memset disabled (SSE instructions causing early faults); use C version
-set(MEMSET_SRC "")
-
-# Lodepng for PNG decoding (cursor images)
-file(GLOB_RECURSE LODEPNG_CPP "lodepng/lodepng/lodepng.cpp")
-list(APPEND LODEPNG_CPP 
-    "kernel/arch/x86_64/drivers/lodepng_alloc.cpp"
-    "kernel/arch/x86_64/drivers/lodepng_wrapper.cpp"
-)
-set(LODEPNG_SRC ${LODEPNG_CPP})
-
-add_executable(kernel.elf ${KERNEL_C} ${KERNEL_CPP} ${KERNEL_ASM} ${MEMSET_SRC} ${LODEPNG_SRC})
+add_executable(kernel.elf ${KERNEL_C} ${KERNEL_CPP} ${KERNEL_ASM} ${BOOT_C} ${LODEPNG_CPP})
 set_target_properties(kernel.elf PROPERTIES LINK_FLAGS "${LDFLAGS_KERNEL}")
+
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:C>:${CFLAGS_KERNEL}>)
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXXFLAGS_KERNEL}>)
-# Disable C++ wrapper and disk I/O in lodepng to avoid stdlib dependencies
-# Also need to provide limits.h stub and redirect malloc/free/realloc
-set_source_files_properties(${LODEPNG_SRC} PROPERTIES COMPILE_FLAGS "-DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include")
 
-target_include_directories(kernel.elf PRIVATE
-    ${CMAKE_SOURCE_DIR}/kernel/include
-    ${CMAKE_SOURCE_DIR}/kernel/gui
-    ${CMAKE_SOURCE_DIR}/kernel/installer
-    ${CMAKE_SOURCE_DIR}/kernel/tests
-    ${CMAKE_SOURCE_DIR}/boot
-    ${CMAKE_SOURCE_DIR}/lodepng/lodepng
-    ${CMAKE_SOURCE_DIR}/assets
+# Disable FPU/SSE/MMX for interrupt handlers in idt.c, irq.c, and isr.c
+set_source_files_properties(kernel/arch/x86_64/cpu/idt.c PROPERTIES
+    COMPILE_FLAGS "-mno-80387 -mno-sse -mno-mmx"
+)
+set_source_files_properties(kernel/arch/x86_64/interrupts/irq.c PROPERTIES
+    COMPILE_FLAGS "-mno-80387 -mno-sse -mno-mmx"
+)
+set_source_files_properties(kernel/arch/x86_64/interrupts/isr.c PROPERTIES
+    COMPILE_FLAGS "-mno-80387 -mno-sse -mno-mmx"
 )
 
-# Limine 10.4.0 (pre-downloaded)
-# After cloning and building, binaries are in bin/ subdirectory
-set(LIMINE_BIN_DIR ${CMAKE_BINARY_DIR}/_deps/limine-src/bin)
-
-set(OVMF_CODE_CAND
-    "/usr/share/ovmf/x64/OVMF_CODE.fd"
-    "/usr/share/ovmf/x64/OVMF_CODE.4m.fd"
-    "/usr/share/OVMF/OVMF_CODE.fd"
-    "/usr/share/OVMF/OVMF_CODE.4m.fd"
-    "/usr/share/edk2-ovmf/x64/OVMF_CODE.fd"
-    "/usr/share/edk2-ovmf/x64/OVMF_CODE.4m.fd"
-)
-set(OVMF_VARS_CAND
-    "/usr/share/ovmf/x64/OVMF_VARS.fd"
-    "/usr/share/ovmf/x64/OVMF_VARS.4m.fd"
-    "/usr/share/OVMF/OVMF_VARS.fd"
-    "/usr/share/OVMF/OVMF_VARS.4m.fd"
-    "/usr/share/edk2-ovmf/x64/OVMF_VARS.fd"
-    "/usr/share/edk2-ovmf/x64/OVMF_VARS.4m.fd"
+# Disable C++ features and disk/stdlib features in lodepng (kernel environment)
+set_source_files_properties(lodepng/lodepng/lodepng.cpp PROPERTIES
+    COMPILE_FLAGS "-DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS"
 )
 
-foreach(c ${OVMF_CODE_CAND})
-    if(EXISTS ${c})
-        set(OVMF_CODE ${c})
-        break()
+target_include_directories(kernel.elf PRIVATE kernel/include boot kernel/installer kernel/gui)
+
+# ------------------------------------
+# LIMINE 10.4.0-binary (your version)
+# ------------------------------------
+
+set(LIMINE_DIR "${CMAKE_SOURCE_DIR}/limine")
+
+foreach(f
+    "BOOTX64.EFI"
+    "limine-bios.sys"
+    "limine-bios-cd.bin"
+    "limine-uefi-cd.bin"
+)
+    if(NOT EXISTS "${LIMINE_DIR}/${f}")
+        message(FATAL_ERROR "Missing Limine file: ${LIMINE_DIR}/${f}")
     endif()
 endforeach()
 
-foreach(c ${OVMF_VARS_CAND})
-    if(EXISTS ${c})
-        set(OVMF_VARS_SRC ${c})
-        break()
-    endif()
-endforeach()
+# ---------------------------
+# LIMINE TOOL BUILD
+# ---------------------------
 
-if(OVMF_CODE AND OVMF_VARS_SRC)
-    set(OVMF_VARS "${CMAKE_BINARY_DIR}/OVMF_VARS.fd")
-    add_custom_command(OUTPUT ${OVMF_VARS}
-        COMMAND ${CMAKE_COMMAND} -E copy ${OVMF_VARS_SRC} ${OVMF_VARS}
-        DEPENDS ${OVMF_VARS_SRC}
-        COMMENT "Copying OVMF_VARS.fd to build dir"
-    )
-    add_custom_target(ovmf_vars ALL DEPENDS ${OVMF_VARS})
-else()
-    message(WARNING "OVMF not found; run_bios will be available, run_uefi will print a message.")
-endif()
+set(LIMINE_TOOL "${LIMINE_DIR}/limine")
+add_custom_command(
+    OUTPUT ${LIMINE_TOOL}
+    COMMAND ${CMAKE_COMMAND} -E chdir ${LIMINE_DIR} ${CMAKE_MAKE_PROGRAM}
+    COMMENT "Building limine tool"
+)
 
-# ISO BUILD TARGET
+# ---------------------------
+# ISO BUILD
+# ---------------------------
+
+set(ISO_ROOT "${CMAKE_BINARY_DIR}/iso_root")
+set(ISO_FILE "${CMAKE_BINARY_DIR}/AstraOS.iso")
+
 add_custom_target(iso ALL
-    DEPENDS kernel.elf
-    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/iso_root
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/iso_root/boot
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/iso_root/EFI/BOOT
+    DEPENDS kernel.elf ${LIMINE_TOOL}
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${ISO_ROOT}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${ISO_ROOT}/boot
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${ISO_ROOT}/EFI/BOOT
 
-    # Copy kernel
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel.elf> ${CMAKE_BINARY_DIR}/iso_root/boot/kernel.elf
+    COMMAND ${CMAKE_COMMAND} -E copy kernel.elf ${ISO_ROOT}/boot/kernel.elf
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/boot/limine.conf
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${ISO_ROOT}/limine.conf
 
-    # Generate initrd with assets
     COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/generate_initrd.py
-        --output ${CMAKE_BINARY_DIR}/iso_root/boot/initrd.img
-        --assets-dir ${CMAKE_SOURCE_DIR}/assets
+            --output ${ISO_ROOT}/boot/initrd.img
+            --assets-dir ${CMAKE_SOURCE_DIR}/assets
 
-    # Copy Limine config (Limine 10.x uses limine.conf)
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${CMAKE_BINARY_DIR}/iso_root/boot/limine.conf
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${CMAKE_BINARY_DIR}/iso_root/limine.conf
+    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_DIR}/BOOTX64.EFI ${ISO_ROOT}/EFI/BOOT/BOOTX64.EFI
+    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_DIR}/limine-uefi-cd.bin ${ISO_ROOT}/boot/limine-uefi-cd.bin
+    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_DIR}/limine-bios-cd.bin ${ISO_ROOT}/boot/limine-bios-cd.bin
+    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_DIR}/limine-bios.sys ${ISO_ROOT}/boot/limine-bios.sys
 
-    # Copy Limine BIOS files
-    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_BIN_DIR}/limine-bios.sys ${CMAKE_BINARY_DIR}/iso_root/boot/limine-bios.sys
-    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_BIN_DIR}/limine-bios-cd.bin ${CMAKE_BINARY_DIR}/iso_root/boot/limine-bios-cd.bin
-
-    # Copy UEFI boot files
-    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_BIN_DIR}/limine-uefi-cd.bin ${CMAKE_BINARY_DIR}/iso_root/boot/limine-uefi-cd.bin
-    COMMAND ${CMAKE_COMMAND} -E copy ${LIMINE_BIN_DIR}/BOOTX64.EFI ${CMAKE_BINARY_DIR}/iso_root/EFI/BOOT/BOOTX64.EFI
-
-    # Build ISO with proper BIOS and UEFI El Torito entries
     COMMAND xorriso -as mkisofs
         -b boot/limine-bios-cd.bin
         -no-emul-boot -boot-load-size 4 -boot-info-table
         --efi-boot boot/limine-uefi-cd.bin
-        -efi-boot-part --efi-boot-image --protective-msdos-label
-        ${CMAKE_BINARY_DIR}/iso_root
-        -o ${CMAKE_BINARY_DIR}/AstraOS.iso
+        -efi-boot-part --efi-boot-image
+        ${ISO_ROOT} -o ${ISO_FILE}
+
+    COMMAND ${LIMINE_DIR}/limine bios-install ${ISO_FILE}
 )
+
+# ---------------------------
+# QEMU RUN TARGETS
+# ---------------------------
 
 add_custom_target(run_bios
     COMMAND qemu-system-x86_64
-        -machine q35
+        -machine q35 -m 4096
         -vga virtio
-        -display sdl
-        -m 4096M
+        -cdrom ${ISO_FILE}
         -serial stdio
-        -no-reboot -no-shutdown
-        -cdrom ${CMAKE_BINARY_DIR}/AstraOS.iso
         -boot d
-        -device qemu-xhci,id=xhci
-        -device usb-kbd,bus=xhci.0
-        -device usb-mouse,bus=xhci.0
-        -nodefaults
     DEPENDS iso
 )
 
-if(OVMF_CODE AND OVMF_VARS_SRC)
-    add_custom_target(run_uefi
-        COMMAND qemu-system-x86_64
-            -machine q35
-            -cpu qemu64
-            -m 2048M
-            -device qemu-xhci,id=xhci
-            -device usb-kbd,bus=xhci.0
-            -device usb-mouse,bus=xhci.0
-            -device usb-tablet,bus=xhci.0
-            -vga virtio
-            -display sdl
-            -drive if=pflash,format=raw,readonly=on,file=${OVMF_CODE}
-            -drive if=pflash,format=raw,file=${OVMF_VARS}
-            -drive format=raw,file=${CMAKE_BINARY_DIR}/AstraOS.iso
-            -serial stdio
-            -no-reboot -no-shutdown
-            -nodefaults
-        DEPENDS iso ovmf_vars
-    )
-else()
-    add_custom_target(run_uefi
-        COMMAND ${CMAKE_COMMAND} -E echo "OVMF not found; install edk2-ovmf to enable run_uefi."
-        DEPENDS iso
-    )
-endif()
+add_custom_target(run_uefi
+    COMMAND qemu-system-x86_64
+        -machine q35 -m 4096
+        -bios /usr/share/edk2-ovmf/x64/OVMF.4m.fd
+        -vga virtio
+        -cdrom ${ISO_FILE}
+        -serial stdio
+        -boot d
+    DEPENDS iso
+)

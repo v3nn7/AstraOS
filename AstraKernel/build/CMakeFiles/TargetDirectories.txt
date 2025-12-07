@@ -1,5 +1,4 @@
 /home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/kernel.elf.dir
-/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/ovmf_vars.dir
 /home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/iso.dir
 /home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/run_bios.dir
 /home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles/run_uefi.dir

@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine"
   "CMakeFiles/iso"
 )
 

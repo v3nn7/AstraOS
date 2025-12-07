@@ -48,7 +48,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/kernel.elf.dir/DependInfo.cmake"
-  "CMakeFiles/ovmf_vars.dir/DependInfo.cmake"
   "CMakeFiles/iso.dir/DependInfo.cmake"
   "CMakeFiles/run_bios.dir/DependInfo.cmake"
   "CMakeFiles/run_uefi.dir/DependInfo.cmake"

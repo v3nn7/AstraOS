@@ -67,23 +67,30 @@ include CMakeFiles/iso.dir/compiler_depend.make
 include CMakeFiles/iso.dir/progress.make
 
 CMakeFiles/iso: kernel.elf
+CMakeFiles/iso: /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine
 	/usr/bin/cmake -E rm -rf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root
 	/usr/bin/cmake -E make_directory /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot
 	/usr/bin/cmake -E make_directory /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/kernel.elf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/kernel.elf
-	python3 /home/v3nn7/Projects/AstraOS/AstraKernel/tools/generate_initrd.py --output /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/initrd.img --assets-dir /home/v3nn7/Projects/AstraOS/AstraKernel/assets
+	/usr/bin/cmake -E copy kernel.elf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/kernel.elf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine.conf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/limine.conf
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-bios.sys /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios.sys
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-bios-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios-cd.bin
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/limine-uefi-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-uefi-cd.bin
-	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/bin/BOOTX64.EFI /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT/BOOTX64.EFI
-	xorriso -as mkisofs -b boot/limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot boot/limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root -o /home/v3nn7/Projects/AstraOS/AstraKernel/build/AstraOS.iso
+	python3 /home/v3nn7/Projects/AstraOS/AstraKernel/tools/generate_initrd.py --output /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/initrd.img --assets-dir /home/v3nn7/Projects/AstraOS/AstraKernel/assets
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/BOOTX64.EFI /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT/BOOTX64.EFI
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine-uefi-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-uefi-cd.bin
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine-bios-cd.bin /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios-cd.bin
+	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine-bios.sys /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios.sys
+	xorriso -as mkisofs -b boot/limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot boot/limine-uefi-cd.bin -efi-boot-part --efi-boot-image /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root -o /home/v3nn7/Projects/AstraOS/AstraKernel/build/AstraOS.iso
+	/home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine bios-install /home/v3nn7/Projects/AstraOS/AstraKernel/build/AstraOS.iso
+
+/home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building limine tool"
+	/usr/bin/cmake -E chdir /home/v3nn7/Projects/AstraOS/AstraKernel/limine /usr/bin/make
 
 CMakeFiles/iso.dir/codegen:
 .PHONY : CMakeFiles/iso.dir/codegen
 
 iso: CMakeFiles/iso
+iso: /home/v3nn7/Projects/AstraOS/AstraKernel/limine/limine
 iso: CMakeFiles/iso.dir/build.make
 .PHONY : iso
 

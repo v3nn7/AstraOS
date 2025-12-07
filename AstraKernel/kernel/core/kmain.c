@@ -13,8 +13,6 @@
 #include "tty.h"
 #include "vfs.h"
 #include "panic.h"
-#include "memory_tests.h"
-#include "kernel_tests.h"
 /* Embedded cursor (optional, compile with -DCURSOR_EMBEDDED) */
 #ifdef CURSOR_EMBEDDED
 #include "cursor.h"

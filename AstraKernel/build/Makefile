@@ -130,19 +130,6 @@ kernel.elf/fast:
 .PHONY : kernel.elf/fast
 
 #=============================================================================
-# Target rules for targets named ovmf_vars
-
-# Build rule for target.
-ovmf_vars: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ovmf_vars
-.PHONY : ovmf_vars
-
-# fast build rule for target.
-ovmf_vars/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ovmf_vars.dir/build.make CMakeFiles/ovmf_vars.dir/build
-.PHONY : ovmf_vars/fast
-
-#=============================================================================
 # Target rules for targets named iso
 
 # Build rule for target.
@@ -2694,7 +2681,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... iso"
-	@echo "... ovmf_vars"
 	@echo "... run_bios"
 	@echo "... run_uefi"
 	@echo "... kernel.elf"
