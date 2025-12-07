@@ -56,7 +56,8 @@ static inline bool pop_sc(uint8_t *out) {
 
 static inline char translate_sc(uint8_t sc) {
     if (sc >= 128) return 0;
-    return shift ? keymap_shift_state[sc] : keymap[sc];
+    char c = shift ? keymap_shift_state[sc] : keymap[sc];
+    return c;
 }
 
 static void handle_scancode(uint8_t sc) {
@@ -115,63 +116,97 @@ static void keyboard_irq(interrupt_frame_t *f) {
 /* INIT */
 /* --------------------------------------------------------------------- */
 
-static inline void wait_input_clear(void) { while (inb(PS2_STATUS) & 0x02) {} }
-static inline void wait_output_ready(void) { while (!(inb(PS2_STATUS) & 0x01)) {} }
+static inline bool wait_input_clear(void) {
+    for (int i = 0; i < 100000; i++) {
+        if (!(inb(PS2_STATUS) & 0x02)) return true;
+    }
+    return false; /* timeout */
+}
+
+static inline bool wait_output_ready(void) {
+    for (int i = 0; i < 100000; i++) {
+        if (inb(PS2_STATUS) & 0x01) return true;
+    }
+    return false; /* timeout */
+}
 
 static bool send_cmd(uint8_t cmd, uint8_t *resp) {
-    wait_input_clear();
+    if (!wait_input_clear()) return false;
     outb(PS2_DATA, cmd);
-    wait_output_ready();
+    if (!wait_output_ready()) return false;
     uint8_t r = inb(PS2_DATA);
     if (resp) *resp = r;
     return (r == 0xFA);
 }
 
 void keyboard_init(void) {
+    printf("keyboard: initializing\n");
     head = tail = 0;
     shift = false;
     extended = false;
 
     /* Flush output buffer */
-    while (inb(PS2_STATUS) & 0x01) (void)inb(PS2_DATA);
+    int flush_count = 0;
+    while ((inb(PS2_STATUS) & 0x01) && flush_count < 100) {
+        (void)inb(PS2_DATA);
+        flush_count++;
+    }
+    printf("keyboard: flushed %d bytes\n", flush_count);
 
     /* Disable then re-enable port 1 (keyboard) */
-    wait_input_clear(); outb(PS2_CMD, 0xAD);
-    wait_input_clear(); outb(PS2_CMD, 0xAE);
+    if (!wait_input_clear()) { printf("keyboard: timeout waiting for input clear (disable)\n"); return; }
+    outb(PS2_CMD, 0xAD);
+    if (!wait_input_clear()) { printf("keyboard: timeout waiting for input clear (enable)\n"); return; }
+    outb(PS2_CMD, 0xAE);
+    printf("keyboard: port enabled\n");
 
     /* Enable IRQ1 in controller config */
-    wait_input_clear(); outb(PS2_CMD, 0x20);
-    wait_output_ready(); uint8_t cfg = inb(PS2_DATA);
+    if (!wait_input_clear()) { printf("keyboard: timeout reading config\n"); return; }
+    outb(PS2_CMD, 0x20);
+    if (!wait_output_ready()) { printf("keyboard: timeout waiting for config response\n"); return; }
+    uint8_t cfg = inb(PS2_DATA);
     cfg |= 1;           /* enable keyboard IRQ */
     cfg &= ~(1 << 6);   /* leave translation on (set1) */
-    wait_input_clear(); outb(PS2_CMD, 0x60);
-    wait_input_clear(); outb(PS2_DATA, cfg);
+    if (!wait_input_clear()) { printf("keyboard: timeout writing config\n"); return; }
+    outb(PS2_CMD, 0x60);
+    if (!wait_input_clear()) { printf("keyboard: timeout writing config data\n"); return; }
+    outb(PS2_DATA, cfg);
+    printf("keyboard: config updated (cfg=0x%02x)\n", cfg);
 
-    /* Reset keyboard */
+    /* Reset keyboard - skip if it fails */
     uint8_t resp = 0;
     if (!send_cmd(0xFF, &resp)) {
-        printf("PS2: keyboard reset no ACK (resp=0x%02x)\n", resp);
+        printf("keyboard: reset no ACK (resp=0x%02x), continuing anyway\n", resp);
     } else {
-        /* Controller sends self-test result after ACK */
-        wait_output_ready();
-        uint8_t bat = inb(PS2_DATA);
-        if (bat != 0xAA) printf("PS2: keyboard BAT fail (0x%02x)\n", bat);
+        if (wait_output_ready()) {
+            uint8_t bat = inb(PS2_DATA);
+            if (bat != 0xAA) printf("keyboard: BAT fail (0x%02x), continuing anyway\n", bat);
+            else printf("keyboard: BAT OK\n");
+        }
     }
 
-    /* Set scancode set 1 (controller translation expects this) */
+    /* Set scancode set 1 (controller translation expects this) - skip if fails */
     if (send_cmd(0xF0, &resp) && resp == 0xFA) {
         send_cmd(0x01, &resp);
+        printf("keyboard: scancode set 1 configured\n");
+    } else {
+        printf("keyboard: scancode set config skipped\n");
     }
 
-    /* Enable scanning */
-    send_cmd(0xF4, NULL);
+    /* Enable scanning - skip if fails */
+    if (!send_cmd(0xF4, NULL)) {
+        printf("keyboard: enable scanning failed, continuing anyway\n");
+    } else {
+        printf("keyboard: scanning enabled\n");
+    }
 
-    /* Unmask IRQ1 on PIC */
-    uint8_t mask = inb(0x21);
-    mask &= ~(1 << 1);
-    outb(0x21, mask);
+    /* Unmask IRQ1 on PIC - but we're using APIC, so this may not be needed */
+    /* Skip PIC unmask in APIC mode - IOAPIC handles IRQ routing */
+    printf("keyboard: skipping PIC unmask (using APIC/IOAPIC)\n");
 
+    printf("keyboard: registering IRQ handler\n");
     irq_register_handler(1, keyboard_irq);
+    printf("keyboard: IRQ handler registered\n");
 
     printf("PS2: keyboard ready\n");
 }
@@ -182,14 +217,14 @@ void keyboard_init(void) {
 
 bool keyboard_pop_char(char *out) {
     uint8_t sc;
-    while (pop_sc(&sc)) {
-        char c = translate_sc(sc);
-        if (c) {
-            *out = c;
-            return true;
-        }
+    if (!pop_sc(&sc)) return false;
+    char c = translate_sc(sc);
+    if (c) {
+        *out = c;
+        return true;
     }
-    return false;
+    /* If translation failed, try next scancode */
+    return keyboard_pop_char(out);
 }
 
 bool keyboard_has_data(void) {

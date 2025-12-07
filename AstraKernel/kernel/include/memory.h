@@ -3,6 +3,10 @@
 #include "types.h"
 #include "limine.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PAGE_SIZE 4096ULL
 #define KERNEL_BASE 0xFFFFFFFF80000000ULL
 
@@ -11,6 +15,8 @@
 #define PAGE_USER           (1ULL << 2)
 #define PAGE_WRITE_THROUGH  (1ULL << 3)
 #define PAGE_CACHE_DISABLE  (1ULL << 4)
+#define PAGE_ACCESSED       (1ULL << 5)
+#define PAGE_DIRTY          (1ULL << 6)
 #define PAGE_HUGE           (1ULL << 7)   /* 2 MiB pages */
 #define PAGE_GLOBAL         (1ULL << 8)
 
@@ -48,4 +54,8 @@ int map_page(virt_addr_t virt, phys_addr_t phys, uint64_t flags);
 void unmap_page(virt_addr_t virt);
 
 void memory_subsystem_init(struct limine_memmap_response *memmap);
+
+#ifdef __cplusplus
+}
+#endif
 

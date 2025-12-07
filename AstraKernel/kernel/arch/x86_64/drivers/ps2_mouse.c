@@ -115,47 +115,108 @@ static void mouse_irq(interrupt_frame_t *f) {
     gui_event_push_mouse_move(mouse_x, mouse_y, dx, dy, buttons);
 }
 
+static inline bool wait_input_clear_mouse(void) {
+    for (int i = 0; i < 100000; i++) {
+        if (!(inb(PS2_STATUS) & 0x02)) return true;
+    }
+    return false;
+}
+
+static inline bool wait_output_ready_mouse(void) {
+    for (int i = 0; i < 100000; i++) {
+        if (inb(PS2_STATUS) & 0x01) return true;
+    }
+    return false;
+}
+
 void mouse_init(void) {
+    printf("mouse: initializing\n");
     screen_w = fb_width();
     screen_h = fb_height();
+    printf("mouse: screen size %dx%d\n", screen_w, screen_h);
     last_x = -1;
     last_y = -1;
     last_buttons = 0;
     saved_valid = false;
 
     /* Flush pending output bytes */
-    while (inb(PS2_STATUS) & 0x01) (void)inb(PS2_DATA);
+    int flush_count = 0;
+    while ((inb(PS2_STATUS) & 0x01) && flush_count < 100) {
+        (void)inb(PS2_DATA);
+        flush_count++;
+    }
+    printf("mouse: flushed %d bytes\n", flush_count);
 
-    // Enable auxiliary
+    // Enable auxiliary port
+    printf("mouse: enabling auxiliary port\n");
+    if (!wait_input_clear_mouse()) {
+        printf("mouse: timeout enabling auxiliary port\n");
+        return;
+    }
     outb(PS2_CMD, 0xA8);
 
-    // Enable mouse IRQ
+    // Enable mouse IRQ in controller config
+    printf("mouse: configuring controller\n");
+    if (!wait_input_clear_mouse()) {
+        printf("mouse: timeout reading config\n");
+        return;
+    }
     outb(PS2_CMD, 0x20);
+    if (!wait_output_ready_mouse()) {
+        printf("mouse: timeout waiting for config response\n");
+        return;
+    }
     uint8_t cfg = inb(PS2_DATA);
     cfg |= 2; // enable IRQ12
+    if (!wait_input_clear_mouse()) {
+        printf("mouse: timeout writing config\n");
+        return;
+    }
     outb(PS2_CMD, 0x60);
+    if (!wait_input_clear_mouse()) {
+        printf("mouse: timeout writing config data\n");
+        return;
+    }
     outb(PS2_DATA, cfg);
+    printf("mouse: config updated (cfg=0x%02x)\n", cfg);
 
-    // Default settings
-    outb(PS2_CMD, 0xD4);
-    outb(PS2_DATA, 0xF6); // default settings
-    (void)inb(PS2_DATA);
+    // Default settings - skip if fails
+    printf("mouse: setting default settings\n");
+    if (wait_input_clear_mouse()) {
+        outb(PS2_CMD, 0xD4);
+        if (wait_input_clear_mouse()) {
+            outb(PS2_DATA, 0xF6); // default settings
+            if (wait_output_ready_mouse()) {
+                (void)inb(PS2_DATA);
+                printf("mouse: default settings applied\n");
+            }
+        }
+    }
 
-    // Enable data reporting
-    outb(PS2_CMD, 0xD4);
-    outb(PS2_DATA, 0xF4);
-    (void)inb(PS2_DATA);
+    // Enable data reporting - skip if fails
+    printf("mouse: enabling data reporting\n");
+    if (wait_input_clear_mouse()) {
+        outb(PS2_CMD, 0xD4);
+        if (wait_input_clear_mouse()) {
+            outb(PS2_DATA, 0xF4);
+            if (wait_output_ready_mouse()) {
+                (void)inb(PS2_DATA);
+                printf("mouse: data reporting enabled\n");
+            }
+        }
+    }
 
-    // Unmask IRQ12
-    uint8_t mask = inb(0xA1);
-    mask &= ~(1 << 4);
-    outb(0xA1, mask);
+    // Skip PIC unmask in APIC mode - IOAPIC handles IRQ routing
+    printf("mouse: skipping PIC unmask (using APIC/IOAPIC)\n");
 
+    printf("mouse: registering IRQ handler\n");
     irq_register_handler(MOUSE_IRQ, mouse_irq);
+    printf("mouse: IRQ handler registered\n");
 
     /* Center cursor and draw once */
     mouse_x = screen_w / 2;
     mouse_y = screen_h / 2;
+    printf("mouse: initial cursor position %d,%d\n", mouse_x, mouse_y);
     save_bg(mouse_x, mouse_y);
     draw_cursor(mouse_x, mouse_y, CURSOR_COLOR);
     last_x = mouse_x;

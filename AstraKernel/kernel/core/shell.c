@@ -221,11 +221,20 @@ static void run_command() {
 /* ============================ MAIN LOOP ============================ */
 
 void shell_run() {
-    fb_fill_screen(COLOR_BG);
+    printf("shell: starting, fb_w=%u fb_h=%u\n", fb_width(), fb_height());
+    
+    /* Test: fill screen with a visible color first */
+    fb_fill_screen(0xFF1E3A5F); /* Dark blue instead of black */
+    
+    printf("shell: screen filled\n");
+    
     header_bar();
+    printf("shell: header drawn\n");
 
     print("Welcome to AstraOS Shell v3!\n");
     prompt();
+    
+    printf("shell: ready, entering main loop\n");
 
     cmd_len = 0;
     history_pos = -1;

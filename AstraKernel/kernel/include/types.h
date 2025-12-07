@@ -15,8 +15,17 @@ typedef int64_t            ssize_t;
 
 typedef uint64_t           phys_addr_t;
 typedef uint64_t           virt_addr_t;
+typedef uint64_t           uintptr_t;
 
+#ifndef __cplusplus
 typedef enum { false = 0, true = 1 } bool;
+#else
+typedef bool __cpp_bool_guard; /* no-op to avoid redefinition */
+#endif
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
 
 #define PACKED      __attribute__((packed))
 #define ALIGNED(x)  __attribute__((aligned(x)))

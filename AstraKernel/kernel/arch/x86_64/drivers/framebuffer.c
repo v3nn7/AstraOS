@@ -1,5 +1,6 @@
 #include "types.h"
 #include "drivers.h"
+#include "kernel.h"
 
 static uint32_t *fb;
 static uint32_t fb_w, fb_h, fb_pitch, fb_bpp;
@@ -108,8 +109,11 @@ void fb_init(uint64_t addr, uint32_t width, uint32_t height, uint32_t pitch, uin
     fb = (uint32_t *)addr;
     fb_w = width;
     fb_h = height;
-    fb_pitch = pitch / 4;
+    fb_pitch = pitch / 4; /* Convert bytes to dwords */
     fb_bpp = bpp;
+    
+    printf("fb_init: addr=%p w=%u h=%u pitch_bytes=%u pitch_dwords=%u bpp=%u\n",
+           (void *)addr, width, height, pitch, fb_pitch, bpp);
 }
 
 uint32_t fb_width(void) { return fb_w; }
@@ -122,7 +126,20 @@ uint32_t fb_getpixel(uint32_t x, uint32_t y) {
 
 void fb_putpixel(uint32_t x, uint32_t y, uint32_t color) {
     if (!fb || x >= fb_w || y >= fb_h) return;
-    fb[y * fb_pitch + x] = color;
+
+    uint8_t *row = (uint8_t *)fb + (size_t)y * (size_t)fb_pitch * 4; /* fb_pitch is in dwords */
+
+    if (fb_bpp == 32) {
+        uint32_t *pix = (uint32_t *)(row + (size_t)x * 4);
+        *pix = color;
+    } else if (fb_bpp == 24) {
+        uint8_t *pix = row + (size_t)x * 3;
+        pix[0] = (color >> 0)  & 0xFF; /* B */
+        pix[1] = (color >> 8)  & 0xFF; /* G */
+        pix[2] = (color >> 16) & 0xFF; /* R */
+    } else {
+        /* Unsupported format; ignore */
+    }
 }
 
 void fb_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color) {
@@ -134,10 +151,26 @@ void fb_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color
 }
 
 void fb_fill_screen(uint32_t color) {
-    if (!fb) return;
+    if (!fb) {
+        printf("fb_fill_screen: fb is NULL!\n");
+        return;
+    }
+    /* fb_pitch is already in dwords (pitch / 4) */
     for (uint32_t y = 0; y < fb_h; ++y) {
+        uint32_t *row = fb + (size_t)y * (size_t)fb_pitch;
         for (uint32_t x = 0; x < fb_w; ++x) {
-            fb[y * fb_pitch + x] = color;
+            row[x] = color;
+        }
+    }
+}
+
+void fb_clear(uint32_t color) {
+    if (!fb) return;
+    /* Use pitch to respect row stride; pitch is in dwords */
+    for (uint32_t y = 0; y < fb_h; ++y) {
+        uint32_t *row = fb + (size_t)y * (size_t)fb_pitch;
+        for (uint32_t x = 0; x < fb_w; ++x) {
+            row[x] = color;
         }
     }
 }

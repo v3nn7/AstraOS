@@ -29,5 +29,12 @@ volatile struct limine_hhdm_request limine_hhdm_request = {
     .revision = 0
 };
 
+/* Executable address request - needed for kernel physical/virtual base */
+__attribute__((used, section(".limine_requests"), aligned(8)))
+volatile struct limine_executable_address_request limine_exec_addr_request = {
+    .id = LIMINE_EXECUTABLE_ADDRESS_REQUEST_ID,
+    .revision = 0
+};
+
 __attribute__((used, section(".limine_requests_end")))
 static volatile uint64_t limine_requests_end[] = LIMINE_REQUESTS_END_MARKER;

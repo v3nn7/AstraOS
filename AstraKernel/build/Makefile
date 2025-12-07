@@ -621,6 +621,30 @@ kernel/arch/x86_64/interrupts/isr.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/interrupts/isr.c.s
 .PHONY : kernel/arch/x86_64/interrupts/isr.c.s
 
+kernel/arch/x86_64/mm/buddy.obj: kernel/arch/x86_64/mm/buddy.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/buddy.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/buddy.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/buddy.cpp.obj
+
+kernel/arch/x86_64/mm/buddy.i: kernel/arch/x86_64/mm/buddy.cpp.i
+.PHONY : kernel/arch/x86_64/mm/buddy.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/buddy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.i
+.PHONY : kernel/arch/x86_64/mm/buddy.cpp.i
+
+kernel/arch/x86_64/mm/buddy.s: kernel/arch/x86_64/mm/buddy.cpp.s
+.PHONY : kernel/arch/x86_64/mm/buddy.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/buddy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.s
+.PHONY : kernel/arch/x86_64/mm/buddy.cpp.s
+
 kernel/arch/x86_64/mm/dma.obj: kernel/arch/x86_64/mm/dma.c.obj
 .PHONY : kernel/arch/x86_64/mm/dma.obj
 
@@ -645,6 +669,30 @@ kernel/arch/x86_64/mm/dma.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma.c.s
 .PHONY : kernel/arch/x86_64/mm/dma.c.s
 
+kernel/arch/x86_64/mm/dma_heap.obj: kernel/arch/x86_64/mm/dma_heap.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/dma_heap.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/dma_heap.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/dma_heap.cpp.obj
+
+kernel/arch/x86_64/mm/dma_heap.i: kernel/arch/x86_64/mm/dma_heap.cpp.i
+.PHONY : kernel/arch/x86_64/mm/dma_heap.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/dma_heap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.i
+.PHONY : kernel/arch/x86_64/mm/dma_heap.cpp.i
+
+kernel/arch/x86_64/mm/dma_heap.s: kernel/arch/x86_64/mm/dma_heap.cpp.s
+.PHONY : kernel/arch/x86_64/mm/dma_heap.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/dma_heap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.s
+.PHONY : kernel/arch/x86_64/mm/dma_heap.cpp.s
+
 kernel/arch/x86_64/mm/heap.obj: kernel/arch/x86_64/mm/heap.c.obj
 .PHONY : kernel/arch/x86_64/mm/heap.obj
 
@@ -668,6 +716,30 @@ kernel/arch/x86_64/mm/heap.s: kernel/arch/x86_64/mm/heap.c.s
 kernel/arch/x86_64/mm/heap.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.c.s
 .PHONY : kernel/arch/x86_64/mm/heap.c.s
+
+kernel/arch/x86_64/mm/heap.obj: kernel/arch/x86_64/mm/heap.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/heap.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/heap.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/heap.cpp.obj
+
+kernel/arch/x86_64/mm/heap.i: kernel/arch/x86_64/mm/heap.cpp.i
+.PHONY : kernel/arch/x86_64/mm/heap.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/heap.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.i
+.PHONY : kernel/arch/x86_64/mm/heap.cpp.i
+
+kernel/arch/x86_64/mm/heap.s: kernel/arch/x86_64/mm/heap.cpp.s
+.PHONY : kernel/arch/x86_64/mm/heap.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/heap.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.s
+.PHONY : kernel/arch/x86_64/mm/heap.cpp.s
 
 kernel/arch/x86_64/mm/kmalloc.obj: kernel/arch/x86_64/mm/kmalloc.c.obj
 .PHONY : kernel/arch/x86_64/mm/kmalloc.obj
@@ -765,6 +837,30 @@ kernel/arch/x86_64/mm/pmm.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/pmm.c.s
 .PHONY : kernel/arch/x86_64/mm/pmm.c.s
 
+kernel/arch/x86_64/mm/slab.obj: kernel/arch/x86_64/mm/slab.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/slab.obj
+
+# target to build an object file
+kernel/arch/x86_64/mm/slab.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj
+.PHONY : kernel/arch/x86_64/mm/slab.cpp.obj
+
+kernel/arch/x86_64/mm/slab.i: kernel/arch/x86_64/mm/slab.cpp.i
+.PHONY : kernel/arch/x86_64/mm/slab.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/mm/slab.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.i
+.PHONY : kernel/arch/x86_64/mm/slab.cpp.i
+
+kernel/arch/x86_64/mm/slab.s: kernel/arch/x86_64/mm/slab.cpp.s
+.PHONY : kernel/arch/x86_64/mm/slab.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/mm/slab.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.s
+.PHONY : kernel/arch/x86_64/mm/slab.cpp.s
+
 kernel/arch/x86_64/mm/vmm.obj: kernel/arch/x86_64/mm/vmm.c.obj
 .PHONY : kernel/arch/x86_64/mm/vmm.obj
 
@@ -860,6 +956,54 @@ kernel/arch/x86_64/util/ports.s: kernel/arch/x86_64/util/ports.c.s
 kernel/arch/x86_64/util/ports.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/util/ports.c.s
 .PHONY : kernel/arch/x86_64/util/ports.c.s
+
+kernel/core/initcall.obj: kernel/core/initcall.cpp.obj
+.PHONY : kernel/core/initcall.obj
+
+# target to build an object file
+kernel/core/initcall.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj
+.PHONY : kernel/core/initcall.cpp.obj
+
+kernel/core/initcall.i: kernel/core/initcall.cpp.i
+.PHONY : kernel/core/initcall.i
+
+# target to preprocess a source file
+kernel/core/initcall.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.i
+.PHONY : kernel/core/initcall.cpp.i
+
+kernel/core/initcall.s: kernel/core/initcall.cpp.s
+.PHONY : kernel/core/initcall.s
+
+# target to generate assembly for a file
+kernel/core/initcall.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.s
+.PHONY : kernel/core/initcall.cpp.s
+
+kernel/core/klog.obj: kernel/core/klog.c.obj
+.PHONY : kernel/core/klog.obj
+
+# target to build an object file
+kernel/core/klog.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/klog.c.obj
+.PHONY : kernel/core/klog.c.obj
+
+kernel/core/klog.i: kernel/core/klog.c.i
+.PHONY : kernel/core/klog.i
+
+# target to preprocess a source file
+kernel/core/klog.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/klog.c.i
+.PHONY : kernel/core/klog.c.i
+
+kernel/core/klog.s: kernel/core/klog.c.s
+.PHONY : kernel/core/klog.s
+
+# target to generate assembly for a file
+kernel/core/klog.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/klog.c.s
+.PHONY : kernel/core/klog.c.s
 
 kernel/core/kmain.obj: kernel/core/kmain.c.obj
 .PHONY : kernel/core/kmain.obj
@@ -1029,6 +1173,78 @@ kernel/core/timers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/core/timers.c.s
 .PHONY : kernel/core/timers.c.s
 
+kernel/dev/driver_manager.obj: kernel/dev/driver_manager.c.obj
+.PHONY : kernel/dev/driver_manager.obj
+
+# target to build an object file
+kernel/dev/driver_manager.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/driver_manager.c.obj
+.PHONY : kernel/dev/driver_manager.c.obj
+
+kernel/dev/driver_manager.i: kernel/dev/driver_manager.c.i
+.PHONY : kernel/dev/driver_manager.i
+
+# target to preprocess a source file
+kernel/dev/driver_manager.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/driver_manager.c.i
+.PHONY : kernel/dev/driver_manager.c.i
+
+kernel/dev/driver_manager.s: kernel/dev/driver_manager.c.s
+.PHONY : kernel/dev/driver_manager.s
+
+# target to generate assembly for a file
+kernel/dev/driver_manager.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/driver_manager.c.s
+.PHONY : kernel/dev/driver_manager.c.s
+
+kernel/dev/tty.obj: kernel/dev/tty.c.obj
+.PHONY : kernel/dev/tty.obj
+
+# target to build an object file
+kernel/dev/tty.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/tty.c.obj
+.PHONY : kernel/dev/tty.c.obj
+
+kernel/dev/tty.i: kernel/dev/tty.c.i
+.PHONY : kernel/dev/tty.i
+
+# target to preprocess a source file
+kernel/dev/tty.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/tty.c.i
+.PHONY : kernel/dev/tty.c.i
+
+kernel/dev/tty.s: kernel/dev/tty.c.s
+.PHONY : kernel/dev/tty.s
+
+# target to generate assembly for a file
+kernel/dev/tty.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/dev/tty.c.s
+.PHONY : kernel/dev/tty.c.s
+
+kernel/fs/devfs.obj: kernel/fs/devfs.c.obj
+.PHONY : kernel/fs/devfs.obj
+
+# target to build an object file
+kernel/fs/devfs.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj
+.PHONY : kernel/fs/devfs.c.obj
+
+kernel/fs/devfs.i: kernel/fs/devfs.c.i
+.PHONY : kernel/fs/devfs.i
+
+# target to preprocess a source file
+kernel/fs/devfs.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.i
+.PHONY : kernel/fs/devfs.c.i
+
+kernel/fs/devfs.s: kernel/fs/devfs.c.s
+.PHONY : kernel/fs/devfs.s
+
+# target to generate assembly for a file
+kernel/fs/devfs.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.s
+.PHONY : kernel/fs/devfs.c.s
+
 kernel/fs/ext2.obj: kernel/fs/ext2.c.obj
 .PHONY : kernel/fs/ext2.obj
 
@@ -1100,6 +1316,30 @@ kernel/fs/initrd.s: kernel/fs/initrd.c.s
 kernel/fs/initrd.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.s
 .PHONY : kernel/fs/initrd.c.s
+
+kernel/fs/ramfs.obj: kernel/fs/ramfs.c.obj
+.PHONY : kernel/fs/ramfs.obj
+
+# target to build an object file
+kernel/fs/ramfs.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj
+.PHONY : kernel/fs/ramfs.c.obj
+
+kernel/fs/ramfs.i: kernel/fs/ramfs.c.i
+.PHONY : kernel/fs/ramfs.i
+
+# target to preprocess a source file
+kernel/fs/ramfs.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.i
+.PHONY : kernel/fs/ramfs.c.i
+
+kernel/fs/ramfs.s: kernel/fs/ramfs.c.s
+.PHONY : kernel/fs/ramfs.s
+
+# target to generate assembly for a file
+kernel/fs/ramfs.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.s
+.PHONY : kernel/fs/ramfs.c.s
 
 kernel/fs/vfs.obj: kernel/fs/vfs.c.obj
 .PHONY : kernel/fs/vfs.obj
@@ -1196,6 +1436,30 @@ kernel/installer/installer.s: kernel/installer/installer.c.s
 kernel/installer/installer.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.s
 .PHONY : kernel/installer/installer.c.s
+
+kernel/ipc/ipc.obj: kernel/ipc/ipc.c.obj
+.PHONY : kernel/ipc/ipc.obj
+
+# target to build an object file
+kernel/ipc/ipc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj
+.PHONY : kernel/ipc/ipc.c.obj
+
+kernel/ipc/ipc.i: kernel/ipc/ipc.c.i
+.PHONY : kernel/ipc/ipc.i
+
+# target to preprocess a source file
+kernel/ipc/ipc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.i
+.PHONY : kernel/ipc/ipc.c.i
+
+kernel/ipc/ipc.s: kernel/ipc/ipc.c.s
+.PHONY : kernel/ipc/ipc.s
+
+# target to generate assembly for a file
+kernel/ipc/ipc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.s
+.PHONY : kernel/ipc/ipc.c.s
 
 kernel/lib/lodepng_compat.obj: kernel/lib/lodepng_compat.c.obj
 .PHONY : kernel/lib/lodepng_compat.obj
@@ -1485,6 +1749,30 @@ kernel/net/udp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/net/udp.c.s
 .PHONY : kernel/net/udp.c.s
 
+kernel/tests/kernel_tests.obj: kernel/tests/kernel_tests.c.obj
+.PHONY : kernel/tests/kernel_tests.obj
+
+# target to build an object file
+kernel/tests/kernel_tests.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj
+.PHONY : kernel/tests/kernel_tests.c.obj
+
+kernel/tests/kernel_tests.i: kernel/tests/kernel_tests.c.i
+.PHONY : kernel/tests/kernel_tests.i
+
+# target to preprocess a source file
+kernel/tests/kernel_tests.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.i
+.PHONY : kernel/tests/kernel_tests.c.i
+
+kernel/tests/kernel_tests.s: kernel/tests/kernel_tests.c.s
+.PHONY : kernel/tests/kernel_tests.s
+
+# target to generate assembly for a file
+kernel/tests/kernel_tests.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.s
+.PHONY : kernel/tests/kernel_tests.c.s
+
 kernel/tests/memory_tests.obj: kernel/tests/memory_tests.c.obj
 .PHONY : kernel/tests/memory_tests.obj
 
@@ -1697,9 +1985,18 @@ help:
 	@echo "... kernel/arch/x86_64/interrupts/isr.obj"
 	@echo "... kernel/arch/x86_64/interrupts/isr.i"
 	@echo "... kernel/arch/x86_64/interrupts/isr.s"
+	@echo "... kernel/arch/x86_64/mm/buddy.obj"
+	@echo "... kernel/arch/x86_64/mm/buddy.i"
+	@echo "... kernel/arch/x86_64/mm/buddy.s"
 	@echo "... kernel/arch/x86_64/mm/dma.obj"
 	@echo "... kernel/arch/x86_64/mm/dma.i"
 	@echo "... kernel/arch/x86_64/mm/dma.s"
+	@echo "... kernel/arch/x86_64/mm/dma_heap.obj"
+	@echo "... kernel/arch/x86_64/mm/dma_heap.i"
+	@echo "... kernel/arch/x86_64/mm/dma_heap.s"
+	@echo "... kernel/arch/x86_64/mm/heap.obj"
+	@echo "... kernel/arch/x86_64/mm/heap.i"
+	@echo "... kernel/arch/x86_64/mm/heap.s"
 	@echo "... kernel/arch/x86_64/mm/heap.obj"
 	@echo "... kernel/arch/x86_64/mm/heap.i"
 	@echo "... kernel/arch/x86_64/mm/heap.s"
@@ -1715,6 +2012,9 @@ help:
 	@echo "... kernel/arch/x86_64/mm/pmm.obj"
 	@echo "... kernel/arch/x86_64/mm/pmm.i"
 	@echo "... kernel/arch/x86_64/mm/pmm.s"
+	@echo "... kernel/arch/x86_64/mm/slab.obj"
+	@echo "... kernel/arch/x86_64/mm/slab.i"
+	@echo "... kernel/arch/x86_64/mm/slab.s"
 	@echo "... kernel/arch/x86_64/mm/vmm.obj"
 	@echo "... kernel/arch/x86_64/mm/vmm.i"
 	@echo "... kernel/arch/x86_64/mm/vmm.s"
@@ -1727,6 +2027,12 @@ help:
 	@echo "... kernel/arch/x86_64/util/ports.obj"
 	@echo "... kernel/arch/x86_64/util/ports.i"
 	@echo "... kernel/arch/x86_64/util/ports.s"
+	@echo "... kernel/core/initcall.obj"
+	@echo "... kernel/core/initcall.i"
+	@echo "... kernel/core/initcall.s"
+	@echo "... kernel/core/klog.obj"
+	@echo "... kernel/core/klog.i"
+	@echo "... kernel/core/klog.s"
 	@echo "... kernel/core/kmain.obj"
 	@echo "... kernel/core/kmain.i"
 	@echo "... kernel/core/kmain.s"
@@ -1748,6 +2054,15 @@ help:
 	@echo "... kernel/core/timers.obj"
 	@echo "... kernel/core/timers.i"
 	@echo "... kernel/core/timers.s"
+	@echo "... kernel/dev/driver_manager.obj"
+	@echo "... kernel/dev/driver_manager.i"
+	@echo "... kernel/dev/driver_manager.s"
+	@echo "... kernel/dev/tty.obj"
+	@echo "... kernel/dev/tty.i"
+	@echo "... kernel/dev/tty.s"
+	@echo "... kernel/fs/devfs.obj"
+	@echo "... kernel/fs/devfs.i"
+	@echo "... kernel/fs/devfs.s"
 	@echo "... kernel/fs/ext2.obj"
 	@echo "... kernel/fs/ext2.i"
 	@echo "... kernel/fs/ext2.s"
@@ -1757,6 +2072,9 @@ help:
 	@echo "... kernel/fs/initrd.obj"
 	@echo "... kernel/fs/initrd.i"
 	@echo "... kernel/fs/initrd.s"
+	@echo "... kernel/fs/ramfs.obj"
+	@echo "... kernel/fs/ramfs.i"
+	@echo "... kernel/fs/ramfs.s"
 	@echo "... kernel/fs/vfs.obj"
 	@echo "... kernel/fs/vfs.i"
 	@echo "... kernel/fs/vfs.s"
@@ -1769,6 +2087,9 @@ help:
 	@echo "... kernel/installer/installer.obj"
 	@echo "... kernel/installer/installer.i"
 	@echo "... kernel/installer/installer.s"
+	@echo "... kernel/ipc/ipc.obj"
+	@echo "... kernel/ipc/ipc.i"
+	@echo "... kernel/ipc/ipc.s"
 	@echo "... kernel/lib/lodepng_compat.obj"
 	@echo "... kernel/lib/lodepng_compat.i"
 	@echo "... kernel/lib/lodepng_compat.s"
@@ -1805,6 +2126,9 @@ help:
 	@echo "... kernel/net/udp.obj"
 	@echo "... kernel/net/udp.i"
 	@echo "... kernel/net/udp.s"
+	@echo "... kernel/tests/kernel_tests.obj"
+	@echo "... kernel/tests/kernel_tests.i"
+	@echo "... kernel/tests/kernel_tests.s"
 	@echo "... kernel/tests/memory_tests.obj"
 	@echo "... kernel/tests/memory_tests.i"
 	@echo "... kernel/tests/memory_tests.s"

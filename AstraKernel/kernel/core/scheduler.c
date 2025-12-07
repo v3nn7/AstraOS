@@ -37,11 +37,12 @@ void scheduler_init(void) {
 }
 
 static int pick_next(void) {
-    for (int i = 1; i <= MAX_TASKS; ++i) {
-        int idx = (current_idx + i) % MAX_TASKS;
+    int start = (current_idx >= 0) ? current_idx + 1 : 0;
+    for (int i = 0; i < MAX_TASKS; ++i) {
+        int idx = (start + i) % MAX_TASKS;
         if (tasks[idx].state == TASK_READY) return idx;
     }
-    return current_idx;
+    return -1;
 }
 
 int scheduler_add_task(void (*entry)(void *), void *arg) {
@@ -71,7 +72,7 @@ void scheduler_tick(interrupt_frame_t *frame) {
 void scheduler_yield(void) {
     if (current_idx < 0) {
         int next = pick_next();
-        if (next < 0) return;
+        if (next < 0) { need_resched = false; return; }
         current_idx = next;
         tasks[next].state = TASK_RUNNING;
         __asm__ volatile(
@@ -84,7 +85,7 @@ void scheduler_yield(void) {
 
     if (!need_resched) return;
     int next = pick_next();
-    if (next == current_idx) { need_resched = false; return; }
+    if (next < 0 || next == current_idx) { need_resched = false; return; }
 
     task_t *current = &tasks[current_idx];
     task_t *target = &tasks[next];

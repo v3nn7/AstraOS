@@ -5,8 +5,9 @@
 #include "stddef.h"
 
 extern volatile struct limine_hhdm_request limine_hhdm_request;
-extern char _kernel_start_physical[];
-extern char _kernel_end_physical[];
+extern volatile struct limine_executable_address_request limine_exec_addr_request;
+extern char _kernel_start[];
+extern char _kernel_end[];
 
 uint64_t pmm_hhdm_offset = 0;
 uint64_t pmm_max_physical = 0;
@@ -89,14 +90,20 @@ void pmm_init(struct limine_memmap_response *mmap) {
     total_pages = align_up_u64(pmm_max_physical, PAGE_SIZE) / PAGE_SIZE;
     bitmap_bytes = align_up_u64((total_pages + 7) / 8, PAGE_SIZE);
 
+    /* Get real kernel physical address from Limine */
+    struct limine_executable_address_response *addr = limine_exec_addr_request.response;
+    uint64_t kernel_phys_base = addr ? addr->physical_base : 0x100000;
+    uint64_t kernel_size = (uint64_t)_kernel_end - (uint64_t)_kernel_start;
+    uint64_t kernel_phys_end = kernel_phys_base + kernel_size;
+    
     uint64_t bitmap_phys = 0;
     for (uint64_t i = 0; i < mmap->entry_count; ++i) {
         struct limine_memmap_entry *e = mmap->entries[i];
         if (e->type != LIMINE_MEMMAP_USABLE) continue;
         uint64_t start = align_up_u64(e->base, PAGE_SIZE);
         uint64_t end   = e->base + e->length;
-        if (start < (uint64_t)_kernel_end_physical) {
-            start = align_up_u64((uint64_t)_kernel_end_physical, PAGE_SIZE);
+        if (start < kernel_phys_end) {
+            start = align_up_u64(kernel_phys_end, PAGE_SIZE);
         }
         if (start + bitmap_bytes <= end) {
             bitmap_phys = start;
@@ -122,8 +129,8 @@ void pmm_init(struct limine_memmap_response *mmap) {
         mark_range(first, pages, 0);
     }
 
-    uint64_t k_start = align_down_u64((uint64_t)_kernel_start_physical, PAGE_SIZE);
-    uint64_t k_end   = align_up_u64((uint64_t)_kernel_end_physical, PAGE_SIZE);
+    uint64_t k_start = align_down_u64(kernel_phys_base, PAGE_SIZE);
+    uint64_t k_end   = align_up_u64(kernel_phys_end, PAGE_SIZE);
     mark_range(k_start / PAGE_SIZE, (k_end - k_start) / PAGE_SIZE, 1);
 
     mark_range(bitmap_phys / PAGE_SIZE, bitmap_bytes / PAGE_SIZE, 1);

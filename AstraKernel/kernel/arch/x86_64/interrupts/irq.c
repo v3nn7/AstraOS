@@ -1,46 +1,49 @@
 #include "types.h"
 #include "interrupts.h"
+#include "apic.h"
 
-static irq_handler_t irq_handlers[16] = {0};
+static irq_handler_t irq_handlers[256] = {0};
 
-static void pic_remap(void) {
-    outb(0x20, 0x11);
-    outb(0xA0, 0x11);
-    outb(0x21, 0x20);
-    outb(0xA1, 0x28);
-    outb(0x21, 0x04);
-    outb(0xA1, 0x02);
-    outb(0x21, 0x01);
-    outb(0xA1, 0x01);
-    outb(0x21, 0x0);
-    outb(0xA1, 0x0);
+void irq_register(uint8_t vector, irq_handler_t handler) {
+    irq_handlers[vector] = handler;
 }
 
-static void pic_eoi(uint8_t irq) {
-    if (irq >= 8) outb(0xA0, 0x20);
-    outb(0x20, 0x20);
-}
-
+/* Public API for drivers: legacy IRQ number (0-based, PIC style) */
 void irq_register_handler(uint8_t irq, irq_handler_t handler) {
-    if (irq < 16) irq_handlers[irq] = handler;
+    /* Map legacy IRQ 0-15 to vectors 32-47 */
+    uint8_t vector = (irq < 16) ? (uint8_t)(32 + irq) : irq;
+    irq_register(vector, handler);
 }
 
-void irq_init(void) {
-    pic_remap();
-}
+static void irq_dispatch(uint8_t vector, interrupt_frame_t *frame) {
+    if (irq_handlers[vector])
+        irq_handlers[vector](frame);
 
-static void irq_dispatch(uint8_t irq, interrupt_frame_t *frame) {
-    if (irq < 16 && irq_handlers[irq]) {
-        irq_handlers[irq](frame);
-    }
-    pic_eoi(irq);
+    lapic_eoi();   // KONIECZNIE — tylko LAPIC dostaje EOI
 }
 
 #define IRQ_STUB(n) \
-__attribute__((interrupt)) void irq##n##_stub(interrupt_frame_t *frame) { irq_dispatch(n, frame); }
+__attribute__((interrupt)) void irq##n(interrupt_frame_t *f) { irq_dispatch(n, f); }
 
-IRQ_STUB(0)  IRQ_STUB(1)  IRQ_STUB(2)  IRQ_STUB(3)
-IRQ_STUB(4)  IRQ_STUB(5)  IRQ_STUB(6)  IRQ_STUB(7)
-IRQ_STUB(8)  IRQ_STUB(9)  IRQ_STUB(10) IRQ_STUB(11)
-IRQ_STUB(12) IRQ_STUB(13) IRQ_STUB(14) IRQ_STUB(15)
+IRQ_STUB(32) IRQ_STUB(33) IRQ_STUB(34) IRQ_STUB(35)
+IRQ_STUB(36) IRQ_STUB(37) IRQ_STUB(38) IRQ_STUB(39)
+IRQ_STUB(40) IRQ_STUB(41) IRQ_STUB(42) IRQ_STUB(43)
+IRQ_STUB(44) IRQ_STUB(45) IRQ_STUB(46) IRQ_STUB(47)
 
+static void pic_disable(void) {
+    outb(0x21, 0xFF);
+    outb(0xA1, 0xFF);
+    outb(0x22, 0x70);
+    outb(0x23, 0x01);
+}
+
+void irq_init(void) {
+    pic_disable();
+    lapic_init();
+    ioapic_init();
+
+    // Timer → 32
+    ioapic_redirect_irq(0, 32);
+    // Keyboard → 33
+    ioapic_redirect_irq(1, 33);
+}

@@ -6,9 +6,10 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(CMAKE_C_COMPILER /opt/elf/bin/x86_64-elf-gcc)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-project(AstraOS C ASM_NASM)
+project(AstraOS C CXX ASM_NASM)
 
 enable_language(ASM_NASM)
+set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
 set(CMAKE_ASM_NASM_FLAGS "-Wall")
@@ -16,13 +17,24 @@ set(CMAKE_ASM_NASM_FLAGS "-Wall")
 set(CFLAGS_KERNEL
     -std=gnu99 -ffreestanding -O2 -Wall -Wextra
     -fno-stack-protector -fno-omit-frame-pointer
+    -fno-pic -fno-pie
     -mno-red-zone -mcmodel=kernel
     -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float
     -nostdlib -nostdinc -fno-builtin -m64
     -Ikernel/include -Iboot
 )
 
-set(LDFLAGS_KERNEL "-nostdlib -z max-page-size=0x1000 -T ${CMAKE_SOURCE_DIR}/linker.ld")
+set(CXXFLAGS_KERNEL
+    -std=c++17 -ffreestanding -O2 -Wall -Wextra
+    -fno-exceptions -fno-rtti -fno-stack-protector -fno-omit-frame-pointer
+    -fno-pic -fno-pie
+    -mno-red-zone -mcmodel=kernel
+    -mno-sse -mno-sse2 -mno-mmx -mgeneral-regs-only -msoft-float
+    -nostdlib -nostdinc -fno-builtin -m64
+    -Ikernel/include -Iboot -Ikernel/arch/x86_64/mm
+)
+
+set(LDFLAGS_KERNEL "-nostdlib -z max-page-size=0x1000 -no-pie -T ${CMAKE_SOURCE_DIR}/linker.ld")
 
 file(GLOB_RECURSE KERNEL_C
     "kernel/*.c"
@@ -30,18 +42,36 @@ file(GLOB_RECURSE KERNEL_C
     "kernel/*/*/*.c"
     "boot/limine_requests.c"
 )
+# Add C++ sources explicitly (no globs from C list)
+file(GLOB_RECURSE KERNEL_CPP
+    "kernel/arch/x86_64/mm/*.cpp"
+    "kernel/core/*.cpp"
+)
 # Ensure new memory subsystem entry point is always compiled
 list(APPEND KERNEL_C
     "kernel/arch/x86_64/mm/memory.c"
+)
+
+# Newly added core/subsystems
+list(APPEND KERNEL_C
+    "kernel/core/klog.c"
+    "kernel/core/shell.c"
+    "kernel/dev/driver_manager.c"
+    "kernel/dev/tty.c"
+    "kernel/fs/devfs.c"
+    "kernel/fs/ramfs.c"
+    "kernel/ipc/ipc.c"
+    "kernel/tests/kernel_tests.c"
 )
 set(KERNEL_ASM boot/kernel_entry.asm)
 
 # D memset disabled (SSE instructions causing early faults); use C version
 set(MEMSET_SRC "")
 
-add_executable(kernel.elf ${KERNEL_C} ${KERNEL_ASM} ${MEMSET_SRC})
+add_executable(kernel.elf ${KERNEL_C} ${KERNEL_CPP} ${KERNEL_ASM} ${MEMSET_SRC})
 set_target_properties(kernel.elf PROPERTIES LINK_FLAGS "${LDFLAGS_KERNEL}")
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:C>:${CFLAGS_KERNEL}>)
+target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXXFLAGS_KERNEL}>)
 
 target_include_directories(kernel.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/kernel/include
@@ -132,7 +162,9 @@ add_custom_target(iso ALL
 add_custom_target(run_bios
     COMMAND qemu-system-x86_64
         -machine pc -device i8042
-        -m 512M
+        -vga virtio
+        -display sdl
+        -m 4096M
         -serial stdio
         -no-reboot -no-shutdown
         -cdrom ${CMAKE_BINARY_DIR}/AstraOS.iso
@@ -144,7 +176,9 @@ if(OVMF_CODE AND OVMF_VARS_SRC)
     add_custom_target(run_uefi
         COMMAND qemu-system-x86_64
             -machine q35
-            -m 512M
+            -vga virtio
+            -display sdl
+            -m 4096M
             -drive if=pflash,format=raw,readonly=on,file=${OVMF_CODE}
             -drive if=pflash,format=raw,file=${OVMF_VARS}
             -drive file=${CMAKE_BINARY_DIR}/AstraOS.iso,if=ide,media=cdrom,format=raw

@@ -41,6 +41,16 @@ SECTIONS
     }
 
     /* -------------------------------------------
+       INITCALL TABLE
+    ------------------------------------------- */
+    .initcalls ALIGN(0x1000) : AT(ADDR(.initcalls) - KERNEL_VMA)
+    {
+        __start_initcalls = .;
+        KEEP(*(.initcalls))
+        __stop_initcalls = .;
+    }
+
+    /* -------------------------------------------
        DATA SECTION
     ------------------------------------------- */
     .data ALIGN(0x1000) : AT(ADDR(.data) - KERNEL_VMA)
