@@ -41,3 +41,6 @@ int devfs_register_chr(const char *name, vfs_read_t rd, vfs_write_t wr, void *ct
 
 /* RamFS */
 vfs_node_t *ramfs_mount(void);
+
+/* Initrd */
+void initrd_load(void);

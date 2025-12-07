@@ -429,6 +429,102 @@ kernel/arch/x86_64/drivers/hpet.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.s
 .PHONY : kernel/arch/x86_64/drivers/hpet.c.s
 
+kernel/arch/x86_64/drivers/load_cursor.obj: kernel/arch/x86_64/drivers/load_cursor.c.obj
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.obj
+
+# target to build an object file
+kernel/arch/x86_64/drivers/load_cursor.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.obj
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.c.obj
+
+kernel/arch/x86_64/drivers/load_cursor.i: kernel/arch/x86_64/drivers/load_cursor.c.i
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/drivers/load_cursor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.i
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.c.i
+
+kernel/arch/x86_64/drivers/load_cursor.s: kernel/arch/x86_64/drivers/load_cursor.c.s
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/drivers/load_cursor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.s
+.PHONY : kernel/arch/x86_64/drivers/load_cursor.c.s
+
+kernel/arch/x86_64/drivers/lodepng_alloc.obj: kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.obj
+
+# target to build an object file
+kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj
+
+kernel/arch/x86_64/drivers/lodepng_alloc.i: kernel/arch/x86_64/drivers/lodepng_alloc.cpp.i
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/drivers/lodepng_alloc.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.i
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.cpp.i
+
+kernel/arch/x86_64/drivers/lodepng_alloc.s: kernel/arch/x86_64/drivers/lodepng_alloc.cpp.s
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/drivers/lodepng_alloc.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.s
+.PHONY : kernel/arch/x86_64/drivers/lodepng_alloc.cpp.s
+
+kernel/arch/x86_64/drivers/lodepng_wrapper.obj: kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.obj
+
+# target to build an object file
+kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj
+
+kernel/arch/x86_64/drivers/lodepng_wrapper.i: kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.i
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.i
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.i
+
+kernel/arch/x86_64/drivers/lodepng_wrapper.s: kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.s
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.s
+.PHONY : kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.s
+
+kernel/arch/x86_64/drivers/mouse_cursor.obj: kernel/arch/x86_64/drivers/mouse_cursor.c.obj
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.obj
+
+# target to build an object file
+kernel/arch/x86_64/drivers/mouse_cursor.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.obj
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.c.obj
+
+kernel/arch/x86_64/drivers/mouse_cursor.i: kernel/arch/x86_64/drivers/mouse_cursor.c.i
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.i
+
+# target to preprocess a source file
+kernel/arch/x86_64/drivers/mouse_cursor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.i
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.c.i
+
+kernel/arch/x86_64/drivers/mouse_cursor.s: kernel/arch/x86_64/drivers/mouse_cursor.c.s
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.s
+
+# target to generate assembly for a file
+kernel/arch/x86_64/drivers/mouse_cursor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.s
+.PHONY : kernel/arch/x86_64/drivers/mouse_cursor.c.s
+
 kernel/arch/x86_64/drivers/pci.obj: kernel/arch/x86_64/drivers/pci.c.obj
 .PHONY : kernel/arch/x86_64/drivers/pci.obj
 
@@ -1917,6 +2013,30 @@ kernel/usb/xhci.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.s
 .PHONY : kernel/usb/xhci.c.s
 
+lodepng/lodepng/lodepng.obj: lodepng/lodepng/lodepng.cpp.obj
+.PHONY : lodepng/lodepng/lodepng.obj
+
+# target to build an object file
+lodepng/lodepng/lodepng.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj
+.PHONY : lodepng/lodepng/lodepng.cpp.obj
+
+lodepng/lodepng/lodepng.i: lodepng/lodepng/lodepng.cpp.i
+.PHONY : lodepng/lodepng/lodepng.i
+
+# target to preprocess a source file
+lodepng/lodepng/lodepng.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.i
+.PHONY : lodepng/lodepng/lodepng.cpp.i
+
+lodepng/lodepng/lodepng.s: lodepng/lodepng/lodepng.cpp.s
+.PHONY : lodepng/lodepng/lodepng.s
+
+# target to generate assembly for a file
+lodepng/lodepng/lodepng.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.s
+.PHONY : lodepng/lodepng/lodepng.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1961,6 +2081,18 @@ help:
 	@echo "... kernel/arch/x86_64/drivers/hpet.obj"
 	@echo "... kernel/arch/x86_64/drivers/hpet.i"
 	@echo "... kernel/arch/x86_64/drivers/hpet.s"
+	@echo "... kernel/arch/x86_64/drivers/load_cursor.obj"
+	@echo "... kernel/arch/x86_64/drivers/load_cursor.i"
+	@echo "... kernel/arch/x86_64/drivers/load_cursor.s"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_alloc.obj"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_alloc.i"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_alloc.s"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_wrapper.obj"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_wrapper.i"
+	@echo "... kernel/arch/x86_64/drivers/lodepng_wrapper.s"
+	@echo "... kernel/arch/x86_64/drivers/mouse_cursor.obj"
+	@echo "... kernel/arch/x86_64/drivers/mouse_cursor.i"
+	@echo "... kernel/arch/x86_64/drivers/mouse_cursor.s"
 	@echo "... kernel/arch/x86_64/drivers/pci.obj"
 	@echo "... kernel/arch/x86_64/drivers/pci.i"
 	@echo "... kernel/arch/x86_64/drivers/pci.s"
@@ -2147,6 +2279,9 @@ help:
 	@echo "... kernel/usb/xhci.obj"
 	@echo "... kernel/usb/xhci.i"
 	@echo "... kernel/usb/xhci.s"
+	@echo "... lodepng/lodepng/lodepng.obj"
+	@echo "... lodepng/lodepng/lodepng.i"
+	@echo "... lodepng/lodepng/lodepng.s"
 .PHONY : help
 
 

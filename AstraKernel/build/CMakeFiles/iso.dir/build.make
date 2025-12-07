@@ -71,6 +71,7 @@ CMakeFiles/iso: kernel.elf
 	/usr/bin/cmake -E make_directory /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot
 	/usr/bin/cmake -E make_directory /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/EFI/BOOT
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/kernel.elf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/kernel.elf
+	python3 /home/v3nn7/Projects/AstraOS/AstraKernel/tools/generate_initrd.py --output /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/initrd.img --assets-dir /home/v3nn7/Projects/AstraOS/AstraKernel/assets
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine.conf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.conf /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/limine.conf
 	/usr/bin/cmake -E copy /home/v3nn7/Projects/AstraOS/AstraKernel/build/_deps/limine-src/limine-bios.sys /home/v3nn7/Projects/AstraOS/AstraKernel/build/iso_root/boot/limine-bios.sys

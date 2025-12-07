@@ -118,6 +118,7 @@ void fb_init(uint64_t addr, uint32_t width, uint32_t height, uint32_t pitch, uin
 
 uint32_t fb_width(void) { return fb_w; }
 uint32_t fb_height(void) { return fb_h; }
+uint32_t fb_get_bpp(void) { return fb_bpp; }
 
 uint32_t fb_getpixel(uint32_t x, uint32_t y) {
     if (!fb || x >= fb_w || y >= fb_h) return 0;

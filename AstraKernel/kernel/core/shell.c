@@ -240,10 +240,14 @@ void shell_run() {
     history_pos = -1;
 
     while (1) {
-
         char ch;
-        if (!keyboard_pop_char(&ch))
+        
+        /* Read from keyboard buffer (IRQ-driven) */
+        if (!keyboard_read_char(&ch)) {
+            /* No input available - small delay to avoid busy loop */
+            for (volatile int i = 0; i < 1000; i++);
             continue;
+        }
 
         /* --- special keys --- */
 

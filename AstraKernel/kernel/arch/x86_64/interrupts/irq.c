@@ -46,4 +46,6 @@ void irq_init(void) {
     ioapic_redirect_irq(0, 32);
     // Keyboard → 33
     ioapic_redirect_irq(1, 33);
+    // Mouse → 44
+    ioapic_redirect_irq(12, 44);
 }

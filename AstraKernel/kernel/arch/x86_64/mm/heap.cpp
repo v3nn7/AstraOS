@@ -151,7 +151,12 @@ extern "C" void heap_free(void *ptr) {
 }
 
 extern "C" void *heap_realloc(void *ptr, size_t new_size) {
-    if (!ptr) return heap_alloc(new_size, MIN_ALIGN, HEAP_TAG_SLAB);
+    /* realloc(NULL, size) is equivalent to malloc(size) */
+    if (!ptr) {
+        return heap_alloc(new_size, MIN_ALIGN, HEAP_TAG_SLAB);
+    }
+    
+    /* realloc(ptr, 0) is equivalent to free(ptr) and return NULL */
     if (new_size == 0) {
         heap_free(ptr);
         return nullptr;

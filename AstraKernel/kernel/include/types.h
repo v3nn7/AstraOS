@@ -24,7 +24,11 @@ typedef bool __cpp_bool_guard; /* no-op to avoid redefinition */
 #endif
 
 #ifndef NULL
+#ifdef __cplusplus
+#define NULL 0
+#else
 #define NULL ((void *)0)
+#endif
 #endif
 
 #define PACKED      __attribute__((packed))

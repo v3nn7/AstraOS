@@ -41,3 +41,32 @@ void *memcpy(void *dst, const void *src, unsigned long n) {
     while (n--) *d++ = *s++;
     return dst;
 }
+
+int memcmp(const void *a, const void *b, size_t n) {
+    const unsigned char *pa = (const unsigned char *)a;
+    const unsigned char *pb = (const unsigned char *)b;
+    while (n--) {
+        if (*pa != *pb) return (int)*pa - (int)*pb;
+        pa++; pb++;
+    }
+    return 0;
+}
+
+char *strchr(const char *s, int c) {
+    while (*s) {
+        if (*s == (char)c) return (char *)s;
+        s++;
+    }
+    if (c == '\0') return (char *)s;
+    return NULL;
+}
+
+char *strrchr(const char *s, int c) {
+    const char *last = NULL;
+    while (*s) {
+        if (*s == (char)c) last = s;
+        s++;
+    }
+    if (c == '\0') return (char *)s;
+    return (char *)last;
+}

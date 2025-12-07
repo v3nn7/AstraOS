@@ -59,6 +59,36 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.obj
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/hpet.c
 
+CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/load_cursor.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vfs.h
+
+CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_alloc.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+
+CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+
+CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/mouse_cursor.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vfs.h
+
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pci.c
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
@@ -71,11 +101,9 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_keyboard.c
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
- /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/stddef.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj
@@ -84,6 +112,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_mouse.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/drivers.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/serial.c.obj
@@ -352,6 +381,15 @@ CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj
 
 CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/initrd.c
+ /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/memory.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vfs.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/ramfs.c
@@ -516,4 +554,10 @@ CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.h
  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.h
+
+CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj
+ /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.cpp
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+ /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.h
 

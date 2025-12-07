@@ -50,6 +50,7 @@ file(GLOB_RECURSE KERNEL_CPP
 # Ensure new memory subsystem entry point is always compiled
 list(APPEND KERNEL_C
     "kernel/arch/x86_64/mm/memory.c"
+    "kernel/arch/x86_64/drivers/load_cursor.c"
 )
 
 # Newly added core/subsystems
@@ -60,6 +61,7 @@ list(APPEND KERNEL_C
     "kernel/dev/tty.c"
     "kernel/fs/devfs.c"
     "kernel/fs/ramfs.c"
+    "kernel/fs/initrd.c"
     "kernel/ipc/ipc.c"
     "kernel/tests/kernel_tests.c"
 )
@@ -68,10 +70,21 @@ set(KERNEL_ASM boot/kernel_entry.asm)
 # D memset disabled (SSE instructions causing early faults); use C version
 set(MEMSET_SRC "")
 
-add_executable(kernel.elf ${KERNEL_C} ${KERNEL_CPP} ${KERNEL_ASM} ${MEMSET_SRC})
+# Lodepng for PNG decoding (cursor images)
+file(GLOB_RECURSE LODEPNG_CPP "lodepng/lodepng/lodepng.cpp")
+list(APPEND LODEPNG_CPP 
+    "kernel/arch/x86_64/drivers/lodepng_alloc.cpp"
+    "kernel/arch/x86_64/drivers/lodepng_wrapper.cpp"
+)
+set(LODEPNG_SRC ${LODEPNG_CPP})
+
+add_executable(kernel.elf ${KERNEL_C} ${KERNEL_CPP} ${KERNEL_ASM} ${MEMSET_SRC} ${LODEPNG_SRC})
 set_target_properties(kernel.elf PROPERTIES LINK_FLAGS "${LDFLAGS_KERNEL}")
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:C>:${CFLAGS_KERNEL}>)
 target_compile_options(kernel.elf PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${CXXFLAGS_KERNEL}>)
+# Disable C++ wrapper and disk I/O in lodepng to avoid stdlib dependencies
+# Also need to provide limits.h stub and redirect malloc/free/realloc
+set_source_files_properties(${LODEPNG_SRC} PROPERTIES COMPILE_FLAGS "-DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include")
 
 target_include_directories(kernel.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/kernel/include
@@ -79,6 +92,8 @@ target_include_directories(kernel.elf PRIVATE
     ${CMAKE_SOURCE_DIR}/kernel/installer
     ${CMAKE_SOURCE_DIR}/kernel/tests
     ${CMAKE_SOURCE_DIR}/boot
+    ${CMAKE_SOURCE_DIR}/lodepng/lodepng
+    ${CMAKE_SOURCE_DIR}/assets
 )
 
 # Limine 10.4.0 (pre-downloaded)
@@ -136,6 +151,11 @@ add_custom_target(iso ALL
 
     # Copy kernel
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel.elf> ${CMAKE_BINARY_DIR}/iso_root/boot/kernel.elf
+
+    # Generate initrd with assets
+    COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/generate_initrd.py
+        --output ${CMAKE_BINARY_DIR}/iso_root/boot/initrd.img
+        --assets-dir ${CMAKE_SOURCE_DIR}/assets
 
     # Copy Limine config (Limine 10.x uses limine.conf)
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boot/limine.conf ${CMAKE_BINARY_DIR}/iso_root/boot/limine.conf

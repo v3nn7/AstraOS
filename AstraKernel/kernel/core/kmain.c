@@ -15,6 +15,10 @@
 #include "panic.h"
 #include "memory_tests.h"
 #include "kernel_tests.h"
+/* Embedded cursor (optional, compile with -DCURSOR_EMBEDDED) */
+#ifdef CURSOR_EMBEDDED
+#include "cursor.h"
+#endif
 
 extern volatile struct limine_framebuffer_request limine_fb_request;
 extern volatile struct limine_memmap_request limine_memmap_request;
@@ -126,12 +130,66 @@ void kmain(void) {
     ramfs_mount();
     printf("kmain: vfs mounted\n");
     klog_printf(KLOG_INFO, "kmain: vfs mounted");
+    
+    /* Load initrd (CPIO archive with assets) */
+    {
+        extern void initrd_load(void);
+        initrd_load();
+    }
+    
+    /* Setup assets directory for cursor and other resources */
+    cursor_setup_assets();
 
     /* Drivers */
     printf("kmain: initializing keyboard\n");
     keyboard_init();
     printf("kmain: initializing mouse\n");
     mouse_init();
+    
+    /* Load cursor image from file system */
+    /* Try multiple locations in order of preference */
+    const char *cursor_paths[] = {
+        "/assets/cursor.png",
+        "/usr/share/cursor.png",
+        "/etc/cursor.png",
+        "/cursor.png",
+        NULL
+    };
+    
+    int cursor_loaded = 0;
+    for (int i = 0; cursor_paths[i] != NULL; i++) {
+        printf("kmain: trying to load cursor from %s\n", cursor_paths[i]);
+        int result = mouse_cursor_load_from_file(cursor_paths[i]);
+        if (result == 0) {
+            unsigned w = 0, h = 0;
+            mouse_cursor_get_size(&w, &h);
+            printf("kmain: cursor loaded successfully from %s (%ux%u)\n", cursor_paths[i], w, h);
+            cursor_loaded = 1;
+            break;
+        } else {
+            printf("kmain: failed to load cursor from %s (error=%d)\n", cursor_paths[i], result);
+        }
+    }
+    
+    /* Fallback: try embedded cursor if file loading failed */
+    if (!cursor_loaded) {
+        #ifdef CURSOR_EMBEDDED
+        extern const unsigned char cursor_png[];
+        extern const unsigned int cursor_png_len;
+        printf("kmain: trying embedded cursor (%u bytes)\n", cursor_png_len);
+        int result = mouse_cursor_load_from_memory(cursor_png, cursor_png_len);
+        if (result == 0) {
+            unsigned w = 0, h = 0;
+            mouse_cursor_get_size(&w, &h);
+            printf("kmain: embedded cursor loaded successfully (%ux%u)\n", w, h);
+            cursor_loaded = 1;
+        }
+        #endif
+        
+        if (!cursor_loaded) {
+            printf("kmain: no cursor image found, using fallback\n");
+        }
+    }
     printf("kmain: initializing USB\n");
     usb_init();
     printf("kmain: initializing HID\n");

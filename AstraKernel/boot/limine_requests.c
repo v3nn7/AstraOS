@@ -36,5 +36,12 @@ volatile struct limine_executable_address_request limine_exec_addr_request = {
     .revision = 0
 };
 
+/* Module request - for initrd */
+__attribute__((used, section(".limine_requests"), aligned(8)))
+volatile struct limine_module_request limine_module_request = {
+    .id = LIMINE_MODULE_REQUEST_ID,
+    .revision = 0
+};
+
 __attribute__((used, section(".limine_requests_end")))
 static volatile uint64_t limine_requests_end[] = LIMINE_REQUESTS_END_MARKER;

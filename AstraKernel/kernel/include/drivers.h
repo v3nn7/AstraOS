@@ -4,14 +4,14 @@
 #include "interrupts.h"
 
 void keyboard_init(void);
-bool keyboard_has_data(void);
-bool keyboard_pop_scancode(uint8_t *code_out);
-bool keyboard_pop_char(char *ch_out);
+bool keyboard_available(void);
+bool keyboard_read_char(char *ch_out);
 bool keyboard_poll_char(char *ch_out); /* polling fallback */
 
 void fb_init(uint64_t addr, uint32_t width, uint32_t height, uint32_t pitch, uint32_t bpp);
 uint32_t fb_width(void);
 uint32_t fb_height(void);
+uint32_t fb_get_bpp(void);
 uint32_t fb_getpixel(uint32_t x, uint32_t y);
 void fb_putpixel(uint32_t x, uint32_t y, uint32_t color);
 void fb_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
@@ -29,6 +29,16 @@ void vga_write(const char *s);
 
 /* PS/2 mouse */
 void mouse_init(void);
+int mouse_get_x(void);
+int mouse_get_y(void);
+
+/* Mouse cursor (PNG-based) */
+int mouse_cursor_load_from_file(const char *path);
+int mouse_cursor_load_from_memory(const unsigned char *png_data, size_t png_size);
+void mouse_cursor_get_size(unsigned *w, unsigned *h);
+void mouse_cursor_draw(int x, int y);
+void mouse_cursor_cleanup(void);
+void cursor_setup_assets(void);
 
 /* PCI + USB */
 void pci_scan(void);

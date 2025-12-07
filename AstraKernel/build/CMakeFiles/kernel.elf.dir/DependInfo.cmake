@@ -19,6 +19,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ahci.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ahci.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/framebuffer.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/framebuffer.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/hpet.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/hpet.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/load_cursor.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/load_cursor.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/mouse_cursor.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/mouse_cursor.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pci.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pci.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/pit.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/pit.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/ps2_keyboard.c" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/ps2_keyboard.c.obj.d"
@@ -76,11 +78,14 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_core.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_core.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/usb_devices.c" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/usb_devices.c.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/usb/xhci.c" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/usb/xhci.c.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_alloc.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/buddy.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/dma_heap.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/heap.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/slab.cpp" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj.d"
   "/home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/initcall.cpp" "CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj.d"
+  "/home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.cpp" "CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj" "gcc" "CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
