@@ -67,6 +67,11 @@ void usb_transfer_free(usb_transfer_t *transfer) {
  */
 void usb_build_setup_packet(uint8_t *setup, uint8_t bmRequestType, uint8_t bRequest,
                             uint16_t wValue, uint16_t wIndex, uint16_t wLength) {
+    if (!setup) {
+        klog_printf(KLOG_ERROR, "usb_transfer: setup packet buffer is NULL");
+        return;
+    }
+    
     setup[0] = bmRequestType;
     setup[1] = bRequest;
     setup[2] = wValue & 0xFF;
@@ -193,7 +198,8 @@ int usb_control_transfer(usb_device_t *dev, uint8_t bmRequestType, uint8_t bRequ
 
     /* Copy data for IN transfers */
     if ((bmRequestType & USB_ENDPOINT_DIR_IN) != 0 && data && transfer->actual_length > 0) {
-        memcpy(data, transfer->buffer, transfer->actual_length);
+        size_t copy_len = (transfer->actual_length < wLength) ? transfer->actual_length : wLength;
+        memcpy(data, transfer->buffer, copy_len);
     }
 
     ret = (transfer->status == USB_TRANSFER_SUCCESS) ? (int)transfer->actual_length : -1;
@@ -222,7 +228,8 @@ int usb_interrupt_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
 
     int ret = usb_transfer_submit(transfer);
     if (ret == 0 && transfer->status == USB_TRANSFER_SUCCESS && data) {
-        memcpy(data, transfer->buffer, transfer->actual_length);
+        size_t copy_len = (transfer->actual_length < length) ? transfer->actual_length : length;
+        memcpy(data, transfer->buffer, copy_len);
     }
 
     ret = (transfer->status == USB_TRANSFER_SUCCESS) ? (int)transfer->actual_length : -1;
@@ -236,6 +243,12 @@ int usb_interrupt_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
 int usb_bulk_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
                       size_t length, uint32_t timeout_ms) {
     if (!dev || !ep) {
+        klog_printf(KLOG_ERROR, "usb_transfer: invalid parameters for bulk transfer");
+        return -1;
+    }
+
+    if (length == 0) {
+        klog_printf(KLOG_ERROR, "usb_transfer: bulk transfer length is zero");
         return -1;
     }
 
@@ -251,7 +264,8 @@ int usb_bulk_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
 
     int ret = usb_transfer_submit(transfer);
     if (ret == 0 && transfer->status == USB_TRANSFER_SUCCESS && data) {
-        memcpy(data, transfer->buffer, transfer->actual_length);
+        size_t copy_len = (transfer->actual_length < length) ? transfer->actual_length : length;
+        memcpy(data, transfer->buffer, copy_len);
     }
 
     ret = (transfer->status == USB_TRANSFER_SUCCESS) ? (int)transfer->actual_length : -1;

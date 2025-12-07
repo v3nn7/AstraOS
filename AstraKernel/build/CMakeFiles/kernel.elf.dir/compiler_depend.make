@@ -500,7 +500,8 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_qh.c.obj: /home/v3nn7/Pro
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ehci_td.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h \
@@ -511,7 +512,8 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ehci_td.c.obj: /home/v3nn7/Pro
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/ohci.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h \
@@ -524,13 +526,16 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/ohci.c.obj: /home/v3nn7/Projec
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_msi.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/pci_msi.c \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/apic.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/interrupts.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/memory.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/pci_usb_detect.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/pci_usb_detect.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h \
@@ -563,6 +568,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.obj: /home/v3nn7/Projec
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kernel.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/memory.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/mmio.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/pmm.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
@@ -570,7 +576,8 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci.c.obj: /home/v3nn7/Projec
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_device.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_transfer.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/host/xhci_irq.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h \
@@ -615,6 +622,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.obj: /home/v3nn7
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/klog.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/kmalloc.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/timer.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/util/usb_bits.h \
@@ -643,7 +651,8 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj: /home/v3nn7/P
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/string.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/types.h \
   /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/usb_core.h \
-  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/usb/xhci.h \
+  /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/include/vmm.h
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c \
   /home/v3nn7/Projects/AstraOS/AstraKernel/boot/limine.h \

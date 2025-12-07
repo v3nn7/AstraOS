@@ -14,6 +14,7 @@
 #include "kernel.h"
 #include "klog.h"
 #include "string.h"
+#include "usb/usb_core.h"
 
 /* Input core functions are in C, need extern "C" */
 extern "C" {
@@ -25,6 +26,7 @@ typedef struct {
     usb_device_t *device;
     usb_endpoint_t *intr_in_ep;
     uint8_t protocol;
+    uint8_t interface_number; /* HID interface number (for SET_PROTOCOL requests) */
     bool is_mouse;
     bool is_keyboard;
     void *report_buffer;
@@ -56,17 +58,87 @@ void hid_init(void) {
 int usb_hid_probe_device(usb_device_t *dev) {
     if (!dev) return -1;
 
-    /* Check if device is HID class */
+    /* Check if device is HID class at device level */
     if (dev->device_class == 0x03) { /* HID Class */
-        klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x",
+        klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x (device class)",
                     dev->vendor_id, dev->product_id);
         return 0;
     }
 
     /* Check interfaces - look for HID interface in configuration */
-    /* TODO: Parse interface descriptors to find HID interfaces */
-    /* For now, assume device class 0x03 means HID */
-    return -1;
+    /* According to OSDev: HID class is often 0 at device level, check interface level */
+    /* Device must be configured before we can check interfaces */
+    if (dev->state != USB_DEVICE_STATE_CONFIGURED) {
+        klog_printf(KLOG_DEBUG, "usb_hid: device not configured yet, cannot check interfaces");
+        return -1;
+    }
+
+    if (dev->num_configurations == 0) {
+        return -1;
+    }
+
+    /* Use active configuration (or first if not set) */
+    uint8_t config_index = dev->active_configuration;
+    if (config_index == 0) {
+        config_index = 1; /* Default to configuration 1 */
+    }
+
+    /* Get configuration descriptor */
+    uint8_t config_buffer[9];
+    int ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, config_buffer, 9);
+    if (ret < 0) {
+        return -1;
+    }
+
+    usb_configuration_descriptor_t config;
+    if (usb_parse_configuration_descriptor(config_buffer, 9, &config) < 0) {
+        return -1;
+    }
+
+    /* Get full configuration descriptor */
+    uint8_t *full_config = (uint8_t *)kmalloc(config.wTotalLength);
+    if (!full_config) {
+        return -1;
+    }
+
+    ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, full_config, config.wTotalLength);
+    if (ret < 0) {
+        kfree(full_config);
+        return -1;
+    }
+
+    /* Parse configuration to find HID interfaces */
+    /* OSDev: bInterfaceClass = 0x03 means HID */
+    size_t offset = config.bLength;
+    bool found_hid = false;
+
+    while (offset < config.wTotalLength && offset < (size_t)ret) {
+        uint8_t desc_type = full_config[offset + 1];
+        uint8_t desc_length = full_config[offset];
+
+        if (desc_length == 0) {
+            break;
+        }
+
+        if (desc_type == USB_DT_INTERFACE) {
+            usb_interface_descriptor_t iface;
+            if (usb_parse_interface_descriptor(full_config + offset, desc_length, &iface) == 0) {
+                if (iface.bInterfaceClass == 0x03) { /* HID Class */
+                    found_hid = true;
+                    klog_printf(KLOG_INFO, "usb_hid: found HID interface %d (class=0x%02x subclass=0x%02x protocol=0x%02x) VID:PID=%04x:%04x",
+                                iface.bInterfaceNumber, iface.bInterfaceClass,
+                                iface.bInterfaceSubClass, iface.bInterfaceProtocol,
+                                dev->vendor_id, dev->product_id);
+                    break;
+                }
+            }
+        }
+
+        offset += desc_length;
+    }
+
+    kfree(full_config);
+    return found_hid ? 0 : -1;
 }
 
 /**
@@ -84,16 +156,91 @@ int usb_hid_mouse_init(usb_device_t *dev) {
     hid->device = dev;
     hid->is_mouse = true;
     hid->protocol = HID_PROTOCOL_BOOT; /* Start with boot protocol */
+    hid->interface_number = 0; /* Will be set from interface descriptor */
     dev->driver_data = hid;
 
-    /* Find interrupt IN endpoint */
-    for (uint8_t i = 0; i < dev->num_endpoints; i++) {
-        usb_endpoint_t *ep = &dev->endpoints[i];
-        if ((ep->address & USB_ENDPOINT_DIR_IN) != 0 && ep->type == USB_ENDPOINT_XFER_INT) {
-            hid->intr_in_ep = ep;
-            klog_printf(KLOG_INFO, "usb_hid: mouse interrupt endpoint 0x%02x", ep->address);
-            break;
+    /* Find HID interface number and interrupt IN endpoint */
+    /* OSDev: Must parse configuration to find interface number */
+    if (dev->state != USB_DEVICE_STATE_CONFIGURED) {
+        klog_printf(KLOG_ERROR, "usb_hid: device not configured");
+        kfree(hid);
+        return -1;
+    }
+
+    uint8_t config_index = dev->active_configuration;
+    if (config_index == 0) config_index = 1;
+
+    uint8_t config_buffer[9];
+    int ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, config_buffer, 9);
+    if (ret < 0) {
+        kfree(hid);
+        return -1;
+    }
+
+    usb_configuration_descriptor_t config;
+    if (usb_parse_configuration_descriptor(config_buffer, 9, &config) < 0) {
+        kfree(hid);
+        return -1;
+    }
+
+    uint8_t *full_config = (uint8_t *)kmalloc(config.wTotalLength);
+    if (!full_config) {
+        kfree(hid);
+        return -1;
+    }
+
+    ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, full_config, config.wTotalLength);
+    if (ret < 0) {
+        kfree(full_config);
+        kfree(hid);
+        return -1;
+    }
+
+    /* Find HID interface and interrupt IN endpoint */
+    size_t offset = config.bLength;
+    bool found_interface = false;
+
+    while (offset < config.wTotalLength && offset < (size_t)ret) {
+        uint8_t desc_type = full_config[offset + 1];
+        uint8_t desc_length = full_config[offset];
+
+        if (desc_length == 0) break;
+
+        if (desc_type == USB_DT_INTERFACE) {
+            usb_interface_descriptor_t iface;
+            if (usb_parse_interface_descriptor(full_config + offset, desc_length, &iface) == 0) {
+                if (iface.bInterfaceClass == 0x03) { /* HID Class */
+                    hid->interface_number = iface.bInterfaceNumber;
+                    found_interface = true;
+                }
+            }
+        } else if (desc_type == USB_DT_ENDPOINT && found_interface) {
+            usb_endpoint_descriptor_t ep_desc;
+            if (usb_parse_endpoint_descriptor(full_config + offset, desc_length, &ep_desc) == 0) {
+                if ((ep_desc.bEndpointAddress & USB_ENDPOINT_DIR_IN) != 0 &&
+                    (ep_desc.bmAttributes & 0x03) == USB_ENDPOINT_XFER_INT) {
+                    /* Find matching endpoint in device structure */
+                    for (uint8_t i = 0; i < dev->num_endpoints; i++) {
+                        if (dev->endpoints[i].address == ep_desc.bEndpointAddress) {
+                            hid->intr_in_ep = &dev->endpoints[i];
+                            klog_printf(KLOG_INFO, "usb_hid: mouse interrupt endpoint 0x%02x (interface %d)",
+                                        ep_desc.bEndpointAddress, hid->interface_number);
+                            break;
+                        }
+                    }
+                }
+            }
         }
+
+        offset += desc_length;
+    }
+
+    kfree(full_config);
+
+    if (!found_interface) {
+        klog_printf(KLOG_ERROR, "usb_hid: HID interface not found");
+        kfree(hid);
+        return -1;
     }
 
     if (!hid->intr_in_ep) {
@@ -130,22 +277,25 @@ int usb_hid_mouse_init(usb_device_t *dev) {
     }
 
     /* HID Boot Protocol Setup Sequence */
+    /* OSDev: wIndex must be interface number for SET_PROTOCOL */
     /* Step 1: Set IDLE (disable automatic reports) */
+    /* wIndex = interface number */
     usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                        HID_REQ_SET_IDLE, 0, 0, NULL, 0, 1000);
+                        HID_REQ_SET_IDLE, 0, hid->interface_number, NULL, 0, 1000);
     
     /* Step 2: Set Boot Protocol (0) for simple mouse format */
-    int ret = usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                                   HID_REQ_SET_PROTOCOL, HID_PROTOCOL_BOOT, 0, NULL, 0, 1000);
+    /* OSDev: wValue = protocol (0=boot, 1=report), wIndex = interface number */
+    ret = usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
+                               HID_REQ_SET_PROTOCOL, HID_PROTOCOL_BOOT, hid->interface_number, NULL, 0, 1000);
     if (ret < 0) {
         klog_printf(KLOG_WARN, "usb_hid: failed to set boot protocol, trying report protocol");
         /* Fallback to report protocol */
         hid->protocol = HID_PROTOCOL_REPORT;
         usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                            HID_REQ_SET_PROTOCOL, HID_PROTOCOL_REPORT, 0, NULL, 0, 1000);
+                            HID_REQ_SET_PROTOCOL, HID_PROTOCOL_REPORT, hid->interface_number, NULL, 0, 1000);
     } else {
         hid->protocol = HID_PROTOCOL_BOOT;
-        klog_printf(KLOG_INFO, "usb_hid: mouse set to boot protocol");
+        klog_printf(KLOG_INFO, "usb_hid: mouse set to boot protocol (interface %d)", hid->interface_number);
     }
 
     /* Register input device */
@@ -254,16 +404,91 @@ int usb_hid_keyboard_init(usb_device_t *dev) {
     hid->device = dev;
     hid->is_keyboard = true;
     hid->protocol = HID_PROTOCOL_BOOT; /* Start with boot protocol */
+    hid->interface_number = 0; /* Will be set from interface descriptor */
     dev->driver_data = hid;
 
-    /* Find interrupt IN endpoint */
-    for (uint8_t i = 0; i < dev->num_endpoints; i++) {
-        usb_endpoint_t *ep = &dev->endpoints[i];
-        if ((ep->address & USB_ENDPOINT_DIR_IN) != 0 && ep->type == USB_ENDPOINT_XFER_INT) {
-            hid->intr_in_ep = ep;
-            klog_printf(KLOG_INFO, "usb_hid: keyboard interrupt endpoint 0x%02x", ep->address);
-            break;
+    /* Find HID interface number and interrupt IN endpoint */
+    /* OSDev: Must parse configuration to find interface number */
+    if (dev->state != USB_DEVICE_STATE_CONFIGURED) {
+        klog_printf(KLOG_ERROR, "usb_hid: device not configured");
+        kfree(hid);
+        return -1;
+    }
+
+    uint8_t config_index = dev->active_configuration;
+    if (config_index == 0) config_index = 1;
+
+    uint8_t config_buffer[9];
+    int ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, config_buffer, 9);
+    if (ret < 0) {
+        kfree(hid);
+        return -1;
+    }
+
+    usb_configuration_descriptor_t config;
+    if (usb_parse_configuration_descriptor(config_buffer, 9, &config) < 0) {
+        kfree(hid);
+        return -1;
+    }
+
+    uint8_t *full_config = (uint8_t *)kmalloc(config.wTotalLength);
+    if (!full_config) {
+        kfree(hid);
+        return -1;
+    }
+
+    ret = usb_get_descriptor(dev, USB_DT_CONFIGURATION, config_index - 1, 0, full_config, config.wTotalLength);
+    if (ret < 0) {
+        kfree(full_config);
+        kfree(hid);
+        return -1;
+    }
+
+    /* Find HID interface and interrupt IN endpoint */
+    size_t offset = config.bLength;
+    bool found_interface = false;
+
+    while (offset < config.wTotalLength && offset < (size_t)ret) {
+        uint8_t desc_type = full_config[offset + 1];
+        uint8_t desc_length = full_config[offset];
+
+        if (desc_length == 0) break;
+
+        if (desc_type == USB_DT_INTERFACE) {
+            usb_interface_descriptor_t iface;
+            if (usb_parse_interface_descriptor(full_config + offset, desc_length, &iface) == 0) {
+                if (iface.bInterfaceClass == 0x03) { /* HID Class */
+                    hid->interface_number = iface.bInterfaceNumber;
+                    found_interface = true;
+                }
+            }
+        } else if (desc_type == USB_DT_ENDPOINT && found_interface) {
+            usb_endpoint_descriptor_t ep_desc;
+            if (usb_parse_endpoint_descriptor(full_config + offset, desc_length, &ep_desc) == 0) {
+                if ((ep_desc.bEndpointAddress & USB_ENDPOINT_DIR_IN) != 0 &&
+                    (ep_desc.bmAttributes & 0x03) == USB_ENDPOINT_XFER_INT) {
+                    /* Find matching endpoint in device structure */
+                    for (uint8_t i = 0; i < dev->num_endpoints; i++) {
+                        if (dev->endpoints[i].address == ep_desc.bEndpointAddress) {
+                            hid->intr_in_ep = &dev->endpoints[i];
+                            klog_printf(KLOG_INFO, "usb_hid: keyboard interrupt endpoint 0x%02x (interface %d)",
+                                        ep_desc.bEndpointAddress, hid->interface_number);
+                            break;
+                        }
+                    }
+                }
+            }
         }
+
+        offset += desc_length;
+    }
+
+    kfree(full_config);
+
+    if (!found_interface) {
+        klog_printf(KLOG_ERROR, "usb_hid: HID interface not found");
+        kfree(hid);
+        return -1;
     }
 
     if (!hid->intr_in_ep) {
@@ -300,22 +525,25 @@ int usb_hid_keyboard_init(usb_device_t *dev) {
     }
 
     /* HID Boot Protocol Setup Sequence */
+    /* OSDev: wIndex must be interface number for SET_PROTOCOL */
     /* Step 1: Set IDLE (disable automatic reports) */
+    /* wIndex = interface number */
     usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                        HID_REQ_SET_IDLE, 0, 0, NULL, 0, 1000);
+                        HID_REQ_SET_IDLE, 0, hid->interface_number, NULL, 0, 1000);
     
     /* Step 2: Set Boot Protocol (0) for simple keyboard format */
-    int ret = usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                                   HID_REQ_SET_PROTOCOL, HID_PROTOCOL_BOOT, 0, NULL, 0, 1000);
+    /* OSDev: wValue = protocol (0=boot, 1=report), wIndex = interface number */
+    ret = usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
+                               HID_REQ_SET_PROTOCOL, HID_PROTOCOL_BOOT, hid->interface_number, NULL, 0, 1000);
     if (ret < 0) {
         klog_printf(KLOG_WARN, "usb_hid: failed to set boot protocol, trying report protocol");
         /* Fallback to report protocol */
         hid->protocol = HID_PROTOCOL_REPORT;
         usb_control_transfer(dev, USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE | USB_ENDPOINT_DIR_OUT,
-                            HID_REQ_SET_PROTOCOL, HID_PROTOCOL_REPORT, 0, NULL, 0, 1000);
+                            HID_REQ_SET_PROTOCOL, HID_PROTOCOL_REPORT, hid->interface_number, NULL, 0, 1000);
     } else {
         hid->protocol = HID_PROTOCOL_BOOT;
-        klog_printf(KLOG_INFO, "usb_hid: keyboard set to boot protocol");
+        klog_printf(KLOG_INFO, "usb_hid: keyboard set to boot protocol (interface %d)", hid->interface_number);
     }
 
     /* Register input device */
@@ -413,6 +641,9 @@ int usb_hid_keyboard_read(usb_device_t *dev, uint8_t *modifiers, uint8_t *keys) 
  * Process keyboard report and generate input events
  */
 void usb_hid_process_keyboard_report(usb_device_t *dev, uint8_t *report, size_t len) {
+    (void)report; /* Report is read via usb_hid_keyboard_read */
+    (void)len;
+    
     if (!dev) return;
     
     usb_hid_device_t *hid = (usb_hid_device_t *)dev->driver_data;

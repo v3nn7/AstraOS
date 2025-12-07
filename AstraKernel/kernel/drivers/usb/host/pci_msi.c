@@ -11,6 +11,8 @@
 #include "kernel.h"
 #include "klog.h"
 #include "string.h"
+#include "vmm.h"
+#include "memory.h"
 
 /* PCI Configuration Space Offsets */
 #define PCI_CONFIG_COMMAND        0x04
@@ -66,6 +68,21 @@ typedef struct PACKED {
     uint32_t msg_data;
     uint32_t vector_control;
 } pci_msix_entry_t;
+
+/* PCI BAR offsets */
+#define PCI_CONFIG_BAR0            0x10
+#define PCI_CONFIG_BAR1            0x14
+#define PCI_CONFIG_BAR2            0x18
+#define PCI_CONFIG_BAR3            0x1C
+#define PCI_CONFIG_BAR4            0x20
+#define PCI_CONFIG_BAR5            0x24
+
+/* BAR type bits */
+#define PCI_BAR_TYPE_MASK          0x01
+#define PCI_BAR_TYPE_IO             0x01
+#define PCI_BAR_TYPE_MEM            0x00
+#define PCI_BAR_MEM_64BIT          0x04
+#define PCI_BAR_MEM_PREFETCH       0x08
 
 /* Helper functions for PCI config space access */
 static uint32_t pci_cfg_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
@@ -180,13 +197,71 @@ int pci_enable_msix(uint8_t bus, uint8_t slot, uint8_t func, uint8_t entry, uint
         return -1;
     }
     
-    /* Get table offset */
+    /* Get table offset and BAR number */
     uint32_t table_offset = pci_cfg_read32(bus, slot, func, msix_cap + PCI_MSIX_CAP_TABLE);
-    uint32_t table_bar = table_offset & ~0x7;
-    uint32_t table_index = (table_offset & 0x7) >> 1;
+    uint8_t bar_number = table_offset & 0x7;
+    uint32_t table_offset_in_bar = table_offset & ~0x7;
     
-    /* TODO: Map MSI-X table BAR if needed */
-    /* For now, assume it's already mapped */
+    if (bar_number > 5) {
+        klog_printf(KLOG_ERROR, "pci_msix: invalid BAR number %u", bar_number);
+        return -1;
+    }
+    
+    /* Read BAR */
+    uint8_t bar_offset = PCI_CONFIG_BAR0 + (bar_number * 4);
+    uint32_t bar_low = pci_cfg_read32(bus, slot, func, bar_offset);
+    
+    if (bar_low & PCI_BAR_TYPE_IO) {
+        klog_printf(KLOG_ERROR, "pci_msix: MSI-X table in I/O BAR (not supported)");
+        return -1;
+    }
+    
+    /* Get physical address from BAR */
+    uint64_t bar_phys = (uint64_t)(bar_low & ~0xF);
+    bool is_64bit = (bar_low & PCI_BAR_MEM_64BIT) != 0;
+    
+    if (is_64bit && bar_number < 5) {
+        uint32_t bar_high = pci_cfg_read32(bus, slot, func, bar_offset + 4);
+        bar_phys = ((uint64_t)bar_high << 32) | bar_phys;
+    }
+    
+    if (bar_phys == 0) {
+        klog_printf(KLOG_ERROR, "pci_msix: BAR%u is zero", bar_number);
+        return -1;
+    }
+    
+    /* Map BAR if needed (check if already mapped via HHDM) */
+    extern uint64_t pmm_hhdm_offset;
+    void *table_virt = NULL;
+    
+    if (bar_phys < 0x100000000ULL && pmm_hhdm_offset) {
+        /* Use HHDM if BAR is below 4GB */
+        table_virt = (void *)(uintptr_t)(pmm_hhdm_offset + bar_phys + table_offset_in_bar);
+    } else {
+        /* Map via VMM */
+        uint64_t aligned_phys = bar_phys & ~(PAGE_SIZE - 1);
+        uint64_t offset = (bar_phys & (PAGE_SIZE - 1)) + table_offset_in_bar;
+        uint64_t virt_base = 0xFFFF800000000000ULL + aligned_phys;
+        
+        /* Map at least 4KB for MSI-X table */
+        uint64_t map_size = PAGE_SIZE;
+        for (uint64_t i = 0; i < map_size; i += PAGE_SIZE) {
+            uint64_t phys_page = aligned_phys + i;
+            uint64_t virt_page = virt_base + i;
+            vmm_map(virt_page, phys_page, PAGE_WRITE | PAGE_CACHE_DISABLE);
+        }
+        
+        table_virt = (void *)(uintptr_t)(virt_base + offset);
+    }
+    
+    if (!table_virt) {
+        klog_printf(KLOG_ERROR, "pci_msix: failed to map MSI-X table BAR");
+        return -1;
+    }
+    
+    /* Access MSI-X table entry */
+    pci_msix_entry_t *msix_table = (pci_msix_entry_t *)table_virt;
+    pci_msix_entry_t *entry_ptr = &msix_table[entry];
     
     /* Calculate MSI-X address */
     uint32_t msi_addr_lo = 0xFEE00000 | (0 << 12); /* Destination ID = 0 */
@@ -194,8 +269,13 @@ int pci_enable_msix(uint8_t bus, uint8_t slot, uint8_t func, uint8_t entry, uint
     uint32_t msi_data = vector;
     
     /* Write MSI-X table entry */
-    /* TODO: Access MSI-X table through BAR */
-    /* This is a simplified version - full implementation needs BAR mapping */
+    entry_ptr->msg_addr_lo = msi_addr_lo;
+    entry_ptr->msg_addr_hi = msi_addr_hi;
+    entry_ptr->msg_data = msi_data;
+    entry_ptr->vector_control = 0; /* Unmasked */
+    
+    /* Memory barrier to ensure write completes */
+    __asm__ volatile("mfence" ::: "memory");
     
     /* Enable MSI-X */
     msix_ctrl |= PCI_MSIX_CTRL_ENABLE;
@@ -205,7 +285,8 @@ int pci_enable_msix(uint8_t bus, uint8_t slot, uint8_t func, uint8_t entry, uint
         *msix_vector = vector;
     }
     
-    klog_printf(KLOG_INFO, "pci_msix: enabled MSI-X entry %u for %02x:%02x.%x -> vector %u", entry, bus, slot, func, vector);
+    klog_printf(KLOG_INFO, "pci_msix: enabled MSI-X entry %u for %02x:%02x.%x -> vector %u (BAR%u phys=0x%016llx)", 
+                entry, bus, slot, func, vector, bar_number, (unsigned long long)bar_phys);
     return 0;
 }
 
@@ -258,4 +339,5 @@ int pci_setup_interrupt(uint8_t bus, uint8_t slot, uint8_t func, uint8_t legacy_
     }
     return 0;
 }
+
 

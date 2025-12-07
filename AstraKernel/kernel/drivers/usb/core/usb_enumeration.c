@@ -66,21 +66,33 @@ int usb_device_enumerate(usb_device_t *dev) {
         }
     }
 
-    /* Step 1: Get device descriptor at address 0 */
+    /* Step 1: Get device descriptor at address 0 (default address) */
+    /* Ensure device is at default address before enumeration */
+    if (dev->address != 0) {
+        klog_printf(KLOG_WARN, "usb_device: device already has address %d, resetting to 0", dev->address);
+        dev->address = 0;
+        dev->state = USB_DEVICE_STATE_DEFAULT;
+    }
+    
     int ret = usb_device_get_device_descriptor(dev);
     if (ret < 0) {
-        klog_printf(KLOG_ERROR, "usb_device: failed to get device descriptor");
+        klog_printf(KLOG_ERROR, "usb_device: failed to get device descriptor at default address");
         return -1;
     }
 
-    /* Step 2: Set address */
+    /* Step 2: Set address (allocate new address if address is 0) */
     ret = usb_device_set_address(dev, 0);
     if (ret < 0) {
         klog_printf(KLOG_ERROR, "usb_device: failed to set address");
         return -1;
     }
+    
+    /* Wait for device to accept new address (USB spec requires 2ms) */
+    /* Small delay to ensure device has processed SET_ADDRESS */
+    extern void pit_wait_ms(uint32_t ms);
+    pit_wait_ms(2);
 
-    /* Step 3: Get full device descriptor */
+    /* Step 3: Get full device descriptor at new address */
     ret = usb_device_get_device_descriptor(dev);
     if (ret < 0) {
         klog_printf(KLOG_ERROR, "usb_device: failed to get device descriptor after address");

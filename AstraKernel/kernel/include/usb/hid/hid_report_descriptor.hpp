@@ -3,6 +3,7 @@
 #include "types.h"
 #include "usb/hid/hid_field.hpp"
 #include "usb/hid/hid_usage.hpp"
+#include "kmalloc.h"
 
 /**
  * HID Report Descriptor
@@ -75,7 +76,14 @@ public:
             delete[] fields;
         }
         if (children) {
-            delete[] children;
+            /* children is array of pointers, free each child then the array */
+            HIDCollection** child_array = (HIDCollection**)children;
+            for (uint32_t i = 0; i < child_count; i++) {
+                if (child_array[i]) {
+                    delete child_array[i];
+                }
+            }
+            kfree(children);
         }
     }
 };

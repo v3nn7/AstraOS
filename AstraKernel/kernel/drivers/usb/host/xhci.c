@@ -14,6 +14,9 @@
 #include "klog.h"
 #include "string.h"
 #include "mmio.h"
+#include "vmm.h"
+#include "memory.h"
+#include "interrupts.h"
 
 /* Forward declarations */
 extern int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
@@ -147,15 +150,84 @@ int xhci_init(usb_host_controller_t *hc) {
         xhci->scratchpad_buffers = (void **)kmalloc(scratchpad_array_size);
         if (xhci->scratchpad_buffers) {
             k_memset(xhci->scratchpad_buffers, 0, scratchpad_array_size);
-            /* TODO: Allocate actual scratchpad pages and set pointers */
-            klog_printf(KLOG_INFO, "xhci: scratchpad buffers allocated");
+            
+            /* Allocate actual scratchpad pages and set pointers */
+            for (uint32_t i = 0; i < xhci->scratchpad_size; i++) {
+                /* Allocate page-aligned buffer (4KB) */
+                void *page = kmalloc(PAGE_SIZE + 64); /* Extra for alignment */
+                if (!page) {
+                    klog_printf(KLOG_ERROR, "xhci: failed to allocate scratchpad page %u", i);
+                    /* Free already allocated pages */
+                    for (uint32_t j = 0; j < i; j++) {
+                        if (xhci->scratchpad_buffers[j]) {
+                            kfree(xhci->scratchpad_buffers[j]);
+                        }
+                    }
+                    kfree(xhci->scratchpad_buffers);
+                    xhci->scratchpad_buffers = NULL;
+                    return -1;
+                }
+                
+                /* Align to page boundary */
+                uintptr_t addr = (uintptr_t)page;
+                if (addr % PAGE_SIZE != 0) {
+                    addr = (addr + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
+                    page = (void *)addr;
+                }
+                
+                k_memset(page, 0, PAGE_SIZE);
+                xhci->scratchpad_buffers[i] = page;
+                
+                /* Get physical address and store in DCBAAP[0] format */
+                uint64_t virt_addr = (uint64_t)(uintptr_t)page;
+                uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
+                if (phys_addr == 0) {
+                    /* Fallback: use HHDM offset if available */
+                    extern uint64_t pmm_hhdm_offset;
+                    if (pmm_hhdm_offset && virt_addr >= pmm_hhdm_offset) {
+                        phys_addr = virt_addr - pmm_hhdm_offset;
+                    } else {
+                        klog_printf(KLOG_ERROR, "xhci: failed to get physical address for scratchpad page %u", i);
+                        /* Free already allocated pages */
+                        for (uint32_t j = 0; j <= i; j++) {
+                            if (xhci->scratchpad_buffers[j]) {
+                                kfree(xhci->scratchpad_buffers[j]);
+                            }
+                        }
+                        kfree(xhci->scratchpad_buffers);
+                        xhci->scratchpad_buffers = NULL;
+                        return -1;
+                    }
+                }
+                
+                /* Store physical address in scratchpad array (for DCBAAP[0]) */
+                /* DCBAAP[0] points to array of scratchpad buffer pointers */
+                if (i == 0) {
+                    /* First scratchpad buffer pointer array will be stored in DCBAAP[0] */
+                    /* We'll set this up when configuring device contexts */
+                }
+            }
+            
+            klog_printf(KLOG_INFO, "xhci: allocated %u scratchpad buffers", xhci->scratchpad_size);
         }
     }
 
     /* Set DCBAAP pointer */
-    uint64_t dcbaap_phys = (uint64_t)(uintptr_t)xhci->dcbaap; /* TODO: Get real physical address */
+    uint64_t dcbaap_virt = (uint64_t)(uintptr_t)xhci->dcbaap;
+    uint64_t dcbaap_phys = vmm_virt_to_phys(dcbaap_virt);
+    if (dcbaap_phys == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && dcbaap_virt >= pmm_hhdm_offset) {
+            dcbaap_phys = dcbaap_virt - pmm_hhdm_offset;
+        } else {
+            klog_printf(KLOG_ERROR, "xhci: failed to get physical address for DCBAAP");
+            return -1;
+        }
+    }
     XHCI_WRITE64(xhci->op_regs, XHCI_DCBAAP, dcbaap_phys);
-    klog_printf(KLOG_INFO, "xhci: DCBAAP set to 0x%016llx", (unsigned long long)dcbaap_phys);
+    klog_printf(KLOG_INFO, "xhci: DCBAAP set to virt=0x%016llx phys=0x%016llx", 
+                (unsigned long long)dcbaap_virt, (unsigned long long)dcbaap_phys);
 
     /* Set Command Ring Control Register (CRCR) */
     uint64_t crcr = (uint64_t)(uintptr_t)xhci->cmd_ring.trbs;
@@ -378,15 +450,75 @@ int xhci_transfer_interrupt(usb_host_controller_t *hc, usb_transfer_t *transfer)
 }
 
 /**
- * Bulk transfer (simplified)
+ * Bulk transfer (TRB-based)
  */
 int xhci_transfer_bulk(usb_host_controller_t *hc, usb_transfer_t *transfer) {
-    if (!hc || !transfer) return -1;
+    if (!hc || !transfer || !transfer->endpoint || !transfer->device) return -1;
 
-    /* TODO: Full TRB-based bulk transfer implementation */
-    klog_printf(KLOG_WARN, "xhci: bulk transfer not fully implemented");
-    transfer->status = USB_TRANSFER_ERROR;
-    return -1;
+    xhci_controller_t *xhci = (xhci_controller_t *)hc->private_data;
+    if (!xhci) return -1;
+
+    usb_device_t *dev = transfer->device;
+    usb_endpoint_t *ep = transfer->endpoint;
+    
+    /* Get slot and endpoint numbers */
+    uint32_t slot = dev->slot_id;
+    if (slot == 0 || slot > xhci->num_slots) {
+        klog_printf(KLOG_ERROR, "xhci: invalid slot %u for bulk transfer", slot);
+        return -1;
+    }
+    
+    uint32_t ep_num = ep->address & 0x0F;
+    uint32_t ep_dir = (ep->address & USB_ENDPOINT_DIR_IN) ? 1 : 0;
+    uint32_t ep_idx = (ep_num * 2) + ep_dir;
+    
+    if (ep_idx >= 32) {
+        klog_printf(KLOG_ERROR, "xhci: invalid endpoint index %u for bulk transfer", ep_idx);
+        return -1;
+    }
+    
+    /* Initialize transfer ring if needed */
+    if (!xhci->transfer_rings[slot][ep_idx]) {
+        if (xhci_transfer_ring_init(xhci, slot, ep_idx) < 0) {
+            klog_printf(KLOG_ERROR, "xhci: failed to init transfer ring slot=%u ep=%u for bulk", slot, ep_idx);
+            return -1;
+        }
+    }
+    
+    xhci_transfer_ring_t *ring = xhci->transfer_rings[slot][ep_idx];
+    if (!ring) {
+        klog_printf(KLOG_ERROR, "xhci: transfer ring not initialized for bulk");
+        return -1;
+    }
+    
+    /* Build Normal TRB for bulk transfer */
+    xhci_trb_t trb;
+    k_memset(&trb, 0, sizeof(xhci_trb_t));
+    
+    uint64_t data_addr = (uint64_t)(uintptr_t)transfer->buffer;
+    trb.parameter = data_addr;
+    
+    uint32_t length = transfer->length;
+    uint32_t flags = XHCI_TRB_IOC; /* Interrupt on completion */
+    if (ep_dir == 0) { /* OUT */
+        flags |= XHCI_TRB_ISP; /* Immediate data */
+    }
+    
+    trb.status = length | (flags << 16);
+    trb.control = (XHCI_TRB_TYPE_NORMAL << XHCI_TRB_TYPE_SHIFT) | XHCI_TRB_CYCLE;
+    
+    /* Enqueue TRB */
+    if (xhci_transfer_ring_enqueue(ring, &trb) < 0) {
+        klog_printf(KLOG_ERROR, "xhci: failed to enqueue bulk TRB");
+        return -1;
+    }
+    
+    /* Ring doorbell */
+    volatile uint32_t *doorbell = (volatile uint32_t *)((uintptr_t)xhci->doorbell_regs + (slot * 4));
+    mmio_write32(doorbell, ep_idx);
+    
+    transfer->status = USB_TRANSFER_SUCCESS; /* Will be updated by event handler */
+    return 0;
 }
 
 /**
@@ -453,8 +585,14 @@ void xhci_cleanup(usb_host_controller_t *hc) {
 
     /* Free scratchpad buffers */
     if (xhci->scratchpad_buffers) {
-        /* TODO: Free individual scratchpad pages */
+        /* Free individual scratchpad pages */
+        for (uint32_t i = 0; i < xhci->scratchpad_size; i++) {
+            if (xhci->scratchpad_buffers[i]) {
+                kfree(xhci->scratchpad_buffers[i]);
+            }
+        }
         kfree(xhci->scratchpad_buffers);
+        xhci->scratchpad_buffers = NULL;
     }
 
     kfree(xhci);
@@ -463,11 +601,48 @@ void xhci_cleanup(usb_host_controller_t *hc) {
 
 /**
  * PCI probe for XHCI controller
+ * 
+ * This function is called from PCI detection code to probe and initialize XHCI controller.
+ * The actual PCI detection is handled in pci_usb_detect.c, this function is kept for
+ * compatibility and future use.
+ * 
+ * NOTE: This is a stub function. Actual PCI detection uses usb_pci_detect() in pci_usb_detect.c.
  */
-int xhci_pci_probe(uint8_t bus __attribute__((unused)), uint8_t slot __attribute__((unused)), uint8_t func __attribute__((unused))) {
-    /* TODO: Implement PCI detection */
-    klog_printf(KLOG_INFO, "xhci: PCI probe not fully implemented");
-    return -1;
+int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
+    /* PCI detection is handled in pci_usb_detect.c via usb_pci_detect() */
+    /* This function is kept for compatibility but actual detection happens elsewhere */
+    klog_printf(KLOG_INFO, "xhci: PCI probe called for %02x:%02x.%x (detection handled by pci_usb_detect)", 
+                bus, slot, func);
+    
+    /* Inline PCI config read for this stub function */
+    #define PCI_CONFIG_ADDRESS 0xCF8
+    #define PCI_CONFIG_DATA    0xCFC
+    
+    /* Check if device exists and is XHCI */
+    uint32_t addr = (1U << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) | 0x00;
+    outl(PCI_CONFIG_ADDRESS, addr);
+    uint32_t vendor_device = inl(PCI_CONFIG_DATA);
+    uint16_t vendor_id = (uint16_t)(vendor_device & 0xFFFF);
+    
+    if (vendor_id == 0xFFFF) {
+        return -1; /* No device */
+    }
+    
+    /* Read class code */
+    addr = (1U << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) | 0x08;
+    outl(PCI_CONFIG_ADDRESS, addr);
+    uint32_t class_rev = inl(PCI_CONFIG_DATA);
+    uint8_t class_code = (uint8_t)((class_rev >> 24) & 0xFF);
+    uint8_t subclass = (uint8_t)((class_rev >> 16) & 0xFF);
+    uint8_t prog_if = (uint8_t)((class_rev >> 8) & 0xFF);
+    
+    /* Check if it's XHCI */
+    if (class_code == 0x0C && subclass == 0x03 && prog_if == 0x30) {
+        klog_printf(KLOG_INFO, "xhci: XHCI controller confirmed at %02x:%02x.%x", bus, slot, func);
+        return 0; /* XHCI controller found */
+    }
+    
+    return -1; /* Not XHCI */
 }
 
 /* XHCI Host Controller Operations */

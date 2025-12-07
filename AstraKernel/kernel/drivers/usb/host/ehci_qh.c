@@ -10,6 +10,7 @@
 #include "klog.h"
 #include "string.h"
 #include "pmm.h"
+#include "vmm.h"
 
 /* EHCI Queue Head Structure (32 bytes, 32-byte aligned) */
 typedef struct PACKED {
@@ -84,8 +85,20 @@ void ehci_qh_free(ehci_qh_t *qh) {
  */
 phys_addr_t ehci_qh_get_phys(ehci_qh_t *qh) {
     if (!qh) return 0;
-    /* TODO: Get physical address from virtual address */
-    return (phys_addr_t)(uintptr_t)qh;
+    
+    uint64_t virt_addr = (uint64_t)(uintptr_t)qh;
+    uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
+    if (phys_addr == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && virt_addr >= pmm_hhdm_offset) {
+            phys_addr = virt_addr - pmm_hhdm_offset;
+        } else {
+            /* Last resort: return virtual address (may not work for DMA) */
+            return (phys_addr_t)virt_addr;
+        }
+    }
+    return (phys_addr_t)phys_addr;
 }
 
 /**

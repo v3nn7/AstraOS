@@ -1,0 +1,43 @@
+name: Build AstraOS Kernel
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          build-essential \
+          nasm \
+          xorriso \
+          gcc \
+          g++ \
+          cmake \
+          python3 \
+          zip
+
+    - name: Configure CMake
+      working-directory: AstraKernel
+      run: |
+        cmake -B build .
+
+    - name: Build Kernel (make build)
+      working-directory: AstraKernel
+      run: |
+        make -C build build
+
+    - name: Move artifacts
+      run: |
+        mkdir -p dist
+        cp AstraKernel/build/kernel.elf dist/kernel.elf
+        echo "Kernel built and saved to dist/"

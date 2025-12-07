@@ -10,6 +10,7 @@
 #include "kmalloc.h"
 #include "kernel.h"
 #include "string.h"
+#include "timer.h"
 
 /**
  * Calculate USB CRC5 checksum
@@ -147,18 +148,39 @@ uint8_t usb_microframe_from_frame(uint16_t frame) {
  * Wait for a condition with timeout
  */
 int usb_wait_for_condition(bool (*condition)(void), uint32_t timeout_us) {
-    uint32_t start = 0; /* TODO: Get current time in microseconds */
-    uint32_t elapsed = 0;
+    if (!condition) {
+        return -1;
+    }
     
-    while (elapsed < timeout_us) {
+    /* Convert microseconds to milliseconds (with rounding up) */
+    uint32_t timeout_ms = (timeout_us + 999) / 1000;
+    if (timeout_ms == 0 && timeout_us > 0) {
+        timeout_ms = 1; /* At least 1ms for any non-zero timeout */
+    }
+    
+    /* Get start time in ticks (1 tick = ~4ms at 250Hz) */
+    uint64_t start_ticks = timer_ticks();
+    uint64_t timeout_ticks = (timeout_ms + 3) / 4; /* Convert ms to ticks */
+    if (timeout_ticks == 0) {
+        timeout_ticks = 1; /* At least 1 tick */
+    }
+    
+    while (true) {
+        /* Check condition */
         if (condition()) {
             return 0;
         }
-        /* TODO: Sleep for a short time */
-        elapsed = 0; /* TODO: Calculate elapsed time */
+        
+        /* Check timeout */
+        uint64_t elapsed_ticks = timer_ticks() - start_ticks;
+        if (elapsed_ticks >= timeout_ticks) {
+            return -1; /* Timeout */
+        }
+        
+        /* Small delay to avoid busy waiting */
+        extern void pit_wait_ms(uint32_t ms);
+        pit_wait_ms(1);
     }
-    
-    return -1; /* Timeout */
 }
 
 /**

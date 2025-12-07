@@ -13,6 +13,7 @@
 #include "string.h"
 #include "pmm.h"
 #include "mmio.h"
+#include "vmm.h"
 
 /* Helper macros for MMIO access */
 #define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
@@ -77,9 +78,25 @@ static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
     ring->dequeue = 0;
     ring->enqueue = 0;
     ring->cycle_state = true; /* Start with cycle bit = 1 */
-    ring->phys_addr = (phys_addr_t)(uintptr_t)ring->trbs; /* TODO: Get real physical address */
     
-    klog_printf(KLOG_INFO, "xhci_ring: allocated command ring size=%u at %p", ring_size, ring->trbs);
+    /* Get physical address from virtual address */
+    uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
+    uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
+    if (phys_addr == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && virt_addr >= pmm_hhdm_offset) {
+            phys_addr = virt_addr - pmm_hhdm_offset;
+        } else {
+            klog_printf(KLOG_ERROR, "xhci_ring: failed to get physical address for command ring");
+            kfree(ring->trbs);
+            return -1;
+        }
+    }
+    ring->phys_addr = (phys_addr_t)phys_addr;
+    
+    klog_printf(KLOG_INFO, "xhci_ring: allocated command ring size=%u at virt=%p phys=0x%016llx", 
+                ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
 }
 
@@ -116,11 +133,27 @@ static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
     ring->dequeue = 0;
     ring->enqueue = 0;
     ring->cycle_state = true;
-    ring->phys_addr = (phys_addr_t)(uintptr_t)ring->trbs;
+    
+    /* Get physical address from virtual address */
+    uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
+    uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
+    if (phys_addr == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && virt_addr >= pmm_hhdm_offset) {
+            phys_addr = virt_addr - pmm_hhdm_offset;
+        } else {
+            klog_printf(KLOG_ERROR, "xhci_ring: failed to get physical address for event ring");
+            kfree(ring->trbs);
+            return -1;
+        }
+    }
+    ring->phys_addr = (phys_addr_t)phys_addr;
     ring->segment_table = NULL;
     ring->segment_table_phys = 0;
     
-    klog_printf(KLOG_INFO, "xhci_ring: allocated event ring size=%u at %p", ring_size, ring->trbs);
+    klog_printf(KLOG_INFO, "xhci_ring: allocated event ring size=%u at virt=%p phys=0x%016llx", 
+                ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
 }
 
@@ -157,9 +190,25 @@ static int xhci_transfer_ring_alloc(xhci_transfer_ring_t *ring, uint32_t size) {
     ring->dequeue = 0;
     ring->enqueue = 0;
     ring->cycle_state = true;
-    ring->phys_addr = (phys_addr_t)(uintptr_t)ring->trbs;
     
-    klog_printf(KLOG_INFO, "xhci_ring: allocated transfer ring size=%u at %p", ring_size, ring->trbs);
+    /* Get physical address from virtual address */
+    uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
+    uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
+    if (phys_addr == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && virt_addr >= pmm_hhdm_offset) {
+            phys_addr = virt_addr - pmm_hhdm_offset;
+        } else {
+            klog_printf(KLOG_ERROR, "xhci_ring: failed to get physical address for transfer ring");
+            kfree(ring->trbs);
+            return -1;
+        }
+    }
+    ring->phys_addr = (phys_addr_t)phys_addr;
+    
+    klog_printf(KLOG_INFO, "xhci_ring: allocated transfer ring size=%u at virt=%p phys=0x%016llx", 
+                ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
 }
 

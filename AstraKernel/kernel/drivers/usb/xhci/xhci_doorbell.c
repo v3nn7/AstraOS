@@ -55,3 +55,4 @@ void xhci_ring_doorbell(xhci_controller_t *xhci, uint8_t slot, uint8_t endpoint,
     __asm__ volatile("mfence" ::: "memory");
 }
 
+

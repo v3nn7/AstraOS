@@ -11,6 +11,27 @@
 #include "klog.h"
 #include "string.h"
 
+/* Global state stack for PUSH/POP operations */
+#define MAX_GLOBAL_STATE_STACK 16
+typedef struct {
+    uint16_t usage_page;
+    int32_t logical_min;
+    int32_t logical_max;
+    int32_t physical_min;
+    int32_t physical_max;
+    uint32_t unit;
+    uint32_t unit_exponent;
+    uint32_t report_size;
+    uint32_t report_count;
+    uint8_t report_id;
+} global_state_t;
+
+/* Collection stack and global state stack (static file-level variables) */
+static HIDCollection* g_collection_stack[MAX_GLOBAL_STATE_STACK];
+static int g_collection_stack_depth = 0;
+static global_state_t g_global_stack[MAX_GLOBAL_STATE_STACK];
+static int g_global_stack_depth = 0;
+
 HIDReportDescriptor::HIDReportDescriptor() :
     root_collection(nullptr),
     descriptor_data(nullptr),
@@ -100,6 +121,11 @@ int HIDReportDescriptor::parse(const uint8_t* data, size_t size) {
         current_field_count[i] = 0;
     }
     
+    /* Initialize collection stack and global state stack */
+    g_collection_stack[0] = root_collection;
+    g_collection_stack_depth = 1;
+    g_global_stack_depth = 0;
+    
     /* Parse items */
     size_t offset = 0;
     while (offset < size) {
@@ -110,7 +136,7 @@ int HIDReportDescriptor::parse(const uint8_t* data, size_t size) {
         }
     }
     
-    /* Finalize collections */
+    /* Finalize root collection */
     root_collection->fields = current_fields[0]; /* Input */
     root_collection->field_count = current_field_count[0];
     
@@ -130,9 +156,7 @@ int HIDReportDescriptor::parse_item(const uint8_t* data, size_t size, size_t* of
         /* Long item format */
         if (*offset + 2 >= size) return -1;
         uint8_t b1 = data[*offset + 1];
-        uint8_t b2 = data[*offset + 2];
         uint32_t data_size = b1;
-        uint8_t tag = b2;
         
         *offset += 3 + data_size;
         /* Long items are rarely used, skip for now */
@@ -203,13 +227,71 @@ int HIDReportDescriptor::parse_main_item(const uint8_t* data, size_t size, size_
             add_field(3, (uint32_t)value); /* Feature report with flags */
             reset_local_state();
             break;
-        case 0xA: /* Collection */
-            /* TODO: Handle nested collections */
+        case 0xA: { /* Collection */
+            /* Handle nested collections */
+            if (g_collection_stack_depth >= MAX_GLOBAL_STATE_STACK) {
+                klog_printf(KLOG_WARN, "hid_parser: collection stack overflow, ignoring nested collection");
+                reset_local_state();
+                break;
+            }
+            
+            /* Create new collection */
+            HIDCollection* new_collection = new HIDCollection();
+            if (!new_collection) {
+                klog_printf(KLOG_ERROR, "hid_parser: failed to allocate collection");
+                reset_local_state();
+                break;
+            }
+            
+            new_collection->type = (uint8_t)value; /* Collection type */
+            new_collection->usage = usage_min; /* Use current usage */
+            new_collection->fields = nullptr;
+            new_collection->field_count = 0;
+            new_collection->children = nullptr;
+            new_collection->child_count = 0;
+            
+            /* Add to parent collection's children */
+            HIDCollection* parent = g_collection_stack[g_collection_stack_depth - 1];
+            if (parent) {
+                /* Allocate or reallocate children array */
+                HIDCollection** old_children = (HIDCollection**)parent->children;
+                HIDCollection** new_children = (HIDCollection**)kmalloc(sizeof(HIDCollection*) * (parent->child_count + 1));
+                if (new_children) {
+                    /* Copy existing children */
+                    if (old_children) {
+                        for (uint32_t i = 0; i < parent->child_count; i++) {
+                            new_children[i] = old_children[i];
+                        }
+                        kfree(old_children);
+                    }
+                    /* Add new collection */
+                    new_children[parent->child_count] = new_collection;
+                    parent->children = (HIDCollection*)new_children; /* Store pointer to array */
+                    parent->child_count++;
+                } else {
+                    klog_printf(KLOG_ERROR, "hid_parser: failed to allocate children array");
+                    delete new_collection;
+                    reset_local_state();
+                    break;
+                }
+            }
+            
+            /* Push to collection stack */
+            g_collection_stack[g_collection_stack_depth++] = new_collection;
+            
             reset_local_state();
             break;
-        case 0xC: /* End Collection */
+        }
+        case 0xC: { /* End Collection */
+            /* Pop from collection stack */
+            if (g_collection_stack_depth > 1) {
+                g_collection_stack_depth--;
+            } else {
+                klog_printf(KLOG_WARN, "hid_parser: End Collection without matching Collection");
+            }
             reset_local_state();
             break;
+        }
     }
     
     return 0;
@@ -253,12 +335,46 @@ int HIDReportDescriptor::parse_global_item(const uint8_t* data, size_t size, siz
         case 0x9: /* Report Count */
             report_count = value;
             break;
-        case 0xA: /* Push */
-            /* TODO: Implement push/pop stack */
+        case 0xA: { /* Push */
+            /* Push current global state onto stack */
+            if (g_global_stack_depth >= MAX_GLOBAL_STATE_STACK) {
+                klog_printf(KLOG_WARN, "hid_parser: global state stack overflow");
+                break;
+            }
+            
+            global_state_t* state = &g_global_stack[g_global_stack_depth++];
+            state->usage_page = usage_page;
+            state->logical_min = logical_min;
+            state->logical_max = logical_max;
+            state->physical_min = physical_min;
+            state->physical_max = physical_max;
+            state->unit = unit;
+            state->unit_exponent = unit_exponent;
+            state->report_size = report_size;
+            state->report_count = report_count;
+            state->report_id = report_id;
             break;
-        case 0xB: /* Pop */
-            /* TODO: Implement push/pop stack */
+        }
+        case 0xB: { /* Pop */
+            /* Pop global state from stack */
+            if (g_global_stack_depth == 0) {
+                klog_printf(KLOG_WARN, "hid_parser: Pop without matching Push");
+                break;
+            }
+            
+            global_state_t* state = &g_global_stack[--g_global_stack_depth];
+            usage_page = state->usage_page;
+            logical_min = state->logical_min;
+            logical_max = state->logical_max;
+            physical_min = state->physical_min;
+            physical_max = state->physical_max;
+            unit = state->unit;
+            unit_exponent = state->unit_exponent;
+            report_size = state->report_size;
+            report_count = state->report_count;
+            report_id = state->report_id;
             break;
+        }
     }
     
     return 0;

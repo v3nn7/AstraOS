@@ -23,3 +23,4 @@ int usb_hub_reset_port(usb_device_t *hub_dev, uint8_t port);
 int usb_hub_port_power_on(usb_device_t *hub_dev, uint8_t port);
 int usb_hub_scan_ports(usb_device_t *hub_dev);
 
+
