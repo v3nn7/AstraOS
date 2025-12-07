@@ -84,6 +84,26 @@ static void itoa_signed(int64_t v, char *buf) {
     }
 }
 
+static void utoa_base_padded(uint64_t v, char *buf, int base, int width, bool zero_pad) {
+    char tmp[64];
+    const char *digits = "0123456789abcdef";
+    int i = 0;
+    if (v == 0) tmp[i++] = '0';
+    while (v > 0 && i < (int)sizeof(tmp)) {
+        tmp[i++] = digits[v % base];
+        v /= base;
+    }
+    /* Apply padding */
+    if (zero_pad) {
+        while (i < width && i < (int)sizeof(tmp)) {
+            tmp[i++] = '0';
+        }
+    }
+    int pos = 0;
+    while (i--) buf[pos++] = tmp[i];
+    buf[pos] = 0;
+}
+
 int printf(const char *fmt, ...) {
     char numbuf[64];
     va_list ap;
@@ -97,6 +117,64 @@ int printf(const char *fmt, ...) {
             continue;
         }
         ++fmt;
+        
+        /* Parse width specifier and zero padding (e.g., %04x) */
+        int width = 0;
+        bool zero_pad = false;
+        if (*fmt == '0') {
+            zero_pad = true;
+            ++fmt;
+            while (*fmt >= '0' && *fmt <= '9') {
+                width = width * 10 + (*fmt - '0');
+                ++fmt;
+            }
+        } else if (*fmt >= '1' && *fmt <= '9') {
+            while (*fmt >= '0' && *fmt <= '9') {
+                width = width * 10 + (*fmt - '0');
+                ++fmt;
+            }
+        }
+        
+        /* Handle %llx - long long hex */
+        if (*fmt == 'l' && fmt[1] == 'l' && fmt[2] == 'x') {
+            uint64_t val = va_arg(ap, uint64_t);
+            utoa_base_padded(val, numbuf, 16, width, zero_pad);
+            puts_str(numbuf);
+            written += (int)strlen_local(numbuf);
+            fmt += 3;
+            continue;
+        }
+        
+        /* Handle %lu - unsigned long */
+        if (*fmt == 'l' && fmt[1] == 'u') {
+            uint64_t val = va_arg(ap, unsigned long);
+            utoa_base_padded(val, numbuf, 10, width, zero_pad);
+            puts_str(numbuf);
+            written += (int)strlen_local(numbuf);
+            fmt += 2;
+            continue;
+        }
+        
+        /* Handle %zu - size_t (unsigned long on x86_64) */
+        if (*fmt == 'z' && fmt[1] == 'u') {
+            uint64_t val = va_arg(ap, unsigned long); /* size_t is unsigned long on x86_64 */
+            utoa_base_padded(val, numbuf, 10, width, zero_pad);
+            puts_str(numbuf);
+            written += (int)strlen_local(numbuf);
+            fmt += 2;
+            continue;
+        }
+        
+        /* Handle %zd - ssize_t (signed long on x86_64) */
+        if (*fmt == 'z' && fmt[1] == 'd') {
+            int64_t val = va_arg(ap, long); /* ssize_t is signed long on x86_64 */
+            itoa_signed(val, numbuf);
+            puts_str(numbuf);
+            written += (int)strlen_local(numbuf);
+            fmt += 2;
+            continue;
+        }
+        
         switch (*fmt) {
             case 's': {
                 const char *s = va_arg(ap, const char *);
@@ -112,9 +190,16 @@ int printf(const char *fmt, ...) {
                 written += (int)strlen_local(numbuf);
                 break;
             }
+            case 'u': {
+                unsigned int val = va_arg(ap, unsigned int);
+                utoa_base_padded(val, numbuf, 10, width, zero_pad);
+                puts_str(numbuf);
+                written += (int)strlen_local(numbuf);
+                break;
+            }
             case 'x': {
-                uint64_t val = va_arg(ap, uint64_t);
-                utoa_base(val, numbuf, 16);
+                unsigned int val = va_arg(ap, unsigned int);
+                utoa_base_padded(val, numbuf, 16, width, zero_pad);
                 puts_str(numbuf);
                 written += (int)strlen_local(numbuf);
                 break;
@@ -122,7 +207,7 @@ int printf(const char *fmt, ...) {
             case 'p': {
                 uint64_t val = (uint64_t)va_arg(ap, void *);
                 numbuf[0] = '0'; numbuf[1] = 'x';
-                utoa_base(val, numbuf + 2, 16);
+                utoa_base_padded(val, numbuf + 2, 16, width, zero_pad);
                 puts_str(numbuf);
                 written += (int)strlen_local(numbuf);
                 break;

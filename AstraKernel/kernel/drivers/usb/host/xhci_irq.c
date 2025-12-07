@@ -32,18 +32,25 @@ static void xhci_handle_irq(usb_host_controller_t *hc) {
         return;
     }
     
+    klog_printf(KLOG_DEBUG, "xhci: IRQ fired!");
+    
     /* Check if interrupt is pending */
     uint32_t iman = XHCI_READ32(xhci->rt_regs, XHCI_IMAN(0));
+    klog_printf(KLOG_DEBUG, "xhci: IMAN=0x%08x (IP=%d IE=%d)", iman, 
+                (iman & (1 << 0)) ? 1 : 0, (iman & (1 << 1)) ? 1 : 0);
+    
     if (!(iman & (1 << 0))) {
         /* No interrupt pending */
+        klog_printf(KLOG_DEBUG, "xhci: no interrupt pending, ignoring");
         return;
     }
     
     /* Process event ring */
     extern int xhci_process_events(xhci_controller_t *xhci);
-    xhci_process_events(xhci);
+    int events = xhci_process_events(xhci);
+    klog_printf(KLOG_DEBUG, "xhci: processed %d events", events);
     
-    /* Clear interrupt pending bit */
+    /* Clear interrupt pending bit (write 1 to clear) */
     XHCI_WRITE32(xhci->rt_regs, XHCI_IMAN(0), iman | (1 << 0));
 }
 
@@ -52,8 +59,12 @@ static void xhci_handle_irq(usb_host_controller_t *hc) {
  * Must match irq_handler_t signature: void (*)(interrupt_frame_t *)
  */
 void xhci_irq_handler(interrupt_frame_t *frame) {
+    klog_printf(KLOG_INFO, "xhci: IRQ FIRED! (frame=%p)", (void *)frame);
+    
     if (global_xhci_controller) {
         xhci_handle_irq(global_xhci_controller);
+    } else {
+        klog_printf(KLOG_WARN, "xhci: IRQ but no controller registered");
     }
 }
 
@@ -66,8 +77,8 @@ void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector) {
         return;
     }
     
-    if (vector == 0 || vector >= 256) {
-        klog_printf(KLOG_ERROR, "xhci: invalid interrupt vector %u", vector);
+    if (vector == 0) {
+        klog_printf(KLOG_ERROR, "xhci: invalid interrupt vector 0");
         return;
     }
     

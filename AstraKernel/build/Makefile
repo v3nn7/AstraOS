@@ -1893,6 +1893,78 @@ kernel/drivers/usb/util/usb_helpers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.s
 .PHONY : kernel/drivers/usb/util/usb_helpers.c.s
 
+kernel/drivers/usb/xhci/xhci_context.obj: kernel/drivers/usb/xhci/xhci_context.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_context.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_context.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_context.c.obj
+
+kernel/drivers/usb/xhci/xhci_context.i: kernel/drivers/usb/xhci/xhci_context.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_context.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_context.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_context.c.i
+
+kernel/drivers/usb/xhci/xhci_context.s: kernel/drivers/usb/xhci/xhci_context.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_context.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_context.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_context.c.s
+
+kernel/drivers/usb/xhci/xhci_debug.obj: kernel/drivers/usb/xhci/xhci_debug.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_debug.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.c.obj
+
+kernel/drivers/usb/xhci/xhci_debug.i: kernel/drivers/usb/xhci/xhci_debug.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_debug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.c.i
+
+kernel/drivers/usb/xhci/xhci_debug.s: kernel/drivers/usb/xhci/xhci_debug.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_debug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_debug.c.s
+
+kernel/drivers/usb/xhci/xhci_device.obj: kernel/drivers/usb/xhci/xhci_device.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_device.obj
+
+# target to build an object file
+kernel/drivers/usb/xhci/xhci_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj
+.PHONY : kernel/drivers/usb/xhci/xhci_device.c.obj
+
+kernel/drivers/usb/xhci/xhci_device.i: kernel/drivers/usb/xhci/xhci_device.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_device.i
+
+# target to preprocess a source file
+kernel/drivers/usb/xhci/xhci_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.i
+.PHONY : kernel/drivers/usb/xhci/xhci_device.c.i
+
+kernel/drivers/usb/xhci/xhci_device.s: kernel/drivers/usb/xhci/xhci_device.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_device.s
+
+# target to generate assembly for a file
+kernel/drivers/usb/xhci/xhci_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.s
+.PHONY : kernel/drivers/usb/xhci/xhci_device.c.s
+
 kernel/drivers/usb/xhci/xhci_doorbell.obj: kernel/drivers/usb/xhci/xhci_doorbell.c.obj
 .PHONY : kernel/drivers/usb/xhci/xhci_doorbell.obj
 
@@ -2792,6 +2864,15 @@ help:
 	@echo "... kernel/drivers/usb/util/usb_helpers.obj"
 	@echo "... kernel/drivers/usb/util/usb_helpers.i"
 	@echo "... kernel/drivers/usb/util/usb_helpers.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_context.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_context.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_context.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_debug.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_debug.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_debug.s"
+	@echo "... kernel/drivers/usb/xhci/xhci_device.obj"
+	@echo "... kernel/drivers/usb/xhci/xhci_device.i"
+	@echo "... kernel/drivers/usb/xhci/xhci_device.s"
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.obj"
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.i"
 	@echo "... kernel/drivers/usb/xhci/xhci_doorbell.s"

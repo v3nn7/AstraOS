@@ -1,8 +1,13 @@
 /**
- * XHCI Transfer Ring Management
+ * XHCI Transfer Ring Management - Complete Fixed Version
  * 
  * Implements TRB ring allocation, enqueueing, and dequeueing.
  * Handles command ring, event ring, and transfer rings.
+ * 
+ * CRITICAL FIXES:
+ * 1. ERDP EHB bit must be cleared after processing events
+ * 2. Command ring cycle state never toggles in software
+ * 3. Event ring dequeue now updates ERDP properly
  */
 
 #include "usb/xhci.h"
@@ -15,23 +20,23 @@
 #include "mmio.h"
 #include "vmm.h"
 
+/* offsetof macro for bare-metal kernel */
+#ifndef offsetof
+#define offsetof(type, member) ((size_t) &((type *)0)->member)
+#endif
+
 /* Helper macros for MMIO access */
 #define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE32(regs, offset, val) mmio_write32((volatile uint32_t *)((uintptr_t)(regs) + (offset)), val)
 #define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
 
-/* Runtime Register Offsets */
-#define XHCI_ERSTBA(n)          (0x20 + ((n) * 0x20))
-#define XHCI_ERSTSZ(n)          (0x24 + ((n) * 0x20))
-#define XHCI_ERDP(n)            (0x28 + ((n) * 0x20))
-#define XHCI_IMAN(n)            (0x00 + ((n) * 0x20))
-#define XHCI_IMOD(n)            (0x04 + ((n) * 0x20))
+/* Runtime Register Offset Macros - defined in xhci.h, but keep local masks here */
 #define XHCI_ERSTSZ_ERST_SZ_MASK 0xFFFF
+<<<<<<< Current (Your changes)
 #define XHCI_ERDP_EHB           (1 << 3)
-#define XHCI_CRCR_RCS           (1 << 0)
-#define XHCI_CRCR_CS            (1 << 1)
-#define XHCI_CRCR_CA            (1 << 2)
+=======
+>>>>>>> Incoming (Background Agent changes)
 
 /* ERST Entry */
 typedef struct PACKED {
@@ -50,13 +55,13 @@ typedef struct PACKED {
  */
 static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
     if (!ring || size == 0) return -1;
-    
+
     /* Round up to power of 2 */
     uint32_t ring_size = 1;
     while (ring_size < size) {
         ring_size <<= 1;
     }
-    
+
     /* Allocate TRBs (must be 16-byte aligned) */
     size_t trb_array_size = ring_size * XHCI_TRB_SIZE;
     ring->trbs = (xhci_trb_t *)kmalloc(trb_array_size + 64); /* Extra for alignment */
@@ -64,21 +69,21 @@ static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
         klog_printf(KLOG_ERROR, "xhci_ring: allocation failed");
         return -1;
     }
-    
+
     /* Align to 64-byte boundary */
     uintptr_t addr = (uintptr_t)ring->trbs;
     if (addr % 64 != 0) {
         addr = (addr + 63) & ~63;
         ring->trbs = (xhci_trb_t *)addr;
     }
-    
+
     k_memset(ring->trbs, 0, trb_array_size);
-    
+
     ring->size = ring_size;
     ring->dequeue = 0;
     ring->enqueue = 0;
-    ring->cycle_state = true; /* Start with cycle bit = 1 */
-    
+    ring->cycle_state = true; /* Command ring starts with cycle = 1 per XHCI spec */
+
     /* Get physical address from virtual address */
     uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
     uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
@@ -94,7 +99,7 @@ static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
         }
     }
     ring->phys_addr = (phys_addr_t)phys_addr;
-    
+
     klog_printf(KLOG_INFO, "xhci_ring: allocated command ring size=%u at virt=%p phys=0x%016llx", 
                 ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
@@ -105,13 +110,13 @@ static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
  */
 static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
     if (!ring || size == 0) return -1;
-    
+
     /* Round up to power of 2 */
     uint32_t ring_size = 1;
     while (ring_size < size) {
         ring_size <<= 1;
     }
-    
+
     /* Allocate event TRBs */
     size_t trb_array_size = ring_size * sizeof(xhci_event_trb_t);
     ring->trbs = (xhci_event_trb_t *)kmalloc(trb_array_size + 64);
@@ -119,21 +124,21 @@ static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
         klog_printf(KLOG_ERROR, "xhci_ring: event ring allocation failed");
         return -1;
     }
-    
+
     /* Align to 64-byte boundary */
     uintptr_t addr = (uintptr_t)ring->trbs;
     if (addr % 64 != 0) {
         addr = (addr + 63) & ~63;
         ring->trbs = (xhci_event_trb_t *)addr;
     }
-    
+
     k_memset(ring->trbs, 0, trb_array_size);
-    
+
     ring->size = ring_size;
     ring->dequeue = 0;
     ring->enqueue = 0;
-    ring->cycle_state = true;
-    
+    ring->cycle_state = true; /* Event ring starts with cycle = 1 */
+
     /* Get physical address from virtual address */
     uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
     uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
@@ -151,7 +156,7 @@ static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
     ring->phys_addr = (phys_addr_t)phys_addr;
     ring->segment_table = NULL;
     ring->segment_table_phys = 0;
-    
+
     klog_printf(KLOG_INFO, "xhci_ring: allocated event ring size=%u at virt=%p phys=0x%016llx", 
                 ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
@@ -162,13 +167,13 @@ static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
  */
 static int xhci_transfer_ring_alloc(xhci_transfer_ring_t *ring, uint32_t size) {
     if (!ring || size == 0) return -1;
-    
+
     /* Round up to power of 2 */
     uint32_t ring_size = 1;
     while (ring_size < size) {
         ring_size <<= 1;
     }
-    
+
     /* Allocate TRBs */
     size_t trb_array_size = ring_size * XHCI_TRB_SIZE;
     ring->trbs = (xhci_trb_t *)kmalloc(trb_array_size + 64);
@@ -176,21 +181,21 @@ static int xhci_transfer_ring_alloc(xhci_transfer_ring_t *ring, uint32_t size) {
         klog_printf(KLOG_ERROR, "xhci_ring: transfer ring allocation failed");
         return -1;
     }
-    
+
     /* Align to 64-byte boundary */
     uintptr_t addr = (uintptr_t)ring->trbs;
     if (addr % 64 != 0) {
         addr = (addr + 63) & ~63;
         ring->trbs = (xhci_trb_t *)addr;
     }
-    
+
     k_memset(ring->trbs, 0, trb_array_size);
-    
+
     ring->size = ring_size;
     ring->dequeue = 0;
     ring->enqueue = 0;
-    ring->cycle_state = true;
-    
+    ring->cycle_state = true; /* Transfer ring starts with cycle = 1 */
+
     /* Get physical address from virtual address */
     uint64_t virt_addr = (uint64_t)(uintptr_t)ring->trbs;
     uint64_t phys_addr = vmm_virt_to_phys(virt_addr);
@@ -206,7 +211,7 @@ static int xhci_transfer_ring_alloc(xhci_transfer_ring_t *ring, uint32_t size) {
         }
     }
     ring->phys_addr = (phys_addr_t)phys_addr;
-    
+
     klog_printf(KLOG_INFO, "xhci_ring: allocated transfer ring size=%u at virt=%p phys=0x%016llx", 
                 ring_size, ring->trbs, (unsigned long long)phys_addr);
     return 0;
@@ -214,33 +219,54 @@ static int xhci_transfer_ring_alloc(xhci_transfer_ring_t *ring, uint32_t size) {
 
 /**
  * Enqueue a TRB to command ring
+ * 
+ * CRITICAL FIX: cycle_state NEVER toggles for command rings!
+ * The HC manages CSS internally when it processes the Link TRB with TC bit.
+ * Software cycle_state remains constant at 1 (the initial value).
  */
 int xhci_cmd_ring_enqueue(xhci_command_ring_t *ring, xhci_trb_t *trb) {
     if (!ring || !trb || !ring->trbs) return -1;
-    
+
     uint32_t index = ring->enqueue & XHCI_RING_MASK;
-    
+
+    /* Check if we're about to overwrite Link TRB */
+    uint32_t link_trb_index = (ring->size - 1) & XHCI_RING_MASK;
+    if (index == link_trb_index) {
+        klog_printf(KLOG_ERROR, "xhci_ring: command ring full (would overwrite Link TRB at index %u)", index);
+        return -1;
+    }
+
     /* Copy TRB */
     memcpy(&ring->trbs[index], trb, sizeof(xhci_trb_t));
-    
-    /* Set cycle bit */
+
+    /* CRITICAL: Set cycle bit to match current ring cycle_state
+     * For command rings, this is ALWAYS 1 (never changes in software)
+     */
     if (ring->cycle_state) {
         ring->trbs[index].control |= XHCI_TRB_CYCLE;
     } else {
         ring->trbs[index].control &= ~XHCI_TRB_CYCLE;
     }
-    
+
+    klog_printf(KLOG_DEBUG, "xhci_ring: enqueued TRB at index=%u cycle=%u enqueue=%u type=%u",
+                index, ring->cycle_state ? 1 : 0, ring->enqueue,
+                (trb->control >> 10) & 0x3F);
+
+    /* Memory barrier - CRITICAL: HC must see TRB before doorbell ring */
+    __asm__ volatile("mfence" ::: "memory");
+
     /* Update enqueue pointer */
     ring->enqueue++;
-    
-    /* Toggle cycle bit if we wrapped around */
+
+    /* CRITICAL FIX: When enqueue wraps, DO NOT toggle cycle_state for command rings!
+     * The HC manages CSS via the Link TRB's Toggle Cycle (TC) bit.
+     * Software cycle_state stays constant at 1.
+     */
     if ((ring->enqueue & XHCI_RING_MASK) == 0) {
-        ring->cycle_state = !ring->cycle_state;
+        klog_printf(KLOG_DEBUG, "xhci_ring: enqueue wrapped to 0 (cycle_state remains %u)",
+                    ring->cycle_state ? 1 : 0);
     }
-    
-    /* Memory barrier */
-    __asm__ volatile("mfence" ::: "memory");
-    
+
     return 0;
 }
 
@@ -249,58 +275,77 @@ int xhci_cmd_ring_enqueue(xhci_command_ring_t *ring, xhci_trb_t *trb) {
  */
 int xhci_transfer_ring_enqueue(xhci_transfer_ring_t *ring, xhci_trb_t *trb) {
     if (!ring || !trb || !ring->trbs) return -1;
-    
+
     uint32_t index = ring->enqueue & XHCI_RING_MASK;
-    
+
     /* Copy TRB */
     memcpy(&ring->trbs[index], trb, sizeof(xhci_trb_t));
-    
+
     /* Set cycle bit */
     if (ring->cycle_state) {
         ring->trbs[index].control |= XHCI_TRB_CYCLE;
     } else {
         ring->trbs[index].control &= ~XHCI_TRB_CYCLE;
     }
-    
+
     /* Update enqueue pointer */
     ring->enqueue++;
-    
+
     /* Toggle cycle bit if we wrapped around */
     if ((ring->enqueue & XHCI_RING_MASK) == 0) {
         ring->cycle_state = !ring->cycle_state;
     }
-    
+
     /* Memory barrier */
     __asm__ volatile("mfence" ::: "memory");
-    
+
     return 0;
 }
 
 /**
  * Dequeue an event TRB from event ring
+ * 
+ * CRITICAL FIX: Must update ERDP and clear EHB bit after each event!
+ * Without this, the HC stops generating events after the first batch.
  */
-int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb) {
-    if (!ring || !trb || !ring->trbs) return -1;
-    
+int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb, void *rt_regs) {
+    if (!ring || !trb || !ring->trbs || !rt_regs) return -1;
+
     uint32_t index = ring->dequeue & XHCI_RING_MASK;
-    
-    /* Check cycle bit */
-    uint8_t cycle_bit = (ring->trbs[index].cycle) & 1;
+
+    /* Check cycle bit - it's in the control field (bit 0) */
+    uint32_t control = ((uint32_t *)&ring->trbs[index])[2]; /* Third 32-bit word */
+    uint8_t cycle_bit = (control & 1) ? 1 : 0;
+
     if (cycle_bit != ring->cycle_state) {
-        return -1; /* Not ready yet */
+        return -1; /* No new event available */
     }
-    
+
     /* Copy TRB */
     memcpy(trb, &ring->trbs[index], sizeof(xhci_event_trb_t));
-    
+
     /* Update dequeue pointer */
     ring->dequeue++;
-    
+
     /* Toggle cycle bit if we wrapped around */
     if ((ring->dequeue & XHCI_RING_MASK) == 0) {
         ring->cycle_state = !ring->cycle_state;
     }
-    
+
+    /* CRITICAL FIX: Update ERDP and clear EHB bit
+     * This tells the HC we've processed the event and it can continue.
+     * Without this, the HC thinks we're still busy and won't generate new events.
+     * 
+     * Note: EHB is a "write 1 to clear" bit - we write 1 to acknowledge we're done.
+     */
+    uint64_t erdp_phys = ring->phys_addr + ((ring->dequeue & XHCI_RING_MASK) * sizeof(xhci_event_trb_t));
+    uint64_t erdp_value = erdp_phys | XHCI_ERDP_EHB; /* Set EHB bit to clear it */
+
+    XHCI_WRITE64(rt_regs, XHCI_ERDP(0), erdp_value);
+
+    /* Memory barrier to ensure ERDP write completes */
+    __asm__ volatile("mfence" ::: "memory");
+
     return 0;
 }
 
@@ -309,17 +354,84 @@ int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb) {
  */
 int xhci_cmd_ring_init(xhci_controller_t *xhci) {
     if (!xhci) return -1;
-    
+
     int ret = xhci_command_ring_alloc(&xhci->cmd_ring, XHCI_RING_SIZE);
     if (ret < 0) {
         return -1;
     }
-    
+
+    /* CRITICAL: Add Link TRB at the end of the ring pointing back to the beginning */
+    uint32_t last_index = (xhci->cmd_ring.size - 1) & XHCI_RING_MASK;
+    xhci_trb_t *link_trb = &xhci->cmd_ring.trbs[last_index];
+
+    /* Build Link TRB pointing to first TRB with Toggle Cycle (TC) bit set */
+    uint64_t first_trb_phys = xhci->cmd_ring.phys_addr;
+    xhci_build_link_trb(link_trb, first_trb_phys, 1); /* toggle_cycle = 1 */
+
+    /* CRITICAL: Link TRB cycle must match ring cycle_state (which is 1) */
+    link_trb->control |= XHCI_TRB_CYCLE;
+
+    /* Memory barrier to ensure Link TRB is written */
+    __asm__ volatile("mfence" ::: "memory");
+
+    klog_printf(KLOG_INFO, "xhci: command ring initialized: size=%u link_trb[%u] points to 0x%016llx cycle=%u",
+                xhci->cmd_ring.size, last_index, (unsigned long long)first_trb_phys,
+                xhci->cmd_ring.cycle_state ? 1 : 0);
+
     /* Set command ring pointer in operational registers */
     uint64_t cmd_ring_addr = xhci->cmd_ring.phys_addr;
-    XHCI_WRITE64(xhci->op_regs, XHCI_CRCR, cmd_ring_addr | XHCI_CRCR_RCS);
-    
-    klog_printf(KLOG_INFO, "xhci: command ring initialized at %p", (void *)cmd_ring_addr);
+
+    /* Verify 64-byte alignment */
+    if ((cmd_ring_addr & 0x3F) != 0) {
+        klog_printf(KLOG_ERROR, "xhci: command ring NOT 64-byte aligned! phys=0x%016llx", 
+                    (unsigned long long)cmd_ring_addr);
+        return -1;
+    }
+
+    /* CRCR bits:
+     * [63:6] = Command Ring Pointer (physical address, 64-byte aligned)
+     * [3] = CRR (Command Ring Running) - read-only
+     * [2] = CA (Command Abort) - write 1 to abort
+     * [1] = CSS (Command Ring Cycle State) - HC manages this
+     * [0] = RCS (Ring Cycle State) - we set this to match ring cycle_state (1)
+     */
+    uint64_t crcr_value = cmd_ring_addr | XHCI_CRCR_RCS;
+
+    /* Write CRCR */
+    xhci->op_regs->CRCR = crcr_value;
+
+    /* Memory barrier */
+    __asm__ volatile("mfence" ::: "memory");
+
+    /* Read CRCR back for verification */
+    uint64_t crcr_read = xhci->op_regs->CRCR;
+    uint8_t rcs_bit = (crcr_read & XHCI_CRCR_RCS) ? 1 : 0;
+    uint8_t css_bit = (crcr_read & XHCI_CRCR_CSS) ? 1 : 0;
+
+    klog_printf(KLOG_INFO, "xhci: structure offsets verification:");
+    klog_printf(KLOG_INFO, "  sizeof(xhci_op_regs_t) = %zu", sizeof(xhci_op_regs_t));
+    klog_printf(KLOG_INFO, "  CRCR offset = 0x%zx (expected 0x18)", offsetof(xhci_op_regs_t, CRCR));
+    klog_printf(KLOG_INFO, "  USBCMD offset = 0x%zx (expected 0x00)", offsetof(xhci_op_regs_t, USBCMD));
+    klog_printf(KLOG_INFO, "  USBSTS offset = 0x%zx (expected 0x04)", offsetof(xhci_op_regs_t, USBSTS));
+    klog_printf(KLOG_INFO, "  DNCTRL offset = 0x%zx (expected 0x10)", offsetof(xhci_op_regs_t, DNCTRL));
+    klog_printf(KLOG_INFO, "  DCBAAP offset = 0x%zx (expected 0x30)", offsetof(xhci_op_regs_t, DCBAAP));
+
+    klog_printf(KLOG_INFO, "xhci: command ring initialized:");
+    klog_printf(KLOG_INFO, "  virt=%p phys=0x%016llx", xhci->cmd_ring.trbs, (unsigned long long)cmd_ring_addr);
+    klog_printf(KLOG_INFO, "  CRCR_write=0x%016llx CRCR_read=0x%016llx", 
+                (unsigned long long)crcr_value, (unsigned long long)crcr_read);
+    klog_printf(KLOG_INFO, "  RCS=%u CSS=%u (before sync)", rcs_bit, css_bit);
+
+    /* Note: CSS starts at 0, but will be set to 1 by HC when it starts processing.
+     * This is NORMAL and expected. Don't try to force CSS=RCS here - CSS is read-only. */
+    klog_printf(KLOG_INFO, "xhci: CRCR set: 0x%016llx RCS=%u CSS=%u", 
+                (unsigned long long)crcr_read, rcs_bit, css_bit);
+
+    klog_printf(KLOG_INFO, "  ring cycle_state=%u enqueue=%u", 
+                xhci->cmd_ring.cycle_state ? 1 : 0, xhci->cmd_ring.enqueue);
+
+    klog_printf(KLOG_INFO, "xhci: command ring ready");
+
     return 0;
 }
 
@@ -328,12 +440,12 @@ int xhci_cmd_ring_init(xhci_controller_t *xhci) {
  */
 int xhci_event_ring_init(xhci_controller_t *xhci) {
     if (!xhci) return -1;
-    
+
     int ret = xhci_event_ring_alloc(&xhci->event_ring, XHCI_RING_SIZE);
     if (ret < 0) {
         return -1;
     }
-    
+
     /* Allocate event ring segment table */
     size_t erst_size = sizeof(xhci_erst_entry_t) * 1; /* Single segment for now */
     xhci_erst_entry_t *erst = (xhci_erst_entry_t *)kmalloc(erst_size);
@@ -341,26 +453,55 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
         kfree(xhci->event_ring.trbs);
         return -1;
     }
-    
+
     k_memset(erst, 0, erst_size);
-    
+
     /* Set up ERST entry */
     uint64_t event_ring_addr = xhci->event_ring.phys_addr;
     erst[0].ring_segment_base = event_ring_addr;
     erst[0].ring_segment_size = XHCI_RING_SIZE;
-    
+
     xhci->event_ring.segment_table = erst;
-    xhci->event_ring.segment_table_phys = (phys_addr_t)(uintptr_t)erst;
-    
+
+    /* Get physical address of ERST segment table */
+    uint64_t erst_virt = (uint64_t)(uintptr_t)erst;
+    uint64_t erst_phys = vmm_virt_to_phys(erst_virt);
+    if (erst_phys == 0) {
+        /* Fallback: use HHDM offset if available */
+        extern uint64_t pmm_hhdm_offset;
+        if (pmm_hhdm_offset && erst_virt >= pmm_hhdm_offset) {
+            erst_phys = erst_virt - pmm_hhdm_offset;
+        } else {
+            klog_printf(KLOG_ERROR, "xhci_ring: failed to get physical address for ERST");
+            kfree(erst);
+            kfree(xhci->event_ring.trbs);
+            return -1;
+        }
+    }
+    xhci->event_ring.segment_table_phys = (phys_addr_t)erst_phys;
+
     /* Set ERST pointer in runtime registers */
-    uint64_t erst_addr = xhci->event_ring.segment_table_phys;
-    XHCI_WRITE64(xhci->rt_regs, XHCI_ERSTBA(0), erst_addr);
+    XHCI_WRITE64(xhci->rt_regs, XHCI_ERSTBA(0), erst_phys);
     XHCI_WRITE32(xhci->rt_regs, XHCI_ERSTSZ(0), 1); /* 1 segment */
-    
-    /* Set event ring dequeue pointer */
-    XHCI_WRITE64(xhci->rt_regs, XHCI_ERDP(0), event_ring_addr | XHCI_ERDP_EHB);
-    
-    klog_printf(KLOG_INFO, "xhci: event ring initialized at %p", (void *)event_ring_addr);
+
+    /* Set event ring dequeue pointer - MUST point to first event TRB */
+    uint64_t erdp_value = event_ring_addr | XHCI_ERDP_EHB;
+    XHCI_WRITE64(xhci->rt_regs, XHCI_ERDP(0), erdp_value);
+
+    /* Memory barrier */
+    __asm__ volatile("mfence" ::: "memory");
+
+    /* Verify Event Ring setup */
+    uint64_t erstba_read = XHCI_READ64(xhci->rt_regs, XHCI_ERSTBA(0));
+    uint32_t erstsz_read = XHCI_READ32(xhci->rt_regs, XHCI_ERSTSZ(0));
+    uint64_t erdp_read = XHCI_READ64(xhci->rt_regs, XHCI_ERDP(0));
+
+    klog_printf(KLOG_INFO, "xhci: event ring initialized: virt=%p phys=0x%016llx", 
+                xhci->event_ring.trbs, (unsigned long long)event_ring_addr);
+    klog_printf(KLOG_INFO, "xhci: ERSTBA=0x%016llx ERSTSZ=%u ERDP=0x%016llx",
+                (unsigned long long)erstba_read, erstsz_read, (unsigned long long)erdp_read);
+    klog_printf(KLOG_INFO, "xhci: event ring ready");
+
     return 0;
 }
 
@@ -369,28 +510,43 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
  */
 int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint) {
     if (!xhci || slot >= 32 || endpoint >= 32) return -1;
-    
+
     if (xhci->transfer_rings[slot][endpoint]) {
         /* Already initialized */
         return 0;
     }
-    
+
     xhci_transfer_ring_t *ring = (xhci_transfer_ring_t *)kmalloc(sizeof(xhci_transfer_ring_t));
     if (!ring) {
         return -1;
     }
-    
+
     k_memset(ring, 0, sizeof(xhci_transfer_ring_t));
-    
+
     int ret = xhci_transfer_ring_alloc(ring, XHCI_RING_SIZE);
     if (ret < 0) {
         kfree(ring);
         return -1;
     }
-    
+
+    /* Add Link TRB at the end of the transfer ring */
+    uint32_t last_index = (ring->size - 1) & XHCI_RING_MASK;
+    xhci_trb_t *link_trb = &ring->trbs[last_index];
+
+    /* Build Link TRB pointing to first TRB with Toggle Cycle (TC) bit set */
+    uint64_t first_trb_phys = ring->phys_addr;
+    xhci_build_link_trb(link_trb, first_trb_phys, 1); /* toggle_cycle = 1 */
+
+    /* Start cycle=1: set cycle bit on Link TRB */
+    link_trb->control |= XHCI_TRB_CYCLE;
+
+    /* Memory barrier to ensure Link TRB is written */
+    __asm__ volatile("mfence" ::: "memory");
+
     xhci->transfer_rings[slot][endpoint] = ring;
-    
-    klog_printf(KLOG_INFO, "xhci: transfer ring slot=%u ep=%u initialized", slot, endpoint);
+
+    klog_printf(KLOG_INFO, "xhci: transfer ring slot=%u ep=%u initialized: size=%u link_trb[%u] points to 0x%016llx",
+                slot, endpoint, ring->size, last_index, (unsigned long long)first_trb_phys);
     return 0;
 }
 
@@ -399,7 +555,7 @@ int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t end
  */
 void xhci_transfer_ring_free(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint) {
     if (!xhci || slot >= 32 || endpoint >= 32) return;
-    
+
     if (xhci->transfer_rings[slot][endpoint]) {
         xhci_transfer_ring_t *ring = xhci->transfer_rings[slot][endpoint];
         if (ring->trbs) {
@@ -415,9 +571,9 @@ void xhci_transfer_ring_free(xhci_controller_t *xhci, uint32_t slot, uint32_t en
  */
 void xhci_build_trb(xhci_trb_t *trb, uint64_t data_ptr, uint32_t length, uint32_t type, uint32_t flags) {
     if (!trb) return;
-    
+
     k_memset(trb, 0, sizeof(xhci_trb_t));
-    
+
     trb->parameter = data_ptr;
     trb->status = length | (flags << 16);
     trb->control = type | (1 << 10); /* IOC bit */
@@ -428,11 +584,10 @@ void xhci_build_trb(xhci_trb_t *trb, uint64_t data_ptr, uint32_t length, uint32_
  */
 void xhci_build_link_trb(xhci_trb_t *trb, uint64_t next_ring_addr, uint8_t toggle_cycle) {
     if (!trb) return;
-    
+
     k_memset(trb, 0, sizeof(xhci_trb_t));
-    
+
     trb->parameter = next_ring_addr;
     trb->control = (XHCI_TRB_TYPE_LINK << XHCI_TRB_TYPE_SHIFT) | 
                    (toggle_cycle ? XHCI_TRB_TC : 0);
 }
-

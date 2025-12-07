@@ -40,6 +40,15 @@ static uint8_t pci_cfg_read8(uint8_t bus, uint8_t slot, uint8_t func, uint8_t of
     return (uint8_t)((val >> ((offset & 3) * 8)) & 0xFF);
 }
 
+static void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t val) {
+    uint32_t addr = (1U << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) | (offset & 0xFC);
+    outl(PCI_CONFIG_ADDRESS, addr);
+    outl(PCI_CONFIG_DATA, val);
+}
+
+/* PCI BAR type bits */
+#define PCI_BAR_MEM_64BIT          0x04
+
 /* PCI Class Codes for USB Controllers */
 #define PCI_CLASS_SERIAL           0x0C
 #define PCI_SUBCLASS_USB           0x03
@@ -57,6 +66,46 @@ static uint8_t pci_cfg_read8(uint8_t bus, uint8_t slot, uint8_t func, uint8_t of
 #define PCI_CONFIG_BAR0            0x10
 #define PCI_CONFIG_BAR1            0x14
 #define PCI_CONFIG_INTERRUPT_LINE  0x3C
+
+/**
+ * Get BAR size by writing 0xFFFFFFFF and reading back
+ * Returns the size of the BAR in bytes
+ */
+static uint64_t pci_get_bar_size(uint8_t bus, uint8_t slot, uint8_t func, uint8_t bar_offset) {
+    uint32_t original = pci_cfg_read32(bus, slot, func, bar_offset);
+    bool is_64bit = (original & PCI_BAR_MEM_64BIT) != 0;
+    
+    /* Write 0xFFFFFFFF to BAR */
+    pci_cfg_write32(bus, slot, func, bar_offset, 0xFFFFFFFF);
+    uint32_t size_low = pci_cfg_read32(bus, slot, func, bar_offset);
+    
+    uint64_t size = 0;
+    if (is_64bit && bar_offset < 0x24) {
+        /* Read high 32 bits for 64-bit BAR */
+        uint32_t original_high = pci_cfg_read32(bus, slot, func, bar_offset + 4);
+        pci_cfg_write32(bus, slot, func, bar_offset + 4, 0xFFFFFFFF);
+        uint32_t size_high = pci_cfg_read32(bus, slot, func, bar_offset + 4);
+        size = ((uint64_t)size_high << 32) | size_low;
+        /* Restore original high value */
+        pci_cfg_write32(bus, slot, func, bar_offset + 4, original_high);
+    } else {
+        size = size_low;
+    }
+    
+    /* Restore original BAR value */
+    pci_cfg_write32(bus, slot, func, bar_offset, original);
+    
+    /* Calculate size: clear lower 4 bits and invert + 1 */
+    size = size & ~0xFULL;
+    size = ~size + 1;
+    
+    /* Round up to at least PAGE_SIZE */
+    if (size < PAGE_SIZE) {
+        size = PAGE_SIZE;
+    }
+    
+    return size;
+}
 
 /**
  * Detect and register USB controllers from PCI
@@ -162,34 +211,51 @@ int usb_pci_detect(void) {
                         klog_printf(KLOG_INFO, "usb_pci: XHCI BAR physical address 0x%016llx (BAR0=0x%08x BAR1=0x%08x)", 
                                    (unsigned long long)phys_addr, bar0, bar1);
                         
-                        /* Map MMIO through HHDM or VMM */
-                        /* XHCI MMIO is typically 64KB, map at least 4 pages (16KB) */
-                        uint64_t mmio_size = 0x10000; /* 64KB */
+                        /* Get actual BAR size */
+                        uint64_t mmio_size = pci_get_bar_size(bus, slot, func, PCI_CONFIG_BAR0);
+                        klog_printf(KLOG_INFO, "usb_pci: XHCI BAR size detected: 0x%016llx bytes (%llu pages)", 
+                                   (unsigned long long)mmio_size, (unsigned long long)(mmio_size / PAGE_SIZE));
+                        
                         uint64_t aligned_phys = phys_addr & ~(PAGE_SIZE - 1);
                         uint64_t offset = phys_addr & (PAGE_SIZE - 1);
+                        
+                        /* Round up size to page boundary */
+                        uint64_t aligned_size = ((mmio_size + offset + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE;
                         
                         /* Try HHDM first (if BAR is in mapped range) */
                         if (phys_addr < 0x100000000ULL && pmm_hhdm_offset) {
                             /* Use HHDM if BAR is below 4GB and HHDM is available */
                             uint64_t virt_addr = pmm_hhdm_offset + phys_addr;
+                            /* Ensure all pages are mapped in VMM even when using HHDM */
+                            uint64_t virt_base = pmm_hhdm_offset + aligned_phys;
+                            size_t pages_mapped = 0;
+                            for (size_t off = 0; off < aligned_size; off += PAGE_SIZE) {
+                                uint64_t phys_page = aligned_phys + off;
+                                uint64_t virt_page = virt_base + off;
+                                vmm_map(virt_page, phys_page, PAGE_PRESENT | PAGE_WRITE | PAGE_CACHE_DISABLE);
+                                pages_mapped++;
+                            }
                             hc->regs_base = (void *)(uintptr_t)virt_addr;
-                            klog_printf(KLOG_INFO, "usb_pci: XHCI using HHDM mapping: phys=0x%016llx virt=0x%016llx", 
-                                       (unsigned long long)phys_addr, (unsigned long long)virt_addr);
+                            klog_printf(KLOG_INFO, "usb_pci: XHCI using HHDM mapping: phys=0x%016llx virt=0x%016llx size=0x%016llx (%zu pages mapped)", 
+                                       (unsigned long long)phys_addr, (unsigned long long)virt_addr, (unsigned long long)aligned_size, pages_mapped);
                         } else {
                             /* Map via VMM */
                             uint64_t virt_base = 0xFFFF800000000000ULL + aligned_phys; /* Use high memory area */
-                            klog_printf(KLOG_INFO, "usb_pci: mapping XHCI MMIO via VMM: phys=0x%016llx virt=0x%016llx size=0x%llx",
-                                       (unsigned long long)aligned_phys, (unsigned long long)virt_base, (unsigned long long)mmio_size);
-                            for (uint64_t i = 0; i < mmio_size; i += PAGE_SIZE) {
-                                uint64_t phys_page = aligned_phys + i;
-                                uint64_t virt_page = virt_base + i;
-                                vmm_map(virt_page, phys_page, PAGE_WRITE | PAGE_CACHE_DISABLE);
-                                klog_printf(KLOG_DEBUG, "usb_pci: mapped XHCI MMIO page phys=0x%016llx virt=0x%016llx",
-                                           (unsigned long long)phys_page, (unsigned long long)virt_page);
+                            klog_printf(KLOG_INFO, "usb_pci: mapping XHCI MMIO via VMM: phys=0x%016llx virt=0x%016llx size=0x%016llx",
+                                       (unsigned long long)aligned_phys, (unsigned long long)virt_base, (unsigned long long)aligned_size);
+                            /* Map all pages in the BAR range */
+                            size_t pages_mapped = 0;
+                            for (size_t off = 0; off < aligned_size; off += PAGE_SIZE) {
+                                uint64_t phys_page = aligned_phys + off;
+                                uint64_t virt_page = virt_base + off;
+                                vmm_map(virt_page, phys_page, PAGE_PRESENT | PAGE_WRITE | PAGE_CACHE_DISABLE);
+                                pages_mapped++;
+                                klog_printf(KLOG_DEBUG, "usb_pci: mapped XHCI MMIO page %zu/%zu phys=0x%016llx virt=0x%016llx",
+                                           pages_mapped, aligned_size / PAGE_SIZE, (unsigned long long)phys_page, (unsigned long long)virt_page);
                             }
                             hc->regs_base = (void *)(uintptr_t)(virt_base + offset);
-                            klog_printf(KLOG_INFO, "usb_pci: XHCI mapped via VMM: phys=0x%016llx virt=0x%016llx", 
-                                       (unsigned long long)phys_addr, (unsigned long long)(uintptr_t)hc->regs_base);
+                            klog_printf(KLOG_INFO, "usb_pci: XHCI mapped via VMM: phys=0x%016llx virt=0x%016llx size=0x%016llx (%zu pages mapped)", 
+                                       (unsigned long long)phys_addr, (unsigned long long)(uintptr_t)hc->regs_base, (unsigned long long)aligned_size, pages_mapped);
                         }
                         
                         if (!hc->regs_base) {

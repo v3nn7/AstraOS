@@ -926,10 +926,52 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.s"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/util/usb_helpers.c -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.s
 
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj: CMakeFiles/kernel.elf.dir/flags.make
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_context.c
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_context.c
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.i"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_context.c > CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.i
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.s"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_context.c -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.s
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj: CMakeFiles/kernel.elf.dir/flags.make
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_debug.c
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_debug.c
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.i"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_debug.c > CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.i
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.s"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_debug.c -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.s
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj: CMakeFiles/kernel.elf.dir/flags.make
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_device.c
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_device.c
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.i"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_device.c > CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.i
+
+CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.s"
+	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_device.c -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.s
+
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_doorbell.c
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_doorbell.c
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.i: cmake_force
@@ -943,7 +985,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_ring.c
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_ring.c
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.i: cmake_force
@@ -957,7 +999,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/xhci/xhci_transfer.c
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.i: cmake_force
@@ -971,7 +1013,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/devfs.c
 CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/devfs.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.i: cmake_force
@@ -985,7 +1027,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/devfs.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/ext2.c
 CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/ext2.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.i: cmake_force
@@ -999,7 +1041,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/ext2.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/fat32.c
 CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/fat32.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.i: cmake_force
@@ -1013,7 +1055,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/fat32.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/initrd.c
 CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/initrd.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.i: cmake_force
@@ -1027,7 +1069,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/initrd.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/ramfs.c
 CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/ramfs.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.i: cmake_force
@@ -1041,7 +1083,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/ramfs.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/vfs.c
 CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/fs/vfs.c
 
 CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.i: cmake_force
@@ -1055,7 +1097,7 @@ CMakeFiles/kernel.elf.dir/kernel/fs/vfs.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.c
 CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/gui/event.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/event.c
 
 CMakeFiles/kernel.elf.dir/kernel/gui/event.c.i: cmake_force
@@ -1069,7 +1111,7 @@ CMakeFiles/kernel.elf.dir/kernel/gui/event.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/ui.c
 CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/gui/ui.c
 
 CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.i: cmake_force
@@ -1083,7 +1125,7 @@ CMakeFiles/kernel.elf.dir/kernel/gui/ui.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer/installer.c
 CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/installer/installer.c
 
 CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.i: cmake_force
@@ -1097,7 +1139,7 @@ CMakeFiles/kernel.elf.dir/kernel/installer/installer.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/ipc/ipc.c
 CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/ipc/ipc.c
 
 CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.i: cmake_force
@@ -1111,7 +1153,7 @@ CMakeFiles/kernel.elf.dir/kernel/ipc/ipc.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/lodepng_compat.c
 CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/lodepng_compat.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.i: cmake_force
@@ -1125,7 +1167,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/lodepng_compat.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/math.c
 CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/math.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/math.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/math.c.i: cmake_force
@@ -1139,7 +1181,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/math.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/png_stub.c
 CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/png_stub.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.i: cmake_force
@@ -1153,7 +1195,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/png_stub.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/printf.c
 CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/printf.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.i: cmake_force
@@ -1167,7 +1209,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/printf.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdio.c
 CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdio.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.i: cmake_force
@@ -1181,7 +1223,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/stdio.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdlib.c
 CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/stdlib.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.i: cmake_force
@@ -1195,7 +1237,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/stdlib.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/string.c
 CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/lib/string.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/lib/string.c
 
 CMakeFiles/kernel.elf.dir/kernel/lib/string.c.i: cmake_force
@@ -1209,7 +1251,7 @@ CMakeFiles/kernel.elf.dir/kernel/lib/string.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ethernet.c
 CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ethernet.c
 
 CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.i: cmake_force
@@ -1223,7 +1265,7 @@ CMakeFiles/kernel.elf.dir/kernel/net/ethernet.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ipv4.c
 CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/ipv4.c
 
 CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.i: cmake_force
@@ -1237,7 +1279,7 @@ CMakeFiles/kernel.elf.dir/kernel/net/ipv4.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/net.c
 CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/net/net.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/net.c
 
 CMakeFiles/kernel.elf.dir/kernel/net/net.c.i: cmake_force
@@ -1251,7 +1293,7 @@ CMakeFiles/kernel.elf.dir/kernel/net/net.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/tcp.c
 CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/tcp.c
 
 CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.i: cmake_force
@@ -1265,7 +1307,7 @@ CMakeFiles/kernel.elf.dir/kernel/net/tcp.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/udp.c
 CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building C object CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/net/udp.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/net/udp.c
 
 CMakeFiles/kernel.elf.dir/kernel/net/udp.c.i: cmake_force
@@ -1279,7 +1321,7 @@ CMakeFiles/kernel.elf.dir/kernel/net/udp.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/kernel_tests.c
 CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building C object CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building C object CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/kernel_tests.c
 
 CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.i: cmake_force
@@ -1293,7 +1335,7 @@ CMakeFiles/kernel.elf.dir/kernel/tests/kernel_tests.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.c
 CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building C object CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Building C object CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj"
 	/opt/elf/bin/x86_64-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj -MF CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj.d -o CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/tests/memory_tests.c
 
 CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.i: cmake_force
@@ -1307,7 +1349,7 @@ CMakeFiles/kernel.elf.dir/kernel/tests/memory_tests.c.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/buddy.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_92) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/buddy.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.i: cmake_force
@@ -1321,7 +1363,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/buddy.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/dma_heap.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_93) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/dma_heap.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.i: cmake_force
@@ -1335,7 +1377,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/dma_heap.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/heap.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_94) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/heap.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.i: cmake_force
@@ -1349,7 +1391,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/heap.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/slab.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_92) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_95) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/mm/slab.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.i: cmake_force
@@ -1363,7 +1405,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/mm/slab.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/initcall.cpp
 CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_93) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_96) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/core/initcall.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.i: cmake_force
@@ -1377,7 +1419,7 @@ CMakeFiles/kernel.elf.dir/kernel/core/initcall.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_driver.cpp
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_94) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_97) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/hid_driver.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.i: cmake_force
@@ -1391,7 +1433,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/hid_driver.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_parser.cpp
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_95) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_98) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_parser.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.i: cmake_force
@@ -1405,7 +1447,7 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_parser.cpp.s: cmake_
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_96) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_99) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cpp.i: cmake_force
@@ -1419,13 +1461,13 @@ CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hid/parser/hid_report_descriptor.cp
 CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/boot/kernel_entry.asm
 CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_97) "Building ASM_NASM object CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_100) "Building ASM_NASM object CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj"
 	/usr/bin/nasm $(ASM_NASM_DEFINES) $(ASM_NASM_INCLUDES) $(ASM_NASM_FLAGS) -MD CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj.d -MT CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj -f elf64 -o CMakeFiles/kernel.elf.dir/boot/kernel_entry.asm.obj /home/v3nn7/Projects/AstraOS/AstraKernel/boot/kernel_entry.asm
 
 CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.cpp
 CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_98) "Building CXX object CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_101) "Building CXX object CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include -MD -MT CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj -MF CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj.d -o CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/lodepng/lodepng/lodepng.cpp
 
 CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.i: cmake_force
@@ -1439,7 +1481,7 @@ CMakeFiles/kernel.elf.dir/lodepng/lodepng/lodepng.cpp.s: cmake_force
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_alloc.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_99) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_102) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_alloc.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.i: cmake_force
@@ -1453,7 +1495,7 @@ CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.cpp.s: cmake_
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj: CMakeFiles/kernel.elf.dir/flags.make
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj: /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj: CMakeFiles/kernel.elf.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_100) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_103) "Building CXX object CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj"
 	/opt/elf/bin/x86_64-elf-c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -DLODEPNG_NO_COMPILE_CPP -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS -Ikernel/include -MD -MT CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj -MF CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj.d -o CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj -c /home/v3nn7/Projects/AstraOS/AstraKernel/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp
 
 CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.i: cmake_force
@@ -1527,6 +1569,9 @@ kernel_elf_OBJECTS = \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.obj" \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.obj" \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.obj" \
+"CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj" \
+"CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj" \
+"CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj" \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj" \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj" \
 "CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj" \
@@ -1631,6 +1676,9 @@ kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/host/xhci_irq.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/hub/usb_hub.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_debug.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/util/usb_helpers.c.obj
+kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_context.c.obj
+kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_debug.c.obj
+kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_device.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_doorbell.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_ring.c.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/drivers/usb/xhci/xhci_transfer.c.obj
@@ -1672,7 +1720,7 @@ kernel.elf: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_alloc.c
 kernel.elf: CMakeFiles/kernel.elf.dir/kernel/arch/x86_64/drivers/lodepng_wrapper.cpp.obj
 kernel.elf: CMakeFiles/kernel.elf.dir/build.make
 kernel.elf: CMakeFiles/kernel.elf.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_101) "Linking CXX executable kernel.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/v3nn7/Projects/AstraOS/AstraKernel/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_104) "Linking CXX executable kernel.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kernel.elf.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

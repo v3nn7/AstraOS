@@ -1,8 +1,10 @@
 #pragma once
 
 #include "usb/usb_core.h"
+#include "usb/xhci_regs.h"  /* Register structures */
 #include "types.h"
 #include "pmm.h"
+#include <stddef.h>  /* For offsetof */
 
 /**
  * XHCI (eXtensible Host Controller Interface) Driver
@@ -11,7 +13,7 @@
  * Supports MSI/MSI-X interrupts and legacy IRQ fallback.
  */
 
-/* XHCI Capability Registers */
+/* XHCI Capability Registers - Offset Macros (for compatibility) */
 #define XHCI_CAPLENGTH           0x00
 #define XHCI_HCIVERSION          0x02
 #define XHCI_HCSPARAMS1          0x04
@@ -21,7 +23,7 @@
 #define XHCI_DBOFF               0x14
 #define XHCI_RTSOFF              0x18
 
-/* XHCI Operational Registers */
+/* XHCI Operational Registers - Offset Macros (for compatibility) */
 #define XHCI_USBCMD              0x00
 #define XHCI_USBSTS              0x04
 #define XHCI_PAGESIZE            0x08
@@ -31,18 +33,27 @@
 #define XHCI_CONFIG              0x38
 
 /* XHCI Runtime Registers */
-#define XHCI_IMAN(n)             (0x00 + ((n) * 0x20))
-#define XHCI_IMOD(n)             (0x04 + ((n) * 0x20))
-#define XHCI_ERSTBA(n)           (0x20 + ((n) * 0x20))
-#define XHCI_ERSTSZ(n)           (0x24 + ((n) * 0x20))
-#define XHCI_ERDP(n)             (0x28 + ((n) * 0x20))
+/* Runtime registers layout:
+ * - mfindex at 0x0
+ * - 7 reserved uint32_t at 0x4-0x20
+ * - Interrupter 0 starts at 0x20
+ * - Each interrupter is 0x20 bytes
+ * - Within interrupter: IMAN(0x00), IMOD(0x04), ERSTSZ(0x08), ERSTBA(0x10), ERDP(0x18)
+ */
+#define XHCI_IMAN(n)             (0x20 + ((n) * 0x20) + 0x00)
+#define XHCI_IMOD(n)             (0x20 + ((n) * 0x20) + 0x04)
+#define XHCI_ERSTSZ(n)           (0x20 + ((n) * 0x20) + 0x08)
+#define XHCI_ERSTBA(n)           (0x20 + ((n) * 0x20) + 0x10)
+#define XHCI_ERDP(n)             (0x20 + ((n) * 0x20) + 0x18)
 
 /* XHCI Runtime Register Bits */
 #define XHCI_ERSTSZ_ERST_SZ_MASK 0xFFFF
 #define XHCI_ERDP_EHB           (1 << 3)
-#define XHCI_CRCR_RCS           (1 << 0)
-#define XHCI_CRCR_CS            (1 << 1)
-#define XHCI_CRCR_CA            (1 << 2)
+#define XHCI_CRCR_RCS           (1ULL << 0)  /* Ring Cycle State */
+#define XHCI_CRCR_CSS           (1ULL << 1)  /* Command Ring Cycle State - CRITICAL! */
+#define XHCI_CRCR_CA            (1ULL << 2)  /* Command Abort */
+#define XHCI_CRCR_CRR           (1ULL << 3)  /* Command Ring Running */
+#define XHCI_CRCR_CS            XHCI_CRCR_CSS  /* Alias for CSS */
 
 /* XHCI Port Registers */
 #define XHCI_PORTSC(n)           (0x400 + ((n) * 0x10))
@@ -70,6 +81,14 @@
 #define XHCI_PORTSC_PLS_SHIFT    5
 #define XHCI_PORTSC_PP           (1 << 9)
 #define XHCI_PORTSC_SPEED_SHIFT  10
+/* Mask of non-RW bits to clear when preserving writable fields during port ops */
+#define XHCI_PORTSC_RW_MASK      (~((uint32_t)(XHCI_PORTSC_CCS | XHCI_PORTSC_PED | (0xF << XHCI_PORTSC_PLS_SHIFT))))
+
+/* USB Speeds (for Slot Context) */
+#define XHCI_SPEED_FULL    1
+#define XHCI_SPEED_LOW     2
+#define XHCI_SPEED_HIGH    3
+#define XHCI_SPEED_SUPER   4
 
 /* TRB Types */
 #define XHCI_TRB_TYPE_NORMAL     1
@@ -148,20 +167,29 @@ typedef struct PACKED {
 #define XHCI_TRB_IDT             (1 << 5)
 #define XHCI_TRB_TLBPC_SHIFT     16
 #define XHCI_TRB_TYPE_SHIFT      10
+#define XHCI_TRB_TYPE_MASK       0x3F  /* 6 bits for TRB type */
 #define XHCI_TRB_TRT_SHIFT       16
 
 /* Event TRB */
 typedef struct PACKED {
-    uint64_t data;
-    uint32_t completion_code:8;
-    uint32_t reserved:8;
-    uint32_t slot_id:8;
-    uint32_t endpoint_id:5;
-    uint32_t reserved2:3;
-    uint32_t trb_type:6;
-    uint32_t cycle:1;
-    uint32_t reserved3:1;
+    uint64_t data; /* Pointer to TRB that completed */
+    uint32_t status; /* Status field: completion_code[7:0], transfer_length[23:8], etc. */
+    uint32_t control; /* Control field: slot_id, endpoint_id, trb_type, cycle */
 } xhci_event_trb_t;
+
+/* Event TRB Status Field Bits */
+#define XHCI_EVENT_TRB_COMPLETION_CODE_MASK 0xFF
+#define XHCI_EVENT_TRB_TRANSFER_LENGTH_SHIFT 16
+#define XHCI_EVENT_TRB_TRANSFER_LENGTH_MASK 0x1FFFF
+
+/* Event TRB Control Field Bits */
+#define XHCI_EVENT_TRB_SLOT_ID_SHIFT 24
+#define XHCI_EVENT_TRB_SLOT_ID_MASK 0xFF
+#define XHCI_EVENT_TRB_ENDPOINT_ID_SHIFT 16
+#define XHCI_EVENT_TRB_ENDPOINT_ID_MASK 0x1F
+#define XHCI_EVENT_TRB_TYPE_SHIFT 10
+#define XHCI_EVENT_TRB_TYPE_MASK 0x3F
+#define XHCI_EVENT_TRB_CYCLE_BIT (1 << 0)
 
 /* Transfer Ring */
 typedef struct {
@@ -259,10 +287,10 @@ typedef struct PACKED {
 
 /* XHCI Controller Private Data */
 typedef struct {
-    void *cap_regs;
-    void *op_regs;
-    void *rt_regs;
-    void *doorbell_regs;
+    xhci_cap_regs_t *cap_regs;          // Capability Registers (MMIO mapped)
+    xhci_op_regs_t *op_regs;            // Operational Registers (MMIO mapped)
+    xhci_rt_regs_t *rt_regs;            // Runtime Registers (MMIO mapped)
+    xhci_doorbell_regs_t *doorbell_regs; // Doorbell Registers (MMIO mapped)
     uint32_t cap_length;
     uint32_t hci_version;
     uint32_t num_slots;
@@ -281,6 +309,7 @@ typedef struct {
     uint64_t *dcbaap; /* Device Context Base Address Array */
     uint8_t slot_allocated[32];
     uint32_t port_status[32];
+    struct usb_transfer *active_control_transfers[32]; /* Active control transfers per slot */
 } xhci_controller_t;
 
 /* XHCI Functions */
@@ -304,7 +333,7 @@ int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t end
 void xhci_transfer_ring_free(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
 int xhci_cmd_ring_enqueue(xhci_command_ring_t *ring, xhci_trb_t *trb);
 int xhci_transfer_ring_enqueue(xhci_transfer_ring_t *ring, xhci_trb_t *trb);
-int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb);
+int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb, void *rt_regs);
 void xhci_build_trb(xhci_trb_t *trb, uint64_t data_ptr, uint32_t length, uint32_t type, uint32_t flags);
 void xhci_build_link_trb(xhci_trb_t *trb, uint64_t next_ring_addr, uint8_t toggle_cycle);
 
@@ -312,10 +341,38 @@ void xhci_build_link_trb(xhci_trb_t *trb, uint64_t next_ring_addr, uint8_t toggl
 int xhci_submit_control_transfer(xhci_controller_t *xhci, usb_transfer_t *transfer);
 int xhci_process_events(xhci_controller_t *xhci);
 
+/* XHCI Context Functions */
+xhci_input_context_t *xhci_input_context_alloc(void);
+void xhci_input_context_free(xhci_input_context_t *ctx);
+void xhci_input_context_set_slot(xhci_input_context_t *ctx, uint8_t slot_id, uint8_t root_port,
+                                  uint8_t speed, uint8_t address, bool hub, uint8_t parent_slot,
+                                  uint8_t parent_port);
+void xhci_input_context_set_ep0(xhci_input_context_t *ctx, xhci_transfer_ring_t *transfer_ring,
+                                 uint16_t max_packet_size);
+phys_addr_t xhci_input_context_get_phys(xhci_input_context_t *ctx);
+
+/* XHCI Device Functions */
+uint32_t xhci_enable_slot(xhci_controller_t *xhci);
+int xhci_address_device(xhci_controller_t *xhci, uint32_t slot_id, xhci_input_context_t *input_ctx,
+                        uint64_t input_ctx_phys);
+void xhci_handle_command_completion(xhci_controller_t *xhci, xhci_event_trb_t *event);
+
 /* XHCI Doorbell Functions */
 void xhci_ring_cmd_doorbell(xhci_controller_t *xhci);
 void xhci_ring_doorbell(xhci_controller_t *xhci, uint8_t slot, uint8_t endpoint, uint16_t stream_id);
 
 /* XHCI Interrupt Functions */
 void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector);
+
+/* XHCI Debug Functions */
+const char *xhci_trb_type_str(uint8_t type);
+void xhci_dump_trb(const char *label, xhci_trb_t *trb);
+void xhci_dump_trb_level(int log_level, const char *label, xhci_trb_t *trb);
+void xhci_dump_event_trb(const char *label, xhci_event_trb_t *event);
+
+/* XHCI Trace Functions */
+void xhci_trace_cmd_ring(xhci_controller_t *xhci);
+void xhci_trace_event_ring(xhci_controller_t *xhci);
+void xhci_trace_transfer_ring(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
+void xhci_trace_controller(xhci_controller_t *xhci);
 

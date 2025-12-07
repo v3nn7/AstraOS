@@ -152,7 +152,8 @@ int usb_device_set_configuration(usb_device_t *dev, uint8_t config) {
     dev->active_configuration = config;
     dev->state = USB_DEVICE_STATE_CONFIGURED;
 
-    klog_printf(KLOG_INFO, "usb_device: set configuration %d", config);
+    klog_printf(KLOG_INFO, "usb_device: set configuration %d (state changed to CONFIGURED=%d)", 
+                config, dev->state);
     return 0;
 }
 

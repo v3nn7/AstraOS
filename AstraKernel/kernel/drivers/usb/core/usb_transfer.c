@@ -184,22 +184,72 @@ int usb_control_transfer(usb_device_t *dev, uint8_t bmRequestType, uint8_t bRequ
     /* Build setup packet */
     usb_build_setup_packet(transfer->setup, bmRequestType, bRequest, wValue, wIndex, wLength);
 
+    /* Log setup packet */
+    klog_printf(KLOG_DEBUG, "usb_transfer: control transfer setup: bmRequestType=0x%02x bRequest=0x%02x wValue=0x%04x wIndex=0x%04x wLength=%u",
+                bmRequestType, bRequest, wValue, wIndex, wLength);
+
     /* Copy data for OUT transfers */
     if ((bmRequestType & USB_ENDPOINT_DIR_IN) == 0 && data && wLength > 0) {
         memcpy(transfer->buffer, data, wLength);
+        /* Hex dump OUT data */
+        klog_printf(KLOG_DEBUG, "usb_transfer: OUT buffer (%u bytes):", wLength);
+        for (uint16_t i = 0; i < wLength && i < 64; i++) {
+            if (i % 16 == 0) {
+                klog_printf(KLOG_DEBUG, "  %04x:", i);
+            }
+            klog_printf(KLOG_DEBUG, " %02x", ((uint8_t *)data)[i]);
+            if (i % 16 == 15 || i == wLength - 1) {
+                klog_printf(KLOG_DEBUG, "");
+            }
+        }
+    } else if ((bmRequestType & USB_ENDPOINT_DIR_IN) != 0 && wLength > 0) {
+        /* Zero IN buffer before transfer */
+        k_memset(transfer->buffer, 0, wLength);
     }
 
     /* Submit transfer */
     int ret = usb_transfer_submit(transfer);
     if (ret != 0) {
+        klog_printf(KLOG_ERROR, "usb_transfer: transfer submit failed, ret=%d", ret);
         usb_transfer_free(transfer);
         return ret;
     }
+
+    /* Log transfer result */
+    klog_printf(KLOG_DEBUG, "usb_transfer: transfer completed: status=%d actual_length=%zu",
+                transfer->status, transfer->actual_length);
 
     /* Copy data for IN transfers */
     if ((bmRequestType & USB_ENDPOINT_DIR_IN) != 0 && data && transfer->actual_length > 0) {
         size_t copy_len = (transfer->actual_length < wLength) ? transfer->actual_length : wLength;
         memcpy(data, transfer->buffer, copy_len);
+        
+        /* Hex dump IN data */
+        klog_printf(KLOG_DEBUG, "usb_transfer: IN buffer (%zu bytes):", copy_len);
+        for (size_t i = 0; i < copy_len && i < 64; i++) {
+            if (i % 16 == 0) {
+                klog_printf(KLOG_DEBUG, "  %04zx:", i);
+            }
+            klog_printf(KLOG_DEBUG, " %02x", ((uint8_t *)data)[i]);
+            if (i % 16 == 15 || i == copy_len - 1) {
+                klog_printf(KLOG_DEBUG, "");
+            }
+        }
+    } else if ((bmRequestType & USB_ENDPOINT_DIR_IN) != 0 && transfer->actual_length == 0) {
+        klog_printf(KLOG_WARN, "usb_transfer: IN transfer returned 0 bytes!");
+        /* Hex dump buffer anyway to see if it's all zeros */
+        if (transfer->buffer && wLength > 0) {
+            klog_printf(KLOG_DEBUG, "usb_transfer: transfer buffer (%u bytes, may be zeros):", wLength);
+            for (uint16_t i = 0; i < wLength && i < 64; i++) {
+                if (i % 16 == 0) {
+                    klog_printf(KLOG_DEBUG, "  %04x:", i);
+                }
+                klog_printf(KLOG_DEBUG, " %02x", ((uint8_t *)transfer->buffer)[i]);
+                if (i % 16 == 15 || i == wLength - 1) {
+                    klog_printf(KLOG_DEBUG, "");
+                }
+            }
+        }
     }
 
     ret = (transfer->status == USB_TRANSFER_SUCCESS) ? (int)transfer->actual_length : -1;

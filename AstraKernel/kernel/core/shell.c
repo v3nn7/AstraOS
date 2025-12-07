@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "string.h"
 #include "installer.h"
+#include "input/input_core.h"
 
 #define CHAR_W 8
 #define CHAR_H 16
@@ -22,6 +23,7 @@ static const uint32_t COLOR_SHADOW = 0xAA000000;
 
 static char cmd_buf[CMD_MAX];
 static int cmd_len = 0;
+static int cursor_pos = 0; /* Cursor position in command buffer */
 
 /* HISTORY */
 static char history[HISTORY_MAX][CMD_MAX];
@@ -79,14 +81,24 @@ static void header_bar() {
 /* ============================ backspace ============================ */
 
 static void backspace() {
-    if (cmd_len <= 0) return;
+    if (cursor_pos <= 0) return;
 
+    /* Shift characters left */
+    for (int i = cursor_pos - 1; i < cmd_len; i++) {
+        cmd_buf[i] = cmd_buf[i + 1];
+    }
     cmd_len--;
+    cursor_pos--;
 
-    if (cursor_x >= SHELL_LEFT + CHAR_W)
-        cursor_x -= CHAR_W;
-
-    fb_draw_char(cursor_x, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
+    /* Redraw line */
+    cursor_x = SHELL_LEFT + CHAR_W;
+    for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
+        fb_draw_char(cursor_x + i * CHAR_W, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
+    cursor_x = SHELL_LEFT + CHAR_W;
+    for (int i = 0; i < cmd_len; i++) {
+        fb_draw_char(cursor_x + i * CHAR_W, cursor_y, cmd_buf[i], COLOR_TEXT, COLOR_BG);
+    }
+    cursor_x = SHELL_LEFT + CHAR_W + cursor_pos * CHAR_W;
 }
 
 /* ============================ prompt ============================ */
@@ -114,6 +126,7 @@ static void history_add(const char *cmd) {
 static void history_load(int idx) {
     cmd_len = strlen(history[idx]);
     strcpy(cmd_buf, history[idx]);
+    cursor_pos = cmd_len; /* Cursor at end */
 
     cursor_x = SHELL_LEFT;
     for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
@@ -123,7 +136,7 @@ static void history_load(int idx) {
     for (int i = 0; i < cmd_len; i++)
         fb_draw_char(cursor_x + i * CHAR_W, cursor_y, cmd_buf[i], COLOR_TEXT, COLOR_BG);
 
-    cursor_x = SHELL_LEFT + CHAR_W + cmd_len * CHAR_W;
+    cursor_x = SHELL_LEFT + CHAR_W + cursor_pos * CHAR_W;
 }
 
 /* ============================ AUTOCOMPLETE ============================ */
@@ -237,6 +250,7 @@ void shell_run() {
     printf("shell: ready, entering main loop\n");
 
     cmd_len = 0;
+    cursor_pos = 0;
     history_pos = -1;
 
     /* Test: draw a test pixel to verify framebuffer works */
@@ -312,20 +326,133 @@ void shell_run() {
             }
         }
         
-        char ch;
+        /* Poll input events (supports both ASCII chars and keycodes) */
+        input_event_t event;
+        bool has_input = false;
+        char ch = 0;
+        uint32_t keycode = 0;
         
-        /* Read from keyboard buffer (IRQ-driven PS/2 or USB HID) */
-        if (!keyboard_read_char(&ch)) {
+        /* Try to get input event */
+        if (input_event_poll(&event)) {
+            has_input = true;
+            
+            if (event.type == INPUT_EVENT_KEY_CHAR) {
+                /* ASCII character event */
+                ch = event.key.ascii;
+            } else if (event.type == INPUT_EVENT_KEY_PRESS) {
+                /* Key press event (for special keys like arrows) */
+                keycode = event.key.keycode;
+            } else {
+                /* Other event types (mouse, etc.) - ignore for shell */
+                has_input = false;
+            }
+        }
+        
+        /* Fallback: try legacy keyboard_read_char for compatibility */
+        if (!has_input) {
+            if (keyboard_read_char(&ch)) {
+                has_input = true;
+            }
+        }
+        
+        if (!has_input) {
             /* No input available - small delay to avoid busy loop */
             for (volatile int i = 0; i < 10000; i++);
             continue;
         }
 
-        /* --- special keys --- */
+        /* --- Handle keycode events (special keys) --- */
+        
+        if (keycode != 0) {
+            /* Arrow Up (HID usage 0x52) */
+            if (keycode == 0x52) {
+                if (history_len > 0) {
+                    if (history_pos < history_len - 1)
+                        history_pos++;
+                    history_load(history_len - 1 - history_pos);
+                }
+                continue;
+            }
+            
+            /* Arrow Down (HID usage 0x51) */
+            if (keycode == 0x51) {
+                if (history_pos > 0) {
+                    history_pos--;
+                    history_load(history_len - 1 - history_pos);
+                } else {
+                    /* Clear command line */
+                    cmd_len = 0;
+                    cursor_pos = 0;
+                    cmd_buf[0] = 0;
+                    cursor_x = SHELL_LEFT;
+                    for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
+                        fb_draw_char(cursor_x + i * CHAR_W, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
+                    cursor_x = SHELL_LEFT + CHAR_W;
+                }
+                continue;
+            }
+            
+            /* Arrow Left (HID usage 0x50) - move cursor left */
+            if (keycode == 0x50) {
+                if (cursor_pos > 0) {
+                    cursor_pos--;
+                    cursor_x -= CHAR_W;
+                }
+                continue;
+            }
+            
+            /* Arrow Right (HID usage 0x4F) - move cursor right */
+            if (keycode == 0x4F) {
+                if (cursor_pos < cmd_len) {
+                    cursor_pos++;
+                    cursor_x += CHAR_W;
+                }
+                continue;
+            }
+            
+            /* Home (HID usage 0x4A) - move to start */
+            if (keycode == 0x4A) {
+                cursor_pos = 0;
+                cursor_x = SHELL_LEFT + CHAR_W;
+                continue;
+            }
+            
+            /* End (HID usage 0x4D) - move to end */
+            if (keycode == 0x4D) {
+                cursor_pos = cmd_len;
+                cursor_x = SHELL_LEFT + CHAR_W + cursor_pos * CHAR_W;
+                continue;
+            }
+            
+            /* Delete (HID usage 0x4C) - delete character at cursor */
+            if (keycode == 0x4C) {
+                if (cursor_pos < cmd_len) {
+                    /* Shift characters left */
+                    for (int i = cursor_pos; i < cmd_len; i++) {
+                        cmd_buf[i] = cmd_buf[i + 1];
+                    }
+                    cmd_len--;
+                    /* Redraw line */
+                    cursor_x = SHELL_LEFT + CHAR_W;
+                    for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
+                        fb_draw_char(cursor_x + i * CHAR_W, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
+                    cursor_x = SHELL_LEFT + CHAR_W;
+                    for (int i = 0; i < cmd_len; i++) {
+                        fb_draw_char(cursor_x + i * CHAR_W, cursor_y, cmd_buf[i], COLOR_TEXT, COLOR_BG);
+                    }
+                    cursor_x = SHELL_LEFT + CHAR_W + cursor_pos * CHAR_W;
+                }
+                continue;
+            }
+            
+            /* Ignore other keycodes without ASCII representation */
+            continue;
+        }
+
+        /* --- Handle ASCII character events --- */
 
         if (ch == '\b') { // backspace
             backspace();
-            if (cmd_len >= 0) cmd_buf[cmd_len] = 0;
             continue;
         }
 
@@ -334,6 +461,7 @@ void shell_run() {
             print("\n");
             run_command();
             cmd_len = 0;
+            cursor_pos = 0;
             cmd_buf[0] = 0;
             history_pos = -1;
             prompt();
@@ -354,43 +482,29 @@ void shell_run() {
             continue;
         }
 
-        unsigned char code = (unsigned char)ch;
-
-        /* UP arrow (0x80 marker — you disabled extended keys so using hack) */
-        if (code == 0x80) {  // fake code — replace when you add real arrow keys
-            if (history_len > 0) {
-                if (history_pos < history_len - 1)
-                    history_pos++;
-
-                history_load(history_len - 1 - history_pos);
-            }
-            continue;
-        }
-
-        /* DOWN arrow (fake for now) */
-        if (code == 0x81) {
-            if (history_pos > 0) {
-                history_pos--;
-                history_load(history_len - 1 - history_pos);
-            } else {
-                // clear
-                cmd_len = 0;
-                cmd_buf[0] = 0;
-
-                cursor_x = SHELL_LEFT;
-                for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
-                    fb_draw_char(cursor_x + i * CHAR_W, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
-
-                cursor_x = SHELL_LEFT + CHAR_W;
-            }
-            continue;
-        }
-
         /* --- normal characters --- */
 
         if (cmd_len < CMD_MAX - 1) {
-            cmd_buf[cmd_len++] = ch;
-            putc_fb(ch);
+            /* Insert character at cursor position */
+            if (cursor_pos < cmd_len) {
+                /* Shift characters right */
+                for (int i = cmd_len; i > cursor_pos; i--) {
+                    cmd_buf[i] = cmd_buf[i - 1];
+                }
+            }
+            cmd_buf[cursor_pos] = ch;
+            cmd_len++;
+            cursor_pos++;
+            
+            /* Redraw line */
+            cursor_x = SHELL_LEFT + CHAR_W;
+            for (uint32_t i = 0; i < fb_width() / CHAR_W; i++)
+                fb_draw_char(cursor_x + i * CHAR_W, cursor_y, ' ', COLOR_TEXT, COLOR_BG);
+            cursor_x = SHELL_LEFT + CHAR_W;
+            for (int i = 0; i < cmd_len; i++) {
+                fb_draw_char(cursor_x + i * CHAR_W, cursor_y, cmd_buf[i], COLOR_TEXT, COLOR_BG);
+            }
+            cursor_x = SHELL_LEFT + CHAR_W + cursor_pos * CHAR_W;
         }
     }
 }

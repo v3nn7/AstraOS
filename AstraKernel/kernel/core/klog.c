@@ -23,7 +23,121 @@ static int kvsnprintf(char *out, size_t out_sz, const char *fmt, __builtin_va_li
             continue;
         }
         ++fmt;
+        
+        /* Parse width specifier and zero padding (e.g., %04x) */
+        int width = 0;
+        bool zero_pad = false;
+        if (*fmt == '0') {
+            zero_pad = true;
+            ++fmt;
+            while (*fmt >= '0' && *fmt <= '9') {
+                width = width * 10 + (*fmt - '0');
+                ++fmt;
+            }
+        } else if (*fmt >= '1' && *fmt <= '9') {
+            while (*fmt >= '0' && *fmt <= '9') {
+                width = width * 10 + (*fmt - '0');
+                ++fmt;
+            }
+        }
+        
+        /* Handle %llx - long long hex */
+        if (*fmt == 'l' && fmt[1] == 'l' && fmt[2] == 'x') {
+            uint64_t v = __builtin_va_arg(ap, uint64_t);
+            char tmp[32];
+            int idx = 0;
+            if (v == 0) tmp[idx++] = '0';
+            while (v && idx < (int)sizeof(tmp)) {
+                uint64_t d = v & 0xF;
+                tmp[idx++] = (char)(d < 10 ? '0' + d : 'a' + (d - 10));
+                v >>= 4;
+            }
+            /* Apply zero padding */
+            while (idx < width && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = '0';
+            }
+            while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+            fmt += 3;
+            continue;
+        }
+        
+        /* Handle %lu - unsigned long */
+        if (*fmt == 'l' && fmt[1] == 'u') {
+            uint64_t v = __builtin_va_arg(ap, unsigned long);
+            char tmp[32];
+            int idx = 0;
+            if (v == 0) tmp[idx++] = '0';
+            while (v && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = (char)('0' + (v % 10));
+                v /= 10;
+            }
+            /* Apply zero padding */
+            while (idx < width && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = '0';
+            }
+            while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+            fmt += 2;
+            continue;
+        }
+        
+        /* Handle %zu - size_t (unsigned long on x86_64) */
+        if (*fmt == 'z' && fmt[1] == 'u') {
+            uint64_t v = __builtin_va_arg(ap, unsigned long); /* size_t is unsigned long on x86_64 */
+            char tmp[32];
+            int idx = 0;
+            if (v == 0) tmp[idx++] = '0';
+            while (v && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = (char)('0' + (v % 10));
+                v /= 10;
+            }
+            /* Apply zero padding */
+            while (idx < width && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = '0';
+            }
+            while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+            fmt += 2;
+            continue;
+        }
+        
+        /* Handle %zd - ssize_t (signed long on x86_64) */
+        if (*fmt == 'z' && fmt[1] == 'd') {
+            int64_t v = __builtin_va_arg(ap, long); /* ssize_t is signed long on x86_64 */
+            char tmp[32];
+            int idx = 0;
+            bool neg = v < 0;
+            uint64_t u = neg ? (uint64_t)(-v) : (uint64_t)v;
+            if (u == 0) tmp[idx++] = '0';
+            while (u && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = '0' + (u % 10);
+                u /= 10;
+            }
+            /* Apply zero padding */
+            while (idx < width && idx < (int)sizeof(tmp)) {
+                tmp[idx++] = '0';
+            }
+            if (neg && pos + 1 < out_sz) out[pos++] = '-';
+            while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+            fmt += 2;
+            continue;
+        }
+        
         switch (*fmt) {
+            case 'u': {
+                unsigned int v = __builtin_va_arg(ap, unsigned int);
+                char tmp[32];
+                int idx = 0;
+                if (v == 0) tmp[idx++] = '0';
+                while (v && idx < (int)sizeof(tmp)) {
+                    tmp[idx++] = (char)('0' + (v % 10));
+                    v /= 10;
+                }
+                /* Apply zero padding */
+                while (idx < width && idx < (int)sizeof(tmp)) {
+                    tmp[idx++] = '0';
+                }
+                while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+                break;
+            }
             case 's': {
                 const char *s = __builtin_va_arg(ap, const char *);
                 if (!s) s = "(null)";
@@ -41,35 +155,45 @@ static int kvsnprintf(char *out, size_t out_sz, const char *fmt, __builtin_va_li
                     tmp[idx++] = '0' + (u % 10);
                     u /= 10;
                 }
+                /* Apply zero padding */
+                while (idx < width && idx < (int)sizeof(tmp)) {
+                    tmp[idx++] = '0';
+                }
                 if (neg && pos + 1 < out_sz) out[pos++] = '-';
                 while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
                 break;
             }
-            case 'u': {
-                uint64_t v = __builtin_va_arg(ap, unsigned int);
+            case 'x': {
+                unsigned int v = __builtin_va_arg(ap, unsigned int);
                 char tmp[32];
                 int idx = 0;
-                if (v == 0) tmp[idx++] = '0';
-                while (v && idx < (int)sizeof(tmp)) {
-                    tmp[idx++] = (char)('0' + (v % 10));
-                    v /= 10;
-                }
-                while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
-                break;
-            }
-            case 'x':
-            case 'p': {
-                uint64_t v = (uint64_t)__builtin_va_arg(ap, void *);
-                char tmp[32];
-                int idx = 0;
-                if (*fmt == 'p') {
-                    if (pos + 2 < out_sz) { out[pos++] = '0'; out[pos++] = 'x'; }
-                }
                 if (v == 0) tmp[idx++] = '0';
                 while (v && idx < (int)sizeof(tmp)) {
                     uint64_t d = v & 0xF;
                     tmp[idx++] = (char)(d < 10 ? '0' + d : 'a' + (d - 10));
                     v >>= 4;
+                }
+                /* Apply zero padding */
+                while (idx < width && idx < (int)sizeof(tmp)) {
+                    tmp[idx++] = '0';
+                }
+                while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
+                break;
+            }
+            case 'p': {
+                uint64_t v = (uint64_t)__builtin_va_arg(ap, void *);
+                char tmp[32];
+                int idx = 0;
+                if (pos + 2 < out_sz) { out[pos++] = '0'; out[pos++] = 'x'; }
+                if (v == 0) tmp[idx++] = '0';
+                while (v && idx < (int)sizeof(tmp)) {
+                    uint64_t d = v & 0xF;
+                    tmp[idx++] = (char)(d < 10 ? '0' + d : 'a' + (d - 10));
+                    v >>= 4;
+                }
+                /* Apply zero padding */
+                while (idx < width && idx < (int)sizeof(tmp)) {
+                    tmp[idx++] = '0';
                 }
                 while (idx-- && pos + 1 < out_sz) out[pos++] = tmp[idx];
                 break;

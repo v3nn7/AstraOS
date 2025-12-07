@@ -49,11 +49,23 @@ void usb_dump_event_trb(const xhci_event_trb_t *trb) {
     
     printf("Event TRB @ %p:\n", trb);
     printf("  Data:           0x%016llx\n", (unsigned long long)trb->data);
-    printf("  Completion Code: %u\n", trb->completion_code);
-    printf("  Slot ID:        %u\n", trb->slot_id);
-    printf("  Endpoint ID:    %u\n", trb->endpoint_id);
-    printf("  TRB Type:       %u\n", trb->trb_type);
-    printf("  Cycle:          %u\n", trb->cycle);
+    printf("  Status:         0x%08x\n", trb->status);
+    printf("  Control:        0x%08x\n", trb->control);
+    
+    /* Extract fields from status and control */
+    uint8_t completion_code = trb->status & XHCI_EVENT_TRB_COMPLETION_CODE_MASK;
+    uint32_t transfer_length = (trb->status >> XHCI_EVENT_TRB_TRANSFER_LENGTH_SHIFT) & XHCI_EVENT_TRB_TRANSFER_LENGTH_MASK;
+    uint8_t slot_id = (trb->control >> XHCI_EVENT_TRB_SLOT_ID_SHIFT) & XHCI_EVENT_TRB_SLOT_ID_MASK;
+    uint8_t endpoint_id = (trb->control >> XHCI_EVENT_TRB_ENDPOINT_ID_SHIFT) & XHCI_EVENT_TRB_ENDPOINT_ID_MASK;
+    uint8_t trb_type = (trb->control >> XHCI_EVENT_TRB_TYPE_SHIFT) & XHCI_EVENT_TRB_TYPE_MASK;
+    uint8_t cycle = (trb->control & XHCI_EVENT_TRB_CYCLE_BIT) ? 1 : 0;
+    
+    printf("  Completion Code: %u\n", completion_code);
+    printf("  Transfer Length: %u\n", transfer_length);
+    printf("  Slot ID:        %u\n", slot_id);
+    printf("  Endpoint ID:    %u\n", endpoint_id);
+    printf("  TRB Type:       %u\n", trb_type);
+    printf("  Cycle:          %u\n", cycle);
 }
 
 /**

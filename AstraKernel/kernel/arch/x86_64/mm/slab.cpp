@@ -3,6 +3,8 @@
 #include "string.h"
 #include "kernel.h"
 #include "memory.h"
+#include "vmm.h"
+#include "pmm.h"
 
 using namespace mm;
 
@@ -54,7 +56,15 @@ bool SlabAllocator::validate_ptr(void *ptr, slab_page **out_page, int *out_idx) 
 slab_page *SlabAllocator::new_page(size_t class_size) {
     void *page_phys = pmm_alloc_page();
     if (!page_phys) return nullptr;
-    uint8_t *page = (uint8_t *)((uint64_t)page_phys + pmm_hhdm_offset);
+    
+    uint64_t page_phys_addr = (uint64_t)page_phys;
+    uint64_t page_virt = pmm_hhdm_offset + page_phys_addr;
+    
+    /* CRITICAL: Map page in VMM to ensure it's accessible */
+    /* Even if HHDM is used, we need explicit VMM mapping */
+    vmm_map(page_virt, page_phys_addr, PAGE_PRESENT | PAGE_WRITE);
+    
+    uint8_t *page = (uint8_t *)page_virt;
     k_memset(page, 0, PAGE_SIZE);
 
     slab_page *hdr = (slab_page *)page;

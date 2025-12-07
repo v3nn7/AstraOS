@@ -185,7 +185,7 @@ add_custom_target(iso ALL
 
 add_custom_target(run_bios
     COMMAND qemu-system-x86_64
-        -machine pc
+        -machine q35
         -vga virtio
         -display sdl
         -m 4096M
@@ -194,8 +194,9 @@ add_custom_target(run_bios
         -cdrom ${CMAKE_BINARY_DIR}/AstraOS.iso
         -boot d
         -device qemu-xhci,id=xhci
-        -device usb-kbd
-        -device usb-mouse
+        -device usb-kbd,bus=xhci.0
+        -device usb-mouse,bus=xhci.0
+        -nodefaults
     DEPENDS iso
 )
 
@@ -205,9 +206,10 @@ if(OVMF_CODE AND OVMF_VARS_SRC)
             -machine q35
             -cpu qemu64
             -m 2048M
-            -device qemu-xhci,id=xhci,p2=8,p3=8
-            -device usb-kbd
-            -device usb-mouse
+            -device qemu-xhci,id=xhci
+            -device usb-kbd,bus=xhci.0
+            -device usb-mouse,bus=xhci.0
+            -device usb-tablet,bus=xhci.0
             -vga virtio
             -display sdl
             -drive if=pflash,format=raw,readonly=on,file=${OVMF_CODE}
@@ -215,6 +217,7 @@ if(OVMF_CODE AND OVMF_VARS_SRC)
             -drive format=raw,file=${CMAKE_BINARY_DIR}/AstraOS.iso
             -serial stdio
             -no-reboot -no-shutdown
+            -nodefaults
         DEPENDS iso ovmf_vars
     )
 else()

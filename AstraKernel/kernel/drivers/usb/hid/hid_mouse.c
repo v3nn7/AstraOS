@@ -37,13 +37,21 @@ void usb_hid_scan_devices(void) {
         if (!dev) continue;
         
         devices_checked++;
-        klog_printf(KLOG_INFO, "usb_hid: checking device at address %d (class=0x%02x, VID:PID=%04x:%04x)",
-                    addr, dev->device_class, dev->vendor_id, dev->product_id);
+        klog_printf(KLOG_INFO, "usb_hid: checking device at address %d (class=0x%02x has_hid=%d state=%d, VID:PID=%04x:%04x)",
+                    addr, dev->device_class, dev->has_hid ? 1 : 0, dev->state,
+                    dev->vendor_id, dev->product_id);
         
-        /* Check if device is HID class */
-        if (dev->device_class == 0x03) { /* HID Class */
-            klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x at address %d",
-                        dev->vendor_id, dev->product_id, addr);
+        /* Check if device is HID class OR has has_hid flag set */
+        if (dev->device_class == 0x03 || dev->has_hid) { /* HID Class */
+            klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x at address %d (class=0x%02x has_hid=%d)",
+                        dev->vendor_id, dev->product_id, addr, dev->device_class, dev->has_hid ? 1 : 0);
+            
+            /* Verify device is in CONFIGURED state */
+            if (dev->state != USB_DEVICE_STATE_CONFIGURED) {
+                klog_printf(KLOG_WARN, "usb_hid: device at address %d is not in CONFIGURED state (state=%d), skipping",
+                            addr, dev->state);
+                continue;
+            }
             
             /* Try to probe device */
             if (usb_hid_probe_device(dev) == 0) {
@@ -68,7 +76,12 @@ void usb_hid_scan_devices(void) {
                         usb_hid_register_keyboard(dev);
                     }
                 }
+            } else {
+                klog_printf(KLOG_DEBUG, "usb_hid: probe failed for device at address %d", addr);
             }
+        } else {
+            klog_printf(KLOG_DEBUG, "usb_hid: device at address %d is not HID (class=0x%02x has_hid=%d)",
+                        addr, dev->device_class, dev->has_hid ? 1 : 0);
         }
     }
     

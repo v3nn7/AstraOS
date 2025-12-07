@@ -112,6 +112,10 @@ typedef struct usb_device usb_device_t;
 typedef struct usb_host_controller usb_host_controller_t;
 typedef struct usb_transfer usb_transfer_t;
 typedef struct usb_endpoint usb_endpoint_t;
+/* Forward declarations for descriptor types */
+struct usb_interface_descriptor;
+struct usb_hid_descriptor;
+struct usb_endpoint_descriptor;
 
 /* USB Transfer Callback */
 typedef void (*usb_transfer_callback_t)(usb_transfer_t *transfer);
@@ -204,6 +208,37 @@ struct usb_device {
     size_t descriptors_size;
     void *driver_data; /* Driver-specific data */
     struct usb_device *next;
+    /* HID-specific fields (set during enumeration) */
+    /* Note: These are defined in usb_descriptors.h, but we use forward declarations here */
+    struct {
+        uint8_t bLength;
+        uint8_t bDescriptorType;
+        uint8_t bInterfaceNumber;
+        uint8_t bAlternateSetting;
+        uint8_t bNumEndpoints;
+        uint8_t bInterfaceClass;
+        uint8_t bInterfaceSubClass;
+        uint8_t bInterfaceProtocol;
+        uint8_t iInterface;
+    } hid_interface; /* HID interface descriptor */
+    struct {
+        uint8_t bLength;
+        uint8_t bDescriptorType;
+        uint16_t bcdHID;
+        uint8_t bCountryCode;
+        uint8_t bNumDescriptors;
+        uint8_t bDescriptorType2;
+        uint16_t wDescriptorLength;
+    } hid_desc; /* HID descriptor */
+    struct {
+        uint8_t bLength;
+        uint8_t bDescriptorType;
+        uint8_t bEndpointAddress;
+        uint8_t bmAttributes;
+        uint16_t wMaxPacketSize;
+        uint8_t bInterval;
+    } hid_intr_endpoint; /* HID interrupt IN endpoint */
+    bool has_hid; /* True if device has HID interface */
 };
 
 /* USB Core Functions */

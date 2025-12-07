@@ -21,6 +21,10 @@ extern "C" {
 #include "input/input_core.h"
 }
 
+/* Global flags for USB HID device detection */
+bool usb_hid_keyboard_found = false;
+bool usb_hid_mouse_found = false;
+
 /* HID Device Private Data */
 typedef struct {
     usb_device_t *device;
@@ -58,12 +62,27 @@ void hid_init(void) {
 int usb_hid_probe_device(usb_device_t *dev) {
     if (!dev) return -1;
 
+    klog_printf(KLOG_DEBUG, "usb_hid: probing device address=%d VID:PID=%04x:%04x class=0x%02x subclass=0x%02x protocol=0x%02x has_hid=%d state=%d",
+                dev->address, dev->vendor_id, dev->product_id,
+                dev->device_class, dev->device_subclass, dev->device_protocol,
+                dev->has_hid ? 1 : 0, dev->state);
+
     /* Check if device is HID class at device level */
     if (dev->device_class == 0x03) { /* HID Class */
-        klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x (device class)",
+        klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x (device class match)",
                     dev->vendor_id, dev->product_id);
         return 0;
     }
+    
+    /* Also check has_hid flag set during enumeration */
+    if (dev->has_hid) {
+        klog_printf(KLOG_INFO, "usb_hid: found HID device VID:PID=%04x:%04x (has_hid flag set during enumeration)",
+                    dev->vendor_id, dev->product_id);
+        return 0;
+    }
+    
+    klog_printf(KLOG_DEBUG, "usb_hid: device not recognized as HID (class=0x%02x has_hid=%d)",
+                dev->device_class, dev->has_hid ? 1 : 0);
 
     /* Check interfaces - look for HID interface in configuration */
     /* According to OSDev: HID class is often 0 at device level, check interface level */
@@ -744,6 +763,45 @@ void usb_hid_process_keyboard_report(usb_device_t *dev, uint8_t *report, size_t 
             } else if (keys[i] == 0x38) {
                 /* Slash */
                 input_key_char(hid->input_dev, '/');
+            } else if (keys[i] == 0x4F) {
+                /* Arrow Right */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x50) {
+                /* Arrow Left */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x51) {
+                /* Arrow Down */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x52) {
+                /* Arrow Up */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x29) {
+                /* Escape */
+                input_key_char(hid->input_dev, '\x1B');
+            } else if (keys[i] == 0x2A) {
+                /* Backspace */
+                input_key_char(hid->input_dev, '\b');
+            } else if (keys[i] == 0x2B) {
+                /* Tab */
+                input_key_char(hid->input_dev, '\t');
+            } else if (keys[i] == 0x49) {
+                /* Insert */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x4A) {
+                /* Home */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x4B) {
+                /* Page Up */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x4C) {
+                /* Delete */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x4D) {
+                /* End */
+                /* Only send key press event, no ASCII char */
+            } else if (keys[i] == 0x4E) {
+                /* Page Down */
+                /* Only send key press event, no ASCII char */
             }
         }
     }
