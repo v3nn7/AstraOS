@@ -288,8 +288,18 @@ int xhci_transfer_control(usb_host_controller_t *hc, usb_transfer_t *xfer) {
     if (xfer->buffer && xfer->length > 0)
         xhci_flush_cache(xfer->buffer, xfer->length);
 <<<<<<< Current (Your changes)
+<<<<<<< Current (Your changes)
+<<<<<<< Current (Your changes)
     if (xfer->is_control && xfer->setup)
         xhci_flush_cache(xfer->setup, sizeof(*xfer->setup));
+=======
+    if (xfer->is_control)
+        xhci_flush_cache(xfer->setup, sizeof(xfer->setup));
+>>>>>>> Incoming (Background Agent changes)
+=======
+    if (xfer->is_control)
+        xhci_flush_cache(xfer->setup, sizeof(xfer->setup));
+>>>>>>> Incoming (Background Agent changes)
 =======
     if (xfer->is_control)
         xhci_flush_cache(xfer->setup, sizeof(xfer->setup));

@@ -31,12 +31,8 @@
 #define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
 
-/* Runtime Register Offset Macros - defined in xhci.h, but keep local masks here */
+/* Runtime Register Offsets - defined in xhci.h */
 #define XHCI_ERSTSZ_ERST_SZ_MASK 0xFFFF
-<<<<<<< Current (Your changes)
-#define XHCI_ERDP_EHB           (1 << 3)
-=======
->>>>>>> Incoming (Background Agent changes)
 
 /* ERST Entry */
 typedef struct PACKED {
@@ -484,8 +480,10 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
     XHCI_WRITE64(xhci->rt_regs, XHCI_ERSTBA(0), erst_phys);
     XHCI_WRITE32(xhci->rt_regs, XHCI_ERSTSZ(0), 1); /* 1 segment */
 
-    /* Set event ring dequeue pointer - MUST point to first event TRB */
-    uint64_t erdp_value = event_ring_addr | XHCI_ERDP_EHB;
+    /* Set event ring dequeue pointer - MUST point to first event TRB
+     * EHB bit should NOT be set during initialization - HC will set it when processing events
+     */
+    uint64_t erdp_value = event_ring_addr;
     XHCI_WRITE64(xhci->rt_regs, XHCI_ERDP(0), erdp_value);
 
     /* Memory barrier */

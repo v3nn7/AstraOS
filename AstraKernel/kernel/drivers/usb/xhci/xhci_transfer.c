@@ -347,7 +347,11 @@ int xhci_process_events(xhci_controller_t *xhci) {
             klog_printf(KLOG_DEBUG, "xhci: event type=%u code=%u", event_type, completion_code);
         }
         
+<<<<<<< Current (Your changes)
         /* Note: ERDP is already updated by xhci_event_ring_dequeue() above */
+=======
+        /* Note: ERDP and EHB are already updated by xhci_event_ring_dequeue() */
+>>>>>>> Incoming (Background Agent changes)
     }
     
     return events_processed;
