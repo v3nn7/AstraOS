@@ -129,6 +129,19 @@ kernel.elf/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/build
 .PHONY : kernel.elf/fast
 
+#=============================================================================
+# Target rules for targets named iso
+
+# Build rule for target.
+iso: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 iso
+.PHONY : iso
+
+# fast build rule for target.
+iso/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/iso.dir/build.make CMakeFiles/iso.dir/build
+.PHONY : iso/fast
+
 arch/x86_64/boot/boot.o: arch/x86_64/boot/boot.s.o
 .PHONY : arch/x86_64/boot/boot.o
 
@@ -136,6 +149,14 @@ arch/x86_64/boot/boot.o: arch/x86_64/boot/boot.s.o
 arch/x86_64/boot/boot.s.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o
 .PHONY : arch/x86_64/boot/boot.s.o
+
+arch/x86_64/boot/multiboot_header.o: arch/x86_64/boot/multiboot_header.S.o
+.PHONY : arch/x86_64/boot/multiboot_header.o
+
+# target to build an object file
+arch/x86_64/boot/multiboot_header.S.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kernel.elf.dir/build.make CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o
+.PHONY : arch/x86_64/boot/multiboot_header.S.o
 
 arch/x86_64/cpu/cpu_init.o: arch/x86_64/cpu/cpu_init.c.o
 .PHONY : arch/x86_64/cpu/cpu_init.o
@@ -1609,8 +1630,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... iso"
 	@echo "... kernel.elf"
 	@echo "... arch/x86_64/boot/boot.o"
+	@echo "... arch/x86_64/boot/multiboot_header.o"
 	@echo "... arch/x86_64/cpu/cpu_init.o"
 	@echo "... arch/x86_64/cpu/cpu_init.i"
 	@echo "... arch/x86_64/cpu/cpu_init.s"

@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/kernel.elf.dir/link.d"
   "CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o"
+  "CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o"
   "CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/cpu_init.c.o"
   "CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/cpu_init.c.o.d"
   "CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/gdt.c.o"

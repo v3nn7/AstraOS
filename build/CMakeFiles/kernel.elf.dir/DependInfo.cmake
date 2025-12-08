@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_ASM
   "/home/v3nn7/Projects/AstraOS/arch/x86_64/boot/boot.s" "/home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o"
+  "/home/v3nn7/Projects/AstraOS/arch/x86_64/boot/multiboot_header.S" "/home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o"
   )
 set(CMAKE_ASM_COMPILER_ID "GNU")
 

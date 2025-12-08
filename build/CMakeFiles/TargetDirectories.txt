@@ -1,3 +1,4 @@
 /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir
+/home/v3nn7/Projects/AstraOS/build/CMakeFiles/iso.dir
 /home/v3nn7/Projects/AstraOS/build/CMakeFiles/edit_cache.dir
 /home/v3nn7/Projects/AstraOS/build/CMakeFiles/rebuild_cache.dir

@@ -774,7 +774,12 @@ CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_transfer.c.o: /home/v3nn7/Projec
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/kernel.elf.dir/kernel/kmain.c.o: /home/v3nn7/Projects/AstraOS/kernel/kmain.c \
-  /home/v3nn7/Projects/AstraOS/include/kernel/kmain.h
+  /home/v3nn7/Projects/AstraOS/include/boot/multiboot2.h \
+  /home/v3nn7/Projects/AstraOS/include/drivers/framebuffer.h \
+  /home/v3nn7/Projects/AstraOS/include/kernel/kmain.h \
+  /home/v3nn7/Projects/AstraOS/include/klog.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint-gcc.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/kernel.elf.dir/kernel/panic.c.o: /home/v3nn7/Projects/AstraOS/kernel/panic.c \
   /home/v3nn7/Projects/AstraOS/include/kernel/panic.h
@@ -894,6 +899,7 @@ CMakeFiles/kernel.elf.dir/mm/vmm.cpp.o: /home/v3nn7/Projects/AstraOS/mm/vmm.cpp 
 
 kernel.elf: /home/v3nn7/Projects/AstraOS/linker.ld \
   CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o \
+  CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o \
   CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/cpu_init.c.o \
   CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/gdt.c.o \
   CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/idt.c.o \
@@ -977,8 +983,6 @@ CMakeFiles/kernel.elf.dir/lib/input_stub.c.o:
 
 CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_transfer.c.o:
 
-CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_init_complete.c.o:
-
 CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_device.c.o:
 
 CMakeFiles/kernel.elf.dir/drivers/usb/hub/usb_hub.c.o:
@@ -1060,6 +1064,8 @@ CMakeFiles/kernel.elf.dir/drivers/usb/util/usb_helpers.c.o:
 CMakeFiles/kernel.elf.dir/mm/paging.cpp.o:
 
 /home/v3nn7/Projects/AstraOS/lib/kmalloc.c:
+
+/home/v3nn7/Projects/AstraOS/lib/klog.c:
 
 /usr/include/bits/types/__FILE.h:
 
@@ -1315,8 +1321,6 @@ CMakeFiles/kernel.elf.dir/mm/pmm.cpp.o:
 
 /home/v3nn7/Projects/AstraOS/drivers/usb/host/pci_usb_detect.c:
 
-/home/v3nn7/Projects/AstraOS/lib/klog.c:
-
 /usr/include/sys/cdefs.h:
 
 /home/v3nn7/Projects/AstraOS/include/pci_msi.h:
@@ -1341,6 +1345,8 @@ CMakeFiles/kernel.elf.dir/mm/pmm.cpp.o:
 
 /home/v3nn7/Projects/AstraOS/include/usb/util/usb_bits.h:
 
+CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o:
+
 /home/v3nn7/Projects/AstraOS/drivers/usb/hid/hid_keyboard.c:
 
 /home/v3nn7/Projects/AstraOS/drivers/usb/core/usb_core.c:
@@ -1358,6 +1364,10 @@ CMakeFiles/kernel.elf.dir/drivers/pci/pci.c.o:
 /home/v3nn7/Projects/AstraOS/drivers/usb/xhci/xhci_transfer.c:
 
 /home/v3nn7/Projects/AstraOS/kernel/kmain.c:
+
+CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_init_complete.c.o:
+
+/home/v3nn7/Projects/AstraOS/include/boot/multiboot2.h:
 
 CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o:
 

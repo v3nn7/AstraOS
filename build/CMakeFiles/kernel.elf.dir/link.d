@@ -1,5 +1,6 @@
 kernel.elf: \
   /home/v3nn7/Projects/AstraOS/linker.ld \
+  CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o \
   CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o \
   CMakeFiles/kernel.elf.dir/kernel/kmain.c.o \
   CMakeFiles/kernel.elf.dir/kernel/panic.c.o \
@@ -64,6 +65,8 @@ kernel.elf: \
   CMakeFiles/kernel.elf.dir/mm/paging.cpp.o
 
 /home/v3nn7/Projects/AstraOS/linker.ld:
+
+CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o:
 
 CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o:
 

@@ -37,8 +37,8 @@ include_directories(
 # KERNEL TARGET
 # ============================================================
 add_executable(kernel.elf
+    arch/x86_64/boot/multiboot_header.S
     arch/x86_64/boot/boot.s
-
     kernel/kmain.c
     kernel/panic.c
 
@@ -115,6 +115,49 @@ add_executable(kernel.elf
 # LINKING
 # ============================================================
 target_link_options(kernel.elf PRIVATE ${KERNEL_LINK_FLAGS})
+
+# ============================================================
+# ISO (GRUB, multiboot2)
+# ============================================================
+find_program(GRUB_MKRESCUE grub-mkrescue)
+if (GRUB_MKRESCUE)
+    set(ISO_DIR ${CMAKE_BINARY_DIR}/iso)
+    set(ISO_IMG ${CMAKE_BINARY_DIR}/astra.iso)
+    set(GRUB_CFG ${CMAKE_BINARY_DIR}/grub.cfg)
+
+    file(WRITE ${GRUB_CFG}
+"set timeout=0
+set default=0
+set gfxpayload=keep
+menuentry \"AstraOS\" {
+    multiboot2 /boot/kernel.elf
+    boot
+}
+")
+
+    # ścieżka do modułów GRUB i386-pc (typowa na Arch)
+    find_path(GRUB_I386_PC_DIR boot.mod
+        PATHS /usr/lib/grub/i386-pc /usr/lib/grub/i386-pc-efi /usr/lib/grub/i386-pc-legacy
+        NO_DEFAULT_PATH)
+    if (GRUB_I386_PC_DIR)
+        set(GRUB_MKRESCUE_ARGS -d ${GRUB_I386_PC_DIR})
+    else()
+        set(GRUB_MKRESCUE_ARGS)
+    endif()
+
+    add_custom_target(iso ALL
+        DEPENDS kernel.elf
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${ISO_DIR}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${ISO_DIR}/boot/grub
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel.elf> ${ISO_DIR}/boot/kernel.elf
+        COMMAND ${CMAKE_COMMAND} -E copy ${GRUB_CFG} ${ISO_DIR}/boot/grub/grub.cfg
+        COMMAND ${GRUB_MKRESCUE} ${GRUB_MKRESCUE_ARGS} -o ${ISO_IMG} ${ISO_DIR}
+        COMMENT "Building bootable ISO ${ISO_IMG}"
+        VERBATIM
+    )
+else()
+    message(WARNING "grub-mkrescue not found: ISO target disabled")
+endif()
 
 # ============================================================
 # TESTS

@@ -816,7 +816,12 @@ CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_transfer.c.o
 
 CMakeFiles/kernel.elf.dir/kernel/kmain.c.o
  /home/v3nn7/Projects/AstraOS/kernel/kmain.c
+ /home/v3nn7/Projects/AstraOS/include/boot/multiboot2.h
+ /home/v3nn7/Projects/AstraOS/include/drivers/framebuffer.h
  /home/v3nn7/Projects/AstraOS/include/kernel/kmain.h
+ /home/v3nn7/Projects/AstraOS/include/klog.h
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint-gcc.h
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/kernel.elf.dir/kernel/panic.c.o
  /home/v3nn7/Projects/AstraOS/kernel/panic.c
@@ -956,6 +961,7 @@ CMakeFiles/kernel.elf.dir/mm/vmm.cpp.o
 kernel.elf
  /home/v3nn7/Projects/AstraOS/linker.ld
  /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o
+ /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o
  /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/cpu_init.c.o
  /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/gdt.c.o
  /home/v3nn7/Projects/AstraOS/build/CMakeFiles/kernel.elf.dir/arch/x86_64/cpu/idt.c.o

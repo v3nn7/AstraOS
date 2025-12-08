@@ -3,3 +3,5 @@
 
 CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o: \
  /home/v3nn7/Projects/AstraOS/arch/x86_64/boot/boot.s
+CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o: \
+ /home/v3nn7/Projects/AstraOS/arch/x86_64/boot/multiboot_header.S

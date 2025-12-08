@@ -1,6 +1,12 @@
 [
 {
   "directory": "/home/v3nn7/Projects/AstraOS/build",
+  "command": "/usr/bin/cc  -I/home/v3nn7/Projects/AstraOS/include  -o CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o -c /home/v3nn7/Projects/AstraOS/arch/x86_64/boot/multiboot_header.S",
+  "file": "/home/v3nn7/Projects/AstraOS/arch/x86_64/boot/multiboot_header.S",
+  "output": "CMakeFiles/kernel.elf.dir/arch/x86_64/boot/multiboot_header.S.o"
+},
+{
+  "directory": "/home/v3nn7/Projects/AstraOS/build",
   "command": "/usr/bin/cc  -I/home/v3nn7/Projects/AstraOS/include  -o CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o -c /home/v3nn7/Projects/AstraOS/arch/x86_64/boot/boot.s",
   "file": "/home/v3nn7/Projects/AstraOS/arch/x86_64/boot/boot.s",
   "output": "CMakeFiles/kernel.elf.dir/arch/x86_64/boot/boot.s.o"
