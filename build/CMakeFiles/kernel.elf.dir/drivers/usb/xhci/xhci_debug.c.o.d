@@ -1,0 +1,25 @@
+CMakeFiles/kernel.elf.dir/drivers/usb/xhci/xhci_debug.c.o: \
+ /home/v3nn7/Projects/AstraOS/drivers/usb/xhci/xhci_debug.c \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/usb_core.h \
+ /home/v3nn7/Projects/AstraOS/include/types.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint-gcc.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdbool.h \
+ /home/v3nn7/Projects/AstraOS/include/interrupts.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/usb_descriptors.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_regs.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_trb.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_context.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_caps.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_rings.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_events.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_ports.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_proto.h \
+ /home/v3nn7/Projects/AstraOS/include/usb/xhci_internal.h \
+ /home/v3nn7/Projects/AstraOS/include/klog.h \
+ /home/v3nn7/Projects/AstraOS/include/mmio.h \
+ /home/v3nn7/Projects/AstraOS/include/vmm.h \
+ /home/v3nn7/Projects/AstraOS/include/pmm.h \
+ /home/v3nn7/Projects/AstraOS/include/memory.h

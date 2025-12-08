@@ -1,0 +1,7 @@
+#ifndef ASTRAOS_DRIVERS_FRAMEBUFFER_H
+#define ASTRAOS_DRIVERS_FRAMEBUFFER_H
+
+void framebuffer_init(void);
+
+#endif /* ASTRAOS_DRIVERS_FRAMEBUFFER_H */
+
