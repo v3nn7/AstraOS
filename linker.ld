@@ -1,36 +1,39 @@
-ENTRY(_start)
+OUTPUT_FORMAT("pei-x86-64")
+OUTPUT_ARCH(i386:x86-64)
+ENTRY(efi_main)
 
 SECTIONS
 {
-    /* Load kernel to 1 MiB */
-    . = 0x100000;
+    . = 0;
 
-    /* multiboot header must be first thing in kernel image */
-    .text : ALIGN(4096)
-    {
-        KEEP(*(.multiboot_header))
-        KEEP(*(.text._start))
+    .text : ALIGN(4096) {
         *(.text*)
     }
 
-    .rodata : ALIGN(4096)
-    {
+    .rdata : ALIGN(4096) {
+        *(.rdata*)
         *(.rodata*)
     }
 
-    .data : ALIGN(4096)
-    {
+    .data : ALIGN(4096) {
         *(.data*)
     }
 
-    .bss : ALIGN(4096)
-    {
+    .pdata : ALIGN(4096) {
+        *(.pdata*)
+    }
+
+    .bss (NOLOAD) : ALIGN(4096) {
         *(.bss*)
         *(COMMON)
     }
 
-    /DISCARD/ :
-    {
-        *(.comment)
+    .reloc : ALIGN(4096) {
+        *(.reloc*)
+    }
+
+    /DISCARD/ : {
+        *(.note*)
+        *(.comment*)
     }
 }

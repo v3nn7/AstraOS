@@ -1,7 +1,0 @@
-#ifndef ASTRAOS_ARCH_X86_64_MULTIBOOT2_HEADER_H
-#define ASTRAOS_ARCH_X86_64_MULTIBOOT2_HEADER_H
-
-/* Multiboot2 header definitions placeholder */
-
-#endif /* ASTRAOS_ARCH_X86_64_MULTIBOOT2_HEADER_H */
-
