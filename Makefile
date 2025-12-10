@@ -1,6 +1,8 @@
 CXX              := clang++
 HOST_CXX         := clang++
 LINKER           := lld-link
+RUSTC            := rustc
+RUST_TARGET      ?=
 QEMU             ?= qemu-system-x86_64
 OVMF_CODE        ?= /home/v3nn7/OVMF/ovmf-code-x86_64.fd
 
@@ -31,9 +33,24 @@ ASM_SOURCES := $(SRC_DIR)/arch/x86_64/isr_stubs.S \
                $(SRC_DIR)/arch/x86_64/idt_asm.S
 CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/gdt.cpp \
-               $(SRC_DIR)/arch/x86_64/idt.cpp
+               $(SRC_DIR)/arch/x86_64/idt.cpp \
+               $(SRC_DIR)/arch/x86_64/lapic.cpp \
+               $(SRC_DIR)/arch/x86_64/smp.cpp \
+               $(SRC_DIR)/ui/renderer.cpp \
+               $(SRC_DIR)/ui/shell.cpp \
+               $(SRC_DIR)/util/logger.cpp \
+               $(SRC_DIR)/util/memory.cpp \
+               $(SRC_DIR)/drivers/serial.cpp \
+               $(SRC_DIR)/drivers/usb/usb_core.cpp \
+               $(SRC_DIR)/drivers/usb/xhci.cpp \
+               $(SRC_DIR)/drivers/usb/usb_hid.cpp \
+               $(SRC_DIR)/drivers/usb/usb_keyboard.cpp
+RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
+RUST_SOURCES := crypto/mod.rs crypto/sha256.rs crypto/rng.rs
+RUSTFLAGS := -O -C panic=abort $(if $(RUST_TARGET),--target $(RUST_TARGET),)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SOURCES)) \
-        $(patsubst $(SRC_DIR)/%.S,$(OBJ_DIR)/%.o,$(ASM_SOURCES))
+        $(patsubst $(SRC_DIR)/%.S,$(OBJ_DIR)/%.o,$(ASM_SOURCES)) \
+        $(RUST_OBJS)
 HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST
 
 .PHONY: all kernel iso run test clean distclean
@@ -72,6 +89,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(OBJ_DIR)/crypto/crypto.o: $(RUST_SOURCES) | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	$(RUSTC) $(RUSTFLAGS) --emit=obj -o $@ crypto/mod.rs
+
 $(KERNEL_BIN): $(OBJS) linker.ld | $(KERNEL_BIN_DIR)
 	$(LINKER) $(OBJS) $(LDFLAGS) /out:$@
 
@@ -106,6 +127,8 @@ run: iso
 		-bios $(OVMF_CODE) \
 		-drive if=none,id=cdrom,file=AstraOS.iso,format=raw,media=cdrom \
 		-device ide-cd,drive=cdrom \
+		-device qemu-xhci,id=xhci \
+		-device usb-kbd,bus=xhci.0 \
 		-boot d
 
 clean:
