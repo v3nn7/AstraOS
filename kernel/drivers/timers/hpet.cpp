@@ -1,6 +1,7 @@
 #include "hpet.hpp"
 #include "acpi.h"
 #include "vmm.h"
+#include "klog.h"
 
 volatile uint64_t* HPET::hpet_base = nullptr;
 uint64_t HPET::hpet_frequency = 0;
@@ -25,6 +26,7 @@ void HPET::init() {
 
     if (phys == 0) {
         hpet_available = false;
+        klog_printf(KLOG_WARN, "hpet: not found");
         return;
     }
 
@@ -32,6 +34,7 @@ void HPET::init() {
     hpet_base = (volatile uint64_t*)vmm_map_mmio(phys, 0x1000);
     if (!hpet_base) {
         hpet_available = false;
+        klog_printf(KLOG_ERROR, "hpet: map failed");
         return;
     }
 
@@ -42,6 +45,7 @@ void HPET::init() {
     hpet_frequency = 1'000'000'000'000'000ULL / period_fs; // Hz
     if (hpet_frequency == 0) {
         hpet_available = false;
+        klog_printf(KLOG_ERROR, "hpet: bad frequency (period_fs=0x%x)", period_fs);
         return;
     }
 
@@ -53,6 +57,7 @@ void HPET::init() {
     cfg |= 1;
     hpet_write(HPET_GENERAL_CONFIG, cfg);
     hpet_available = true;
+    klog_printf(KLOG_INFO, "hpet: init ok base=0x%llx freq=%lluHz", (unsigned long long)phys, (unsigned long long)hpet_frequency);
 }
 
 uint64_t HPET::counter() {

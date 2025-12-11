@@ -1,6 +1,7 @@
 // Minimal heap and memory helpers for freestanding builds.
 #include <stddef.h>
 #include <stdint.h>
+#include "klog.h"
 
 #include "io.hpp"
 #include "vmm.h"
@@ -89,6 +90,7 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
     if (func_out) *func_out = 0;
     return false;
 #else
+    klog_printf(KLOG_INFO, "pci: scanning for xHCI");
     auto force_bar32 = [](uint8_t bus, uint8_t dev, uint8_t func, uint32_t attrs) -> uint32_t {
         uint32_t mmio32 = 0xFEBF0000u;  // typical PC MMIO hole
         uint32_t addr0 = (1u << 31) | (static_cast<uint32_t>(bus) << 16) | (static_cast<uint32_t>(dev) << 11) |
@@ -155,7 +157,8 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
                     if (bus_out) *bus_out = static_cast<uint8_t>(bus);
                     if (slot_out) *slot_out = dev;
                     if (func_out) *func_out = func;
-                    klog("pci xhci: BAR mapped");
+                    klog_printf(KLOG_INFO, "pci: xhci bus=%u dev=%u func=%u bar=0x%llx",
+                                (unsigned)bus, (unsigned)dev, (unsigned)func, (unsigned long long)base_addr);
                     return true;
                 }
                 if (func == 0) {

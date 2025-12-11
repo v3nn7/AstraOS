@@ -9,17 +9,20 @@
 
 int xhci_init(usb_host_controller_t *hc) {
     (void)hc;
+    klog_printf(KLOG_INFO, "xhci: init stub");
     return 0;
 }
 
 int xhci_reset(usb_host_controller_t *hc) {
     (void)hc;
+    klog_printf(KLOG_INFO, "xhci: reset");
     return 0;
 }
 
 int xhci_reset_port(usb_host_controller_t *hc, uint8_t port) {
     (void)hc;
     (void)port;
+    klog_printf(KLOG_INFO, "xhci: reset port %u", port);
     return 0;
 }
 
@@ -32,6 +35,8 @@ static int submit_stub(usb_transfer_t *transfer) {
     if (transfer->callback) {
         transfer->callback(transfer);
     }
+    klog_printf(KLOG_INFO, "xhci: submit stub len=%zu ep=0x%02x", transfer->length,
+                transfer->endpoint ? transfer->endpoint->address : 0);
     return 0;
 }
 
