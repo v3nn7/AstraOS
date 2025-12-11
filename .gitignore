@@ -3,6 +3,8 @@ AstraKernel/build/
 AstraKernel/qemu.log
 AstraKernel/*.iso
 AstraKernel/*.elf
+*.iso
+*.elf
 
 # Generic
 *.o

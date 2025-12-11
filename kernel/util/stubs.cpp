@@ -10,11 +10,6 @@ extern "C" {
 
 volatile uint32_t *apic_lapic_base = nullptr;
 
-int printf(const char *fmt, ...) {
-    (void)fmt;
-    return 0;
-}
-
 void *k_memset(void *dest, int value, unsigned long n) {
     unsigned char *d = static_cast<unsigned char *>(dest);
     for (unsigned long i = 0; i < n; ++i) d[i] = static_cast<unsigned char>(value);

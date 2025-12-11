@@ -52,7 +52,8 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
-               $(SRC_DIR)/util/memory.cpp
+               $(SRC_DIR)/util/memory.cpp \
+               $(SRC_DIR)/util/stubs.cpp
 
 C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/core/usb_core.c \
