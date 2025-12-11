@@ -214,6 +214,7 @@ void usb_core_cleanup(void);
 int usb_host_register(usb_host_controller_t *hc);
 int usb_host_unregister(usb_host_controller_t *hc);
 usb_host_controller_t *usb_host_find_by_type(usb_controller_type_t type);
+int usb_host_count(void);
 
 /* Device Management */
 usb_device_t *usb_device_alloc(void);

@@ -13,6 +13,12 @@
 #include "string.h"
 
 extern uintptr_t virt_to_phys(const void *p);
+static uint32_t xhci_get_port_speed(xhci_controller_t *ctrl, uint32_t port) {
+    volatile uint32_t *op = (volatile uint32_t *)ctrl->op_regs;
+    uint32_t ps = xhci_read32((void *)op, XHCI_PORTSC(port));
+    uint32_t sp = (ps >> XHCI_PORTSC_SPEED_SHIFT) & 0xF;
+    return sp ? sp : 3; /* default HS if unknown */
+}
 static inline uint32_t xhci_read32(void *base, uint32_t off) {
     volatile uint32_t *p = (volatile uint32_t *)((uintptr_t)base + off);
     return *p;
@@ -54,14 +60,14 @@ static usb_host_ops_t xhci_ops = {
 static uint8_t *g_kbd_buf = NULL;
 static phys_addr_t g_kbd_buf_phys = 0;
 
-static int xhci_queue_kbd_irq(xhci_controller_t *ctrl, uint8_t slot, uint8_t ep) {
-    if (!ctrl || !ctrl->transfer_rings[slot][ep]) return -1;
+static int xhci_queue_kbd_irq(xhci_controller_t *ctrl, uint8_t slot, uint8_t ep_dci) {
+    if (!ctrl || !ctrl->transfer_rings[slot][ep_dci]) return -1;
     if (!g_kbd_buf) {
         g_kbd_buf = dma_alloc(8, 16, &g_kbd_buf_phys);
         if (!g_kbd_buf) return -1;
         memset(g_kbd_buf, 0, 8);
     }
-    xhci_transfer_ring_t *ring = ctrl->transfer_rings[slot][ep];
+    xhci_transfer_ring_t *ring = ctrl->transfer_rings[slot][ep_dci];
     xhci_trb_t trb = {0};
     xhci_set_trb_ptr(&trb, g_kbd_buf_phys);
     trb.status = 8; /* length */
@@ -73,12 +79,14 @@ static int xhci_queue_kbd_irq(xhci_controller_t *ctrl, uint8_t slot, uint8_t ep)
     /* Doorbell: target = ep */
     if (ctrl->doorbell_regs) {
         volatile uint32_t *db = (volatile uint32_t *)ctrl->doorbell_regs;
-        db[slot] = ep;
+        db[slot] = ep_dci;
     }
     return 0;
 }
 
 static void xhci_event_push(xhci_controller_t *ctrl, uint8_t type, uint8_t slot_id, uint8_t ep_id, uint8_t cc, uint64_t data) {
+    /* In real HW mode nie wstrzykujemy soft eventów, by nie korumpować event ringu. */
+    if (ctrl && ctrl->rt_regs) return;
     if (!ctrl || !ctrl->event_ring.trbs || ctrl->event_ring.size == 0) return;
     uint32_t idx = ctrl->event_ring.enqueue % ctrl->event_ring.size;
     xhci_event_trb_t *ev = &ctrl->event_ring.trbs[idx];
@@ -93,6 +101,50 @@ static void xhci_event_push(xhci_controller_t *ctrl, uint8_t type, uint8_t slot_
     if (ctrl->event_ring.enqueue == 0) {
         ctrl->event_ring.cycle_state = !ctrl->event_ring.cycle_state;
     }
+}
+
+static inline void xhci_ring_doorbell(xhci_controller_t *ctrl, uint8_t target) {
+    if (!ctrl || !ctrl->doorbell_regs) return;
+    volatile uint32_t *db = (volatile uint32_t *)ctrl->doorbell_regs;
+    db[target] = 0;
+}
+
+static int xhci_wait_event_type(xhci_controller_t *ctrl, uint8_t type, xhci_event_trb_t *out, uint32_t spin) {
+    if (!ctrl || !ctrl->event_ring.trbs) return -1;
+    while (spin--) {
+        uint32_t idx = ctrl->event_ring.dequeue % ctrl->event_ring.size;
+        xhci_event_trb_t *ev = &ctrl->event_ring.trbs[idx];
+        if (ev->cycle != (ctrl->event_ring.cycle_state ? 1 : 0)) {
+            __asm__ __volatile__("pause");
+            continue;
+        }
+        /* consume */
+        if (out) memcpy(out, ev, sizeof(*out));
+        ctrl->event_ring.dequeue = (idx + 1) % ctrl->event_ring.size;
+        if (ctrl->event_ring.dequeue == 0) ctrl->event_ring.cycle_state = !ctrl->event_ring.cycle_state;
+        /* Ack ERDP */
+        if (ctrl->rt_regs) {
+            uint64_t erdp = ctrl->event_ring.phys_addr + ((uint64_t)ctrl->event_ring.dequeue * sizeof(xhci_event_trb_t));
+            xhci_write64(ctrl->rt_regs, XHCI_ERDP(0), erdp | (1ull << 3));
+        }
+        if (ev->trb_type == type) {
+            return ev->completion_code;
+        }
+    }
+    return -1;
+}
+
+static int xhci_cmd_submit(xhci_controller_t *ctrl, xhci_trb_t *trb, xhci_event_trb_t *out) {
+    if (!ctrl || !trb) return -1;
+    if (xhci_cmd_ring_enqueue(&ctrl->cmd_ring, trb) != 0) return -1;
+    xhci_ring_doorbell(ctrl, 0);
+    xhci_event_trb_t ev;
+    int cc = xhci_wait_event_type(ctrl, TRB_EVENT_CMD_COMPLETION, &ev, 200000);
+    if (cc < 0) {
+        klog_printf(KLOG_ERROR, "xhci: cmd timeout");
+    }
+    if (out) *out = ev;
+    return cc;
 }
 
 static uint8_t xhci_alloc_slot(xhci_controller_t *ctrl) {
@@ -152,8 +204,8 @@ int xhci_init(usb_host_controller_t *hc) {
     rt[XHCI_ERSTSZ(0) / 4] = ctrl->event_ring.size;
     rt[XHCI_ERSTBA(0) / 4] = (uint32_t)(ctrl->event_ring.segment_table_phys & 0xFFFFFFFFu);
     rt[(XHCI_ERSTBA(0) + 4) / 4] = (uint32_t)(ctrl->event_ring.segment_table_phys >> 32);
-    xhci_write64((void *)rt, XHCI_ERDP(0), ctrl->event_ring.phys_addr);
-    rt[XHCI_IMAN(0) / 4] |= 0x1; /* enable interrupts */
+    xhci_write64((void *)rt, XHCI_ERDP(0), ctrl->event_ring.phys_addr | (1ull << 3)); /* set EHB */
+    rt[XHCI_IMAN(0) / 4] |= (1 << 1) | 0x1; /* enable interrupts (IE + preserve IP) */
     rt[XHCI_IMOD(0) / 4] = 0;
 
     /* DCBAAP */
@@ -166,21 +218,22 @@ int xhci_init(usb_host_controller_t *hc) {
     cmd |= XHCI_CMD_RUN | XHCI_CMD_INTE;
     xhci_write32((void *)op, XHCI_USBCMD, cmd);
 
-    /* Pre-allocate slot 1 and interrupt EP1 ring for keyboard polling */
+    /* Wait for HCHalted clear */
+    for (uint32_t i = 0; i < 100000; i++) {
+        uint32_t sts_now = xhci_read32((void *)op, XHCI_USBSTS);
+        if ((sts_now & XHCI_STS_HCH) == 0) {
+            klog_printf(KLOG_INFO, "xhci: HCHalted cleared");
+            break;
+        }
+    }
+
+    /* Pre-allocate slot 1 i skonfiguruj EP0/EP1 (interrupt IN) */
     uint8_t slot = 0;
     if (xhci_cmd_enable_slot(ctrl, &slot) && slot == 1) {
-        /* configure EP0 already handled; set up EP1 as interrupt IN */
-        if (!ctrl->transfer_rings[slot][1]) {
-            xhci_transfer_ring_init(ctrl, slot, 1);
+        if (xhci_cmd_address_device(ctrl, slot, 0)) {
+            xhci_cmd_configure_endpoint(ctrl, slot, 0);
+            xhci_queue_kbd_irq(ctrl, slot, 2); /* DCI=2 dla EP1 IN */
         }
-        /* Set endpoint context EP1 dequeue pointer if device context exists */
-        if (ctrl->device_contexts[slot]) {
-            xhci_device_ctx_t *dev_ctx = (xhci_device_ctx_t *)ctrl->device_contexts[slot];
-            dev_ctx->ep_ctx[1].tr_dequeue_ptr = ctrl->transfer_rings[slot][1]->phys_addr;
-            dev_ctx->ep_ctx[1].max_packet_size = 8;
-            dev_ctx->ep_ctx[1].ep_state = 1; /* running */
-        }
-        xhci_queue_kbd_irq(ctrl, slot, 1);
     }
 
     /* Power ports if possible */
@@ -351,6 +404,9 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     hc->ops = &xhci_ops;
     hc->private_data = ctrl;
 
+    /* Register IRQ handler for legacy/MSI vector */
+    xhci_register_irq_handler(hc, hc->irq);
+
     usb_host_register(hc);
     klog_printf(KLOG_INFO, "xhci: pci probe bus=%u slot=%u func=%u bar=0x%llx mapped=0x%llx irq=%u (msi=%s)",
                 (unsigned)bus, (unsigned)slot, (unsigned)func,
@@ -400,6 +456,8 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
     erst[0].rsvd = 0;
     xhci->event_ring.segment_table = erst;
     xhci->event_ring.segment_table_phys = erst_phys;
+    klog_printf(KLOG_INFO, "xhci: event ring started entries=%u erst=0x%llx", entries,
+                (unsigned long long)erst_phys);
     return 0;
 }
 
@@ -582,10 +640,10 @@ int xhci_process_events(xhci_controller_t *xhci) {
                 klog_printf(KLOG_INFO, "xhci: transfer complete slot=%u ep=%u cc=%u",
                             ev->slot_id, ev->endpoint_id, ev->completion_code);
                 /* For keyboard EP1 slot1, parse the buffer */
-                if (ev->slot_id == 1 && ev->endpoint_id == 1 && g_kbd_buf) {
+                if (ev->slot_id == 1 && ev->endpoint_id == 2 && g_kbd_buf) {
                     usb_hid_process_keyboard_report(NULL, g_kbd_buf, 8);
                     memset(g_kbd_buf, 0, 8);
-                    xhci_queue_kbd_irq(xhci, 1, 1);
+                    xhci_queue_kbd_irq(xhci, 1, 2);
                 }
                 break;
             default:
@@ -673,13 +731,14 @@ int xhci_controller_init(xhci_controller_t *ctrl, uintptr_t base) {
 
 bool xhci_cmd_enable_slot(xhci_controller_t *ctrl, uint8_t *slot_id) {
     if (!ctrl || !slot_id) return false;
-    uint8_t slot = xhci_alloc_slot(ctrl);
-    if (slot == 0) {
-        klog_printf(KLOG_ERROR, "xhci: no free slots");
-        return false;
-    }
+    xhci_trb_t trb = {0};
+    trb.control = (TRB_CMD_ENABLE_SLOT << XHCI_TRB_TYPE_SHIFT) | XHCI_TRB_CYCLE;
+    xhci_event_trb_t ev = {0};
+    int cc = xhci_cmd_submit(ctrl, &trb, &ev);
+    if (cc != XHCI_TRB_CC_SUCCESS) return false;
+    uint8_t slot = ev.slot_id ? ev.slot_id : xhci_alloc_slot(ctrl);
+    if (slot == 0) return false;
     *slot_id = slot;
-
     /* Allocate device context and hook into DCBAA */
     phys_addr_t dev_phys = 0;
     xhci_device_ctx_t *dev_ctx = dma_alloc(sizeof(xhci_device_ctx_t), 64, &dev_phys);
@@ -688,40 +747,67 @@ bool xhci_cmd_enable_slot(xhci_controller_t *ctrl, uint8_t *slot_id) {
         return false;
     }
     memset(dev_ctx, 0, sizeof(xhci_device_ctx_t));
-    if (!ctrl->dcbaap) return false;
     ctrl->dcbaap[slot] = dev_phys;
     ctrl->device_contexts[slot] = (xhci_device_context_t *)dev_ctx;
-
-    xhci_event_push(ctrl, TRB_EVENT_CMD_COMPLETION, slot, 0, XHCI_TRB_CC_SUCCESS, 0);
     return true;
 }
 
 bool xhci_cmd_address_device(xhci_controller_t *ctrl, uint8_t slot_id, uint32_t route) {
     if (!ctrl || slot_id == 0 || !ctrl->device_contexts[slot_id]) return false;
-    (void)route;
-    xhci_slot_ctx_t *slot_ctx = &((xhci_device_ctx_t *)ctrl->device_contexts[slot_id])->slot_ctx;
-    slot_ctx->route_string = route;
-    slot_ctx->root_hub_port = 1;
-    slot_ctx->num_ports = ctrl->num_ports;
-    xhci_event_push(ctrl, TRB_EVENT_CMD_COMPLETION, slot_id, 0, XHCI_TRB_CC_SUCCESS, 0);
-    return true;
+    /* Build input context */
+    phys_addr_t in_phys = 0;
+    xhci_input_ctx_t *in = dma_alloc(sizeof(xhci_input_ctx_t), 64, &in_phys);
+    if (!in) return false;
+    memset(in, 0, sizeof(*in));
+    in->ctrl_ctx.add_flags = 0x3; /* slot + ep0 */
+    in->slot_ctx.route_string = route;
+    in->slot_ctx.root_hub_port = 1;
+    in->slot_ctx.num_ports = ctrl->num_ports;
+    in->slot_ctx.speed = xhci_get_port_speed(ctrl, 0);
+    if (!ctrl->transfer_rings[slot_id][1]) {
+        if (xhci_transfer_ring_init(ctrl, slot_id, 1) != 0) return false;
+    }
+    in->ep_ctx[0].tr_dequeue_ptr = ctrl->transfer_rings[slot_id][1]->phys_addr | 0x1; /* DCS */
+    in->ep_ctx[0].max_packet_size = 64;
+    in->ep_ctx[0].ep_state = 1;
+
+    xhci_trb_t trb = {0};
+    xhci_set_trb_ptr(&trb, in_phys);
+    trb.control = (TRB_CMD_ADDRESS_DEVICE << XHCI_TRB_TYPE_SHIFT) | XHCI_TRB_CYCLE | (slot_id << 24);
+    int cc = xhci_cmd_submit(ctrl, &trb, NULL);
+    dma_free(in, sizeof(*in));
+    return cc == XHCI_TRB_CC_SUCCESS;
 }
 
 bool xhci_cmd_configure_endpoint(xhci_controller_t *ctrl, uint8_t slot_id, uint32_t ctx) {
     (void)ctx;
     if (!ctrl || slot_id == 0 || !ctrl->device_contexts[slot_id]) return false;
-    /* Ensure EP0 ring exists */
     if (!ctrl->transfer_rings[slot_id][1]) {
-        if (xhci_transfer_ring_init(ctrl, slot_id, 1) != 0) {
-            return false;
-        }
+        if (xhci_transfer_ring_init(ctrl, slot_id, 1) != 0) return false;
     }
-    xhci_ep_ctx_t *ep0 = &((xhci_device_ctx_t *)ctrl->device_contexts[slot_id])->ep_ctx[0];
-    ep0->tr_dequeue_ptr = ctrl->transfer_rings[slot_id][1]->phys_addr;
-    ep0->max_packet_size = 64;
-    ep0->ep_state = 1; /* running */
-    xhci_event_push(ctrl, TRB_EVENT_CMD_COMPLETION, slot_id, 1, XHCI_TRB_CC_SUCCESS, 0);
-    return true;
+    if (!ctrl->transfer_rings[slot_id][2]) {
+        if (xhci_transfer_ring_init(ctrl, slot_id, 2) != 0) return false;
+    }
+    phys_addr_t in_phys = 0;
+    xhci_input_ctx_t *in = dma_alloc(sizeof(xhci_input_ctx_t), 64, &in_phys);
+    if (!in) return false;
+    memset(in, 0, sizeof(*in));
+    in->ctrl_ctx.add_flags = (1 << 1) | (1 << 2); /* slot + ep1 */
+    in->slot_ctx.root_hub_port = 1;
+    in->slot_ctx.num_ports = ctrl->num_ports;
+    in->slot_ctx.speed = xhci_get_port_speed(ctrl, 0);
+    /* EP1 interrupt IN */
+    in->ep_ctx[1].tr_dequeue_ptr = ctrl->transfer_rings[slot_id][2]->phys_addr | 0x1;
+    in->ep_ctx[1].max_packet_size = 8;
+    in->ep_ctx[1].ep_state = 1;
+    in->ep_ctx[1].interval = 4; /* ~1ms */
+
+    xhci_trb_t trb = {0};
+    xhci_set_trb_ptr(&trb, in_phys);
+    trb.control = (TRB_CMD_CONFIGURE_ENDPOINT << XHCI_TRB_TYPE_SHIFT) | XHCI_TRB_CYCLE | (slot_id << 24);
+    int cc = xhci_cmd_submit(ctrl, &trb, NULL);
+    dma_free(in, sizeof(*in));
+    return cc == XHCI_TRB_CC_SUCCESS;
 }
 
 int xhci_poll_events(xhci_controller_t *ctrl) {

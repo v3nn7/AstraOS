@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 
+0.0.2.PATCH — 2025-12-11
+
+-xHCI: Added full implementations for Enable Slot, Address Device, and Configure Endpoint commands on the   -Command Ring. Implemented setup of Input Context, Device Context, and Endpoint Contexts (DCBAA, EP0, EP1). -Doorbell handling added for command submission. Event Ring (ERDP/IMAN, cycle state) now processes events -correctly, including re-queuing interrupt TRBs for EP1 (keyboard). Transfer Events now parse HID reports and -automatically resubmit the TRB.
+-xHCI: Expanded MMIO mapping to 0x10000. Main loop now polls the controller when needed. Normal TRB for EP1 (8 -bytes) is armed programmatically and doorbelled using DCI=2.
+-HID: Boot-protocol keyboard parser integrated with Transfer Events; the IRQ buffer is automatically reissued -after each report.
+-Build/Run: Simplified QEMU configuration (kernel-irqchip=split, removed intel-iommu). Version bumped to 0.0.2.-PATCH.
+
 ## 0.0.1.minor - 2025-12-11
 - Relocated USB and input headers under `kernel/include/drivers/...` and refreshed all driver includes to use `<drivers/...>` paths that match the new layout.
 - Updated the build to track the current USB/input sources and added `kernel/include` to the compiler search paths to keep the reorganized headers discoverable.

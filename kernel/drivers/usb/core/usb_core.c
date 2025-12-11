@@ -114,6 +114,17 @@ void usb_debug_print_transfer(usb_transfer_t *transfer) {
     }
     klog_printf(KLOG_DEBUG, "usb: xfer len=%zu status=%d", transfer->length, transfer->status);
 }
+
+/* Helpers to expose host/device counts (for UI/debug). */
+int usb_host_count(void) {
+    int count = 0;
+    usb_host_controller_t *cur = g_host_controllers;
+    while (cur) {
+        count++;
+        cur = cur->next;
+    }
+    return count;
+}
 /**
  * USB Core Implementation
  * 
