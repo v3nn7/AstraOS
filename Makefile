@@ -63,7 +63,7 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/apic/lapic.c \
              $(SRC_DIR)/drivers/apic/ioapic.c \
              $(SRC_DIR)/drivers/apic/apic_timer.c \
-             $(SRC_DIR)/drivers/acpi/acpi_stub.c \
+             $(SRC_DIR)/drivers/acpi/acpi.c \
              $(SRC_DIR)/drivers/usb/core/usb_core.c \
              $(SRC_DIR)/drivers/usb/core/usb_descriptors.c \
              $(SRC_DIR)/drivers/usb/core/usb_device.c \

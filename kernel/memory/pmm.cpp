@@ -57,7 +57,6 @@ void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
     uint64_t bitmap_phys = first_usable_phys;
     uint64_t bitmap_pages = (bitmap_size + PAGE_SIZE - 1) / PAGE_SIZE;
 
-    extern uint64_t pmm_hhdm_offset;
 #ifdef HHDM_BASE
     if (pmm_hhdm_offset == 0) pmm_hhdm_offset = HHDM_BASE;
 #endif

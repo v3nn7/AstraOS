@@ -182,3 +182,14 @@ extern "C" uintptr_t virt_to_phys(const void* p) {
     uintptr_t t = vmm_translate(v);
     return t ? t : v;
 }
+
+extern "C" int memcmp(const void* a, const void* b, size_t n) {
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(a);
+    const uint8_t* q = reinterpret_cast<const uint8_t*>(b);
+    for (size_t i = 0; i < n; ++i) {
+        if (p[i] != q[i]) {
+            return (p[i] < q[i]) ? -1 : 1;
+        }
+    }
+    return 0;
+}

@@ -7,7 +7,13 @@ extern "C" {
 #endif
 
 /* Higher-half direct map offset (set by physical memory manager). */
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern uint64_t pmm_hhdm_offset;
+#ifdef __cplusplus
+}
+#endif
 
 /* Initialize PMM from firmware memory map. */
 void pmm_init(uintptr_t memory_map, size_t memory_map_size, size_t desc_size);
