@@ -33,5 +33,10 @@ void ioapic_init() {
     uint64_t phys;
     acpi_get_ioapic(&phys, &gsi_base);
 
+    if (phys == 0) {
+        /* No IOAPIC reported; skip init. */
+        return;
+    }
+
     ioapic = (volatile uint32_t*)vmm_map_mmio(phys, 0x20);
 }

@@ -5,10 +5,16 @@
 static volatile uint32_t* lapic_base = 0;
 
 void lapic_write(uint32_t reg, uint32_t value) {
+    if (!lapic_base) {
+        return;
+    }
     lapic_base[reg / 4] = value;
 }
 
 uint32_t lapic_read(uint32_t reg) {
+    if (!lapic_base) {
+        return 0;
+    }
     return lapic_base[reg / 4];
 }
 
@@ -23,7 +29,13 @@ void lapic_send_ipi(uint32_t apic_id, uint32_t flags) {
 
 void lapic_init() {
     uint64_t phys = acpi_get_lapic_address();
+    if (phys == 0) {
+        phys = 0xFEE00000ULL; /* default xAPIC base */
+    }
     lapic_base = (volatile uint32_t*)vmm_map_mmio(phys, 0x1000);
+    if (!lapic_base) {
+        return;
+    }
 
     lapic_write(LAPIC_SVR, 0x100 | 0xFF); // enable LAPIC + vector 0xFF
 }

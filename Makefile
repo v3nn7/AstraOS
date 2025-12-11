@@ -14,7 +14,7 @@ OBJ_DIR          := $(BUILD_DIR)/obj
 KERNEL_BIN_DIR   := $(BUILD_DIR)/kernel
 KERNEL_BIN       := $(KERNEL_BIN_DIR)/$(TARGET_NAME)
 ISO_DIR          := $(BUILD_DIR)/iso
-BOOTEFI          ?= /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+BOOTEFI          ?= $(firstword $(wildcard /usr/lib/systemd/boot/efi/systemd-bootx64.efi /lib/systemd/boot/efi/systemd-bootx64.efi))
 EFI_PART_LABEL   ?= AstraOS
 TEST_BIN         := $(BUILD_DIR)/tests/kernel_test
 ESP_DIR          := $(BUILD_DIR)/esp
@@ -120,6 +120,10 @@ $(BUILD_DIR)/tests: | $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/tests
 
 $(ESP_IMG): $(KERNEL_BIN) $(BOOT_LOADER_CONF) $(BOOT_ENTRY_CONF) | $(ESP_DIR)
+	@if [ -z "$(BOOTEFI)" ] || [ ! -f "$(BOOTEFI)" ]; then \
+		echo "Missing BOOTX64.EFI; set BOOTEFI=/path/to/systemd-bootx64.efi"; \
+		exit 1; \
+	fi
 	truncate -s 8M $(ESP_IMG)
 	mkfs.vfat -n ASTRAESP $(ESP_IMG)
 	mmd -i $(ESP_IMG) ::/EFI ::/EFI/BOOT ::/EFI/AstraOS ::/loader ::/loader/entries

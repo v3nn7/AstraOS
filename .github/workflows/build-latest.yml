@@ -18,7 +18,7 @@ jobs:
       - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang lld make mtools xorriso
+          sudo apt-get install -y clang lld make mtools xorriso systemd-boot-efi
 
       - name: Build ISO (headless)
         run: make iso
