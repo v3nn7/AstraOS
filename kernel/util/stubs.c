@@ -3,14 +3,11 @@
 #include "memory.h"
 #include "string.h"
 #include "stdio.h"
+#include "../drivers/serial.hpp"
+#include "../util/logger.hpp"
 #include <drivers/usb/usb_hub.h>
 
 volatile uint32_t *apic_lapic_base = 0;
-
-int printf(const char *fmt, ...) {
-    (void)fmt;
-    return 0;
-}
 
 void *k_memset(void *dest, int value, unsigned long n) {
     unsigned char *d = dest;
@@ -27,7 +24,10 @@ void *memcpy(void *dst, const void *src, unsigned long n) {
 
 void klog_printf(klog_level_t level, const char *fmt, ...) {
     (void)level;
-    (void)fmt;
+    serial_write("[LOG] ");
+    serial_write(fmt);
+    serial_write("\r\n");
+    klog(fmt);
 }
 
 void klog_init(void) {}

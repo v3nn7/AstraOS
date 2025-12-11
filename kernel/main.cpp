@@ -203,12 +203,19 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     draw_splash();
     render_shell();
     smp::init();
+    klog("main: before usb_init");
     usb::usb_init();
+    klog("main: after usb_init");
 #ifndef HOST_TEST
+    interrupts_enable();
     while (true) {
         ps2::poll();
         usb::usb_poll();
         shell_blink_tick();
+        static uint32_t hb = 0;
+        if ((hb++ % 5000u) == 0) {
+            klog("main: heartbeat");
+        }
         __asm__ __volatile__("hlt");
     }
 #else

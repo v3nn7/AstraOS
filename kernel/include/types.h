@@ -1,5 +1,18 @@
 #pragma once
 
+/*
+ * In host tests (HOST_TEST), include standard headers to avoid typedef
+ * redefinitions with the system libc. For the kernel build, provide our own
+ * fixed-width types and aliases.
+ */
+#ifdef HOST_TEST
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+typedef uintptr_t phys_addr_t;
+typedef uintptr_t virt_addr_t;
+#else
+
 typedef unsigned char      uint8_t;
 typedef unsigned short     uint16_t;
 typedef unsigned int       uint32_t;
@@ -30,6 +43,8 @@ typedef bool __cpp_bool_guard; /* no-op to avoid redefinition */
 #define NULL ((void *)0)
 #endif
 #endif
+
+#endif /* HOST_TEST */
 
 #define PACKED      __attribute__((packed))
 #define ALIGNED(x)  __attribute__((aligned(x)))

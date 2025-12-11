@@ -26,15 +26,23 @@ extern void usb_hid_scan_devices(void);
 /**
  * Scan root hub ports for connected devices
  */
-static int usb_scan_root_ports(usb_host_controller_t *hc) {
+__attribute__((unused)) static int usb_scan_root_ports(usb_host_controller_t *hc) {
     if (!hc) return -1;
 
     klog_printf(KLOG_INFO, "usb: scanning root hub ports for controller %s", hc->name);
 
     if (hc->type == USB_CONTROLLER_XHCI) {
         xhci_controller_t *xhci = (xhci_controller_t *)hc->private_data;
-        if (!xhci) return -1;
+        if (!xhci) {
+            klog_printf(KLOG_ERROR, "usb: xhci controller data missing");
+            return -1;
+        }
+        if (!xhci->op_regs) {
+            klog_printf(KLOG_ERROR, "usb: xhci op_regs is NULL, skipping scan");
+            return -1;
+        }
 
+        klog_printf(KLOG_INFO, "usb: xhci op_regs=%lx num_ports=%u", (uintptr_t)xhci->op_regs, xhci->num_ports);
         klog_printf(KLOG_INFO, "usb: scanning %u XHCI ports...", xhci->num_ports);
         
         /* Scan all ports */
@@ -114,7 +122,7 @@ static int usb_scan_root_ports(usb_host_controller_t *hc) {
  * Initialize USB subsystem
  */
 void usb_init(void) {
-    klog_printf(KLOG_INFO, "usb: initializing USB subsystem");
+    klog_printf(KLOG_INFO, "usb: initializing USB subsystem (enter)");
 
     /* Initialize USB core */
     if (usb_core_init() != 0) {
@@ -137,31 +145,23 @@ void usb_init(void) {
     usb_hub_register_driver();
 
     /* Scan PCI for USB controllers */
+    klog_printf(KLOG_INFO, "usb: starting PCI detection");
     if (usb_pci_detect() != 0) {
         klog_printf(KLOG_WARN, "usb: no USB controllers found");
         return;
     }
+    klog_printf(KLOG_INFO, "usb: PCI detection finished");
 
     /* Scan root hub ports for connected devices */
     usb_host_controller_t *hc = usb_host_find_by_type(USB_CONTROLLER_XHCI);
     if (hc) {
-        klog_printf(KLOG_INFO, "usb: found XHCI controller, scanning ports...");
-        usb_scan_root_ports(hc);
-        
-        /* Wait a bit for devices to stabilize, then scan again */
-        klog_printf(KLOG_INFO, "usb: waiting for devices to stabilize...");
-        for (volatile int i = 0; i < 1000000; i++); /* ~1 second delay */
-        
-        klog_printf(KLOG_INFO, "usb: rescanning ports after delay...");
-        usb_scan_root_ports(hc);
+        klog_printf(KLOG_WARN, "usb: skipping XHCI port scan (disabled to avoid MMIO hang)");
     } else {
         klog_printf(KLOG_WARN, "usb: no XHCI controller found, USB devices will not work");
     }
 
-    /* Scan for HID devices */
-    klog_printf(KLOG_INFO, "usb: scanning for HID devices...");
-    usb_hid_scan_devices();
+    klog_printf(KLOG_INFO, "usb: skipping HID device scan (USB disabled)");
 
-    klog_printf(KLOG_INFO, "usb: initialization complete");
+    klog_printf(KLOG_INFO, "usb: initialization complete (exit)");
 }
 
