@@ -26,6 +26,9 @@ void shell_handle_key(char key);
 // Render the full shell window using current state.
 void shell_render();
 
+// Blink cursor; call periodically (e.g., main loop) to show activity.
+void shell_blink_tick();
+
 #ifdef HOST_TEST
 // Debug helpers for host-side unit tests.
 const char* shell_debug_input();

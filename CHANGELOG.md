@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## 0.0.1.minor - 2025-12-11
+- Added C USB stack skeleton with stub controllers, Makefile integration, and shell `usb` command showing controller/device counts.
+- Added MSI/MSI-X stubs with allocator helpers and host tests.
+- Added xHCI legacy handoff, PS/2 legacy disable, MSI setup, port routing path, and host tests for handoff/alignment.
+- Implemented xHCI rings (command/event/control transfer builders), controller init with DCBAA/CRCR/ERST programming, simulated command completions, USB device registration, and host tests for command flow and control TRB chains.
+
 ## 0.0.1.1exp - 2025-12-10
 - Bumped version metadata to experimental iteration 0.0.1.1exp.
 - Added `renderer_rect_outline` for drawing bordered rectangles with coverage checks and host test coverage.
@@ -12,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Added generic HID parsing helpers and a keyboard driver mapping usages to keycodes.
 - Interrupt-IN endpoint wiring for keyboards with event dispatch into `input_push_key`.
 - Host tests covering keyboard report handling and HID mapping.
+- HHDM-aware `virt_to_phys` to ensure xHCI sees physical addresses; xHCI init now logs MMIO base and configured HHDM offset for troubleshooting.
 
 ## 0.0.1 - 2025-12-10
 - Initial UEFI framebuffer bootstrap for AstraOS using systemd-boot.

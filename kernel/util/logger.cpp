@@ -19,8 +19,11 @@ extern "C" void logger_init() {
 static void framebuffer_puts(const char* s) {
 #ifndef HOST_TEST
     const uint32_t screen_h = renderer_height();
-    // Auto-scroll: when near bottom, clear and reset cursor.
+    const uint32_t screen_w = renderer_width();
+    const uint32_t log_width = (screen_w > 320) ? 320u : (screen_w / 2);
+    // Auto-scroll: when near bottom, clear only the log column to avoid touching shell.
     if (screen_h > kLineHeight * 4 && g_cursor_y + kLineHeight > screen_h) {
+        renderer_rect(0, 0, log_width, screen_h, g_bg);
         g_cursor_x = 12;
         g_cursor_y = 40;
     }

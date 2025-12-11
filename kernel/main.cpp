@@ -11,6 +11,7 @@
 #include "util/logger.hpp"
 #include "efi/gop.hpp"
 #include "drivers/usb/usb_core.hpp"
+#include "drivers/ps2/ps2.hpp"
 
 #define EFIAPI __attribute__((ms_abi))
 
@@ -123,6 +124,23 @@ static EFI_GUID kGraphicsOutputProtocolGuid{
 #endif
 }
 
+static void draw_splash() {
+    Rgb bg{18, 18, 24};
+    Rgb fg{120, 200, 255};
+    renderer_clear(bg);
+    const uint32_t screen_w = renderer_width();
+    const uint32_t screen_h = renderer_height();
+    const char* splash = "==[ ASTRA ]==";
+    uint32_t x = (screen_w > 12 * 8) ? (screen_w - 12 * 8) / 2 : 0;
+    uint32_t y = (screen_h > 16) ? (screen_h - 16) / 2 : 0;
+    renderer_text(splash, x, y, fg, bg);
+#ifndef HOST_TEST
+    for (volatile int i = 0; i < 2000000; ++i) {
+        __asm__ __volatile__("pause");
+    }
+#endif
+}
+
 static void render_shell() {
     Rgb background{18, 18, 24};
     Rgb window{28, 28, 36};
@@ -177,19 +195,25 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     __asm__ __volatile__("cli");
     init_gdt();
     init_idt();
+    ps2::init();  // PS/2 fallback to release BIOS locks on some laptops
 #endif
     renderer_init(gop);
     logger_init();
+    draw_splash();
     render_shell();
     smp::init();
     usb::usb_init();
 #ifndef HOST_TEST
     while (true) {
+        ps2::poll();
         usb::usb_poll();
+        shell_blink_tick();
         __asm__ __volatile__("hlt");
     }
 #else
+    ps2::poll();
     usb::usb_poll();
+    shell_blink_tick();
 #endif
 }
 

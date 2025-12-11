@@ -40,22 +40,30 @@ extern "C" void* memset(void* dest, int val, size_t n) {
     return dest;
 }
 
+extern "C" void klog(const char*);
+
 // Stub to satisfy input subsystem; platform code should override.
 extern "C" void input_push_key(uint8_t, bool) {}
 
-// MMIO helpers (trivial identity mapping stubs; platform should provide real mapping).
+// MMIO helpers with optional HHDM offset (define HHDM_BASE at build time).
+#ifndef HHDM_BASE
+#define HHDM_BASE 0
+#endif
+static constexpr uintptr_t kHhdmBase = static_cast<uintptr_t>(HHDM_BASE);
+
+// MMIO helpers (assume HHDM direct map; adjust HHDM_BASE via build if needed).
 extern "C" uint32_t mmio_read32(uintptr_t addr) {
-    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(addr);
+    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(kHhdmBase + addr);
     return *p;
 }
 
 extern "C" uint8_t mmio_read8(uintptr_t addr) {
-    volatile uint8_t* p = reinterpret_cast<volatile uint8_t*>(addr);
+    volatile uint8_t* p = reinterpret_cast<volatile uint8_t*>(kHhdmBase + addr);
     return *p;
 }
 
 extern "C" void mmio_write32(uintptr_t addr, uint32_t val) {
-    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(addr);
+    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(kHhdmBase + addr);
     *p = val;
 }
 
@@ -97,11 +105,27 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
                     if ((bar0 & 0x1) != 0) {
                         continue;  // I/O space, skip
                     }
+                    uint32_t bar1 = 0;
+                    bool is64 = (((bar0 >> 1) & 0x3) == 0x2);
                     uint64_t base_addr = bar0 & 0xFFFFFFF0u;
-                    // If 64-bit BAR, read high dword
-                    if (((bar0 >> 1) & 0x3) == 0x2) {
-                        uint32_t bar1 = read_config(bus, dev, func, 0x14);
-                        base_addr |= (static_cast<uint64_t>(bar1) << 32);
+                    if (is64) {
+                        bar1 = read_config(bus, dev, func, 0x14);
+                        uint64_t hi = static_cast<uint64_t>(bar1) << 32;
+                        uint64_t lo = base_addr;
+                        if (kHhdmBase == 0) {
+                            // No paging: force BAR into 32-bit window to keep identity mapping.
+                            uint32_t mmio32 = 0xFEBF0000u;  // typical PC MMIO hole
+                            uint32_t attrs = bar0 & 0xF;    // preserve cacheability bits
+                            write_config(bus, dev, func, 0x10, (mmio32 & 0xFFFFFFF0u) | attrs);
+                            write_config(bus, dev, func, 0x14, 0);
+                            base_addr = mmio32 & 0xFFFFFFF0u;
+                        } else {
+                            base_addr = lo | hi;
+                        }
+                    }
+                    if (base_addr == 0) {
+                        klog("pci xhci: BAR0/BAR1 yielded 0, skipping");
+                        continue;  // bogus BAR
                     }
                     // Enable memory space + bus master.
                     uint32_t cmd = read_config(bus, dev, func, 0x04);
@@ -128,6 +152,9 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
 }
 
 extern "C" uintptr_t virt_to_phys(const void* p) {
-    // Identity mapping in stub; platform must provide real translation.
-    return reinterpret_cast<uintptr_t>(p);
+    uintptr_t v = reinterpret_cast<uintptr_t>(p);
+    if (kHhdmBase != 0 && v >= kHhdmBase) {
+        return v - kHhdmBase;
+    }
+    return v;
 }

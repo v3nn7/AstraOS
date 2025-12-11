@@ -1,8 +1,10 @@
 CXX              := clang++
+CC               := clang
 HOST_CXX         := clang++
 LINKER           := lld-link
 RUSTC            := rustc
 RUST_TARGET      ?=
+HHDM_BASE        ?= 0
 QEMU             ?= qemu-system-x86_64
 OVMF_CODE        ?= /home/v3nn7/OVMF/ovmf-code-x86_64.fd
 
@@ -23,7 +25,11 @@ BOOT_ENTRY_CONF  := $(BOOT_SRC)/entries/astra.conf
 
 CXXFLAGS := --target=x86_64-pc-win32-coff -ffreestanding -fno-exceptions -fno-rtti \
             -fshort-wchar -mno-red-zone -fno-stack-protector -Wall -Wextra -Werror \
-            -fdata-sections -ffunction-sections -std=c++17 -Ikernel
+            -fdata-sections -ffunction-sections -std=c++17 -Ikernel $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
+
+CFLAGS := --target=x86_64-pc-win32-coff -ffreestanding -fshort-wchar -mno-red-zone \
+          -fno-stack-protector -Wall -Wextra -Werror -fdata-sections -ffunction-sections \
+          -std=c17 -Ikernel $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
 
 LDFLAGS := /machine:x64 /subsystem:efi_application /entry:efi_main /nodefaultlib /align:4096
 
@@ -36,22 +42,50 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/idt.cpp \
                $(SRC_DIR)/arch/x86_64/lapic.cpp \
                $(SRC_DIR)/arch/x86_64/smp.cpp \
+               $(SRC_DIR)/acpi/ACPI_OSC_USB.cpp \
+               $(SRC_DIR)/drivers/ps2/ps2.cpp \
+               $(SRC_DIR)/drivers/serial.cpp \
+               $(SRC_DIR)/drivers/usb/usb_core.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
-               $(SRC_DIR)/util/memory.cpp \
-               $(SRC_DIR)/drivers/serial.cpp \
-               $(SRC_DIR)/drivers/usb/usb_core.cpp \
-               $(SRC_DIR)/drivers/usb/xhci.cpp \
-               $(SRC_DIR)/drivers/usb/usb_hid.cpp \
-               $(SRC_DIR)/drivers/usb/usb_keyboard.cpp
+               $(SRC_DIR)/util/memory.cpp
+
+C_SOURCES := $(SRC_DIR)/drivers/usb/core/usb_core.c \
+             $(SRC_DIR)/drivers/usb/core/usb_descriptor.c \
+             $(SRC_DIR)/drivers/usb/core/usb_device.c \
+             $(SRC_DIR)/drivers/usb/core/usb_helpers.c \
+             $(SRC_DIR)/drivers/usb/core/usb_hub.c \
+             $(SRC_DIR)/drivers/usb/core/usb_request.c \
+             $(SRC_DIR)/drivers/usb/core/usb_transfer.c \
+             $(SRC_DIR)/drivers/usb/msi.c \
+             $(SRC_DIR)/drivers/usb/msi_allocator.c \
+             $(SRC_DIR)/drivers/usb/msix.c \
+             $(SRC_DIR)/drivers/usb/ehci/ehci.c \
+             $(SRC_DIR)/drivers/usb/ehci/ehci_ports.c \
+             $(SRC_DIR)/drivers/usb/hid/hid.c \
+             $(SRC_DIR)/drivers/usb/hid/hid_keyboard.c \
+             $(SRC_DIR)/drivers/usb/hid/hid_mouse.c \
+             $(SRC_DIR)/drivers/usb/hid/hid_parser.c \
+             $(SRC_DIR)/drivers/usb/ohci/ohci.c \
+             $(SRC_DIR)/drivers/usb/ohci/ohci_ports.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_commands.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_debug.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_events.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_init.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_ports.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_ring.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_transfer.c
 RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
 RUST_SOURCES := crypto/mod.rs crypto/sha256.rs crypto/rng.rs
 RUSTFLAGS := -O -C panic=abort $(if $(RUST_TARGET),--target $(RUST_TARGET),)
+COBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SOURCES))
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SOURCES)) \
         $(patsubst $(SRC_DIR)/%.S,$(OBJ_DIR)/%.o,$(ASM_SOURCES)) \
+        $(COBJS) \
         $(RUST_OBJS)
-HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST
+HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST -Ikernel
 
 .PHONY: all kernel iso run test clean distclean
 
@@ -84,6 +118,10 @@ $(ESP_IMG): $(KERNEL_BIN) $(BOOT_LOADER_CONF) $(BOOT_ENTRY_CONF) | $(ESP_DIR)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
@@ -125,6 +163,9 @@ iso: kernel $(ESP_IMG)
 run: iso
 	$(QEMU) -machine q35 -m 2G \
 		-bios $(OVMF_CODE) \
+		-serial stdio \
+		-d guest_errors,unimp,pcall \
+		-no-reboot -no-shutdown \
 		-drive if=none,id=cdrom,file=AstraOS.iso,format=raw,media=cdrom \
 		-device ide-cd,drive=cdrom \
 		-device qemu-xhci,id=xhci \

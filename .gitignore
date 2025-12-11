@@ -22,3 +22,6 @@ build/
 .vscode/
 .idea/
 
+
+#PRIVATE FILES
+modules-private/

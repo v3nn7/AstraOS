@@ -1,194 +1,98 @@
-// Core USB orchestration and descriptor parsing.
 #include "usb_core.hpp"
 
 #include <stddef.h>
 
-#include "xhci.hpp"
-#include "usb_hid.hpp"
-#include "usb_keyboard.hpp"
+#include "util/logger.hpp"
+#include "drivers/ps2/ps2.hpp"
+#include "drivers/usb/include/xhci.h"
+#include "drivers/usb/include/usb_defs.h"
+#include "drivers/usb/include/usb_controller.h"
+#include "drivers/usb/include/xhci_regs.h"
+#include "drivers/usb/include/msi.h"
 
-// Provide placement new without depending on <new>.
-inline void* operator new(size_t, void* p) noexcept { return p; }
-
-namespace usb {
+extern "C" bool pci_find_xhci(uintptr_t* base, uint8_t* bus, uint8_t* slot, uint8_t* func);
 
 namespace {
 
-void log(const char* msg) { klog(msg); }
+void append_str(char* dst, size_t& len, size_t cap, const char* src) {
+    while (len + 1 < cap && *src) {
+        dst[len++] = *src++;
+    }
+    dst[len] = 0;
+}
+
+void append_uint(char* dst, size_t& len, size_t cap, uint32_t value) {
+    char buf[11];
+    size_t digits = 0;
+    do {
+        buf[digits++] = static_cast<char>('0' + (value % 10));
+        value /= 10;
+    } while (value && digits < sizeof(buf));
+
+    while (digits > 0 && len + 1 < cap) {
+        dst[len++] = buf[--digits];
+    }
+    dst[len] = 0;
+}
 
 }  // namespace
 
-UsbDevice::UsbDevice() = default;
-
-bool UsbDevice::parse_descriptors(const uint8_t* data, size_t length) {
-    // Minimal parser: expects device + configuration + interface + endpoint.
-    size_t offset = 0;
-    bool have_device = false;
-    bool have_config = false;
-    UsbInterface* current_interface = nullptr;
-    while (offset + sizeof(UsbDescriptorHeader) <= length) {
-        const auto* hdr = reinterpret_cast<const UsbDescriptorHeader*>(data + offset);
-        if (hdr->length == 0 || offset + hdr->length > length) {
-            break;
-        }
-        switch (hdr->descriptor_type) {
-            case 1:  // Device
-                if (hdr->length <= sizeof(UsbDeviceDescriptor)) {
-                    const auto* dev = reinterpret_cast<const UsbDeviceDescriptor*>(hdr);
-                    device_desc_ = *dev;
-                    have_device = true;
-                }
-                break;
-            case 2:  // Configuration
-                if (hdr->length <= sizeof(UsbConfigurationDescriptor)) {
-                    const auto* cfg = reinterpret_cast<const UsbConfigurationDescriptor*>(hdr);
-                    configuration_.value = cfg->configuration_value;
-                    configuration_.interface_count = 0;
-                    have_config = true;
-                }
-                break;
-            case 4:  // Interface
-                if (!have_config || configuration_.interface_count >= 4) {
-                    break;
-                }
-                if (hdr->length <= sizeof(UsbInterfaceDescriptor)) {
-                    const auto* ifc = reinterpret_cast<const UsbInterfaceDescriptor*>(hdr);
-                    UsbInterface& slot = configuration_.interfaces[configuration_.interface_count++];
-                    slot.number = ifc->interface_number;
-                    slot.alternate_setting = ifc->alternate_setting;
-                    slot.class_code = ifc->interface_class;
-                    slot.subclass = ifc->interface_subclass;
-                    slot.protocol = ifc->interface_protocol;
-                    slot.endpoint_count = 0;
-                    current_interface = &slot;
-                }
-                break;
-            case 5:  // Endpoint
-                if (current_interface == nullptr || current_interface->endpoint_count >= 4) {
-                    break;
-                }
-                if (hdr->length <= sizeof(UsbEndpointDescriptor)) {
-                    const auto* ep = reinterpret_cast<const UsbEndpointDescriptor*>(hdr);
-                    UsbEndpoint& out = current_interface->endpoints[current_interface->endpoint_count++];
-                    out.address = ep->endpoint_address;
-                    out.attributes = ep->attributes;
-                    out.max_packet_size = ep->max_packet_size;
-                    out.interval = ep->interval;
-                    const uint8_t type = ep->attributes & 0x3;
-                    switch (type) {
-                        case 0: out.type = UsbTransferType::Control; break;
-                        case 1: out.type = UsbTransferType::Isochronous; break;
-                        case 2: out.type = UsbTransferType::Bulk; break;
-                        case 3: out.type = UsbTransferType::Interrupt; break;
-                        default: out.type = UsbTransferType::Interrupt; break;
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-        offset += hdr->length;
-    }
-    return have_device && have_config;
-}
-
-bool UsbDevice::set_configuration(uint8_t value) {
-    if (configuration_.value == value) {
-        configured_ = true;
-        return true;
-    }
-    return false;
-}
-
-UsbConfiguration* UsbDevice::configuration() { return &configuration_; }
-
-UsbCore::UsbCore() = default;
-
-UsbCore::~UsbCore() {
-    if (keyboard_driver_) {
-        kfree(keyboard_driver_);
-    }
-    if (keyboard_device_) {
-        kfree(keyboard_device_);
-    }
-    if (xhci_) {
-        kfree(xhci_);
-    }
-}
-
-bool UsbCore::init() {
-    xhci_ = reinterpret_cast<XhciController*>(kmalloc(sizeof(XhciController)));
-    keyboard_device_ = reinterpret_cast<UsbDevice*>(kmalloc(sizeof(UsbDevice)));
-    keyboard_driver_ = reinterpret_cast<UsbKeyboardDriver*>(kmalloc(sizeof(UsbKeyboardDriver)));
-    if (!xhci_ || !keyboard_device_ || !keyboard_driver_) {
-        log("usb: allocation failed");
-        return false;
-    }
-    new (xhci_) XhciController();
-    new (keyboard_device_) UsbDevice();
-    new (keyboard_driver_) UsbKeyboardDriver();
-
-    if (!xhci_->init()) {
-        log("usb: xhci init failed");
-        return false;
-    }
-    xhci_->set_keyboard_driver(keyboard_driver_);
-    return probe_keyboard();
-}
-
-bool UsbCore::probe_keyboard() {
-    // In a real stack we would enumerate ports, read descriptors, and so on.
-    // Here we rely on the controller helper to perform the minimal flow.
-    if (!xhci_->reset_first_port()) {
-        log("usb: port reset failed");
-        return false;
-    }
-    const uint8_t slot = xhci_->enable_slot();
-    if (slot == 0) {
-        log("usb: enable slot failed");
-        return false;
-    }
-    keyboard_device_->set_slot_id(slot);
-    keyboard_device_->set_speed(UsbSpeed::Full);
-    if (!xhci_->address_device(keyboard_device_)) {
-        log("usb: address device failed");
-        return false;
-    }
-    if (!xhci_->configure_endpoints_for_keyboard(keyboard_device_)) {
-        log("usb: configure endpoints failed");
-        return false;
-    }
-    keyboard_device_->set_configuration(1);
-    keyboard_driver_->bind(xhci_, keyboard_device_);
-    return true;
-}
-
-void UsbCore::poll() {
-    if (xhci_) {
-        xhci_->poll();
-    }
-}
-
-static UsbCore* g_core = nullptr;
+namespace usb {
 
 void usb_init() {
-    g_core = reinterpret_cast<UsbCore*>(kmalloc(sizeof(UsbCore)));
-    if (!g_core) {
-        klog("usb: core alloc failed");
-        return;
-    }
-    new (g_core) UsbCore();
-    if (!g_core->init()) {
-        klog("usb: init failed");
+    // BIOS handoff prerequisites: disable legacy PS/2 and claim USB ownership.
+    ps2::disable_legacy();
+
+    usb_stack_init();
+
+    uintptr_t xhci_mmio = 0;
+    uint8_t bus = 0, slot = 0, func = 0;
+    bool found = pci_find_xhci(&xhci_mmio, &bus, &slot, &func);
+    if (found && xhci_mmio != 0) {
+        usb_controller_t* ctrl = (usb_controller_t*)usb_stack_controller_at(0);
+        xhci_controller_t* xhci = ctrl ? (xhci_controller_t*)ctrl->driver_data : nullptr;
+        if (xhci && xhci_controller_init(xhci, xhci_mmio)) {
+            uint8_t slot = 0;
+            xhci_cmd_enable_slot(xhci, &slot);
+            xhci_cmd_address_device(xhci, slot, 0);
+            xhci_cmd_configure_endpoint(xhci, slot, 0);
+            usb_stack_enumerate_basic();
+            if (!xhci_check_lowmem(xhci_mmio)) {
+                klog("xhci: warning BAR above 4GB; ensure mapping before DMA");
+            }
+        } else {
+            klog("xhci: init failed");
+        }
     } else {
-        klog("usb: initialized");
+        klog("xhci: controller not found");
     }
+
+    const usb_stack_state_t* state = usb_stack_state();
+    char msg[64];
+    size_t len = 0;
+    msg[0] = 0;
+    append_str(msg, len, sizeof(msg), "USB init: controllers=");
+    append_uint(msg, len, sizeof(msg), state ? state->controller_count : 0);
+    append_str(msg, len, sizeof(msg), " devices=");
+    append_uint(msg, len, sizeof(msg), state ? state->device_count : 0);
+    klog(msg);
 }
 
 void usb_poll() {
-    if (g_core) {
-        g_core->poll();
-    }
+    usb_stack_poll();
+    /* For now, also keep shell-visible counts in sync via poll path. */
+}
+
+uint32_t controller_count() {
+    return usb_stack_controller_count();
+}
+
+uint32_t device_count() {
+    return usb_stack_device_count();
+}
+
+const usb_controller_t* controller_at(uint32_t index) {
+    return usb_stack_controller_at(index);
 }
 
 }  // namespace usb

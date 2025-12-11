@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#define HAS_PLACEMENT_NEW
 
 #define HOST_TEST 1
 #ifdef HOST_TEST
@@ -30,8 +31,6 @@ extern "C" bool pci_find_xhci(uintptr_t* base, uint8_t* b, uint8_t* d, uint8_t* 
     if (f) *f = 0;
     return false;
 }
-extern "C" uint64_t rdmsr(uint32_t) { return 0; }
-extern "C" void wrmsr(uint32_t, uint64_t) {}
 
 // Input subsystem capture for keyboard events.
 static uint8_t gKeys[16];
@@ -46,10 +45,17 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 }
 #include "../kernel/ui/renderer.cpp"
 #include "../kernel/ui/shell.cpp"
+#include "../kernel/drivers/usb/core/usb_core.c"
 #include "../kernel/drivers/usb/usb_core.cpp"
-#include "../kernel/drivers/usb/xhci.cpp"
-#include "../kernel/drivers/usb/usb_hid.cpp"
-#include "../kernel/drivers/usb/usb_keyboard.cpp"
+#include "../kernel/drivers/usb/msi_allocator.c"
+#include "../kernel/drivers/usb/msi.c"
+#include "../kernel/drivers/usb/msix.c"
+#include "../kernel/drivers/usb/xhci/xhci_init.c"
+#include "../kernel/drivers/usb/xhci/xhci_ring.c"
+#include "../kernel/drivers/usb/xhci/xhci_events.c"
+#include "../kernel/drivers/usb/xhci/xhci_commands.c"
+#include "../kernel/drivers/usb/xhci/xhci_transfer.c"
+#include "../kernel/drivers/ps2/ps2.cpp"
 #include "../kernel/arch/x86_64/lapic.cpp"
 #include "../kernel/arch/x86_64/smp.cpp"
 #include "../kernel/util/logger.cpp"
@@ -171,6 +177,15 @@ int main() {
     shell_handle_key('\n');
     assert(shell_debug_history_size() == 0);
 
+    usb::usb_init();
+    shell_handle_key('u');
+    shell_handle_key('s');
+    shell_handle_key('b');
+    shell_handle_key('\n');
+    assert(shell_debug_history_size() == 1);
+    const char* usb_line = shell_debug_history_line(0);
+    assert(usb_line[0] == 'U' && usb_line[1] == 'S' && usb_line[2] == 'B');
+
     EFI_BOOT_SERVICES services{};
     services.LocateProtocol = FakeLocateProtocol;
 
@@ -189,37 +204,82 @@ int main() {
     // Foreground color must appear after drawing the message.
     assert(contains_foreground());
 
-    // USB keyboard mapping and report handling.
+    // USB stack controllers/devices.
+    assert(usb::controller_count() == 3);
+    assert(usb::device_count() == 1);
+    const usb_controller_t* c0 = usb::controller_at(0);
+    const usb_controller_t* c1 = usb::controller_at(1);
+    const usb_controller_t* c2 = usb::controller_at(2);
+    assert(c0 && c0->type == USB_CONTROLLER_XHCI);
+    assert(c1 && c1->type == USB_CONTROLLER_EHCI);
+    assert(c2 && c2->type == USB_CONTROLLER_OHCI);
+    assert(usb::controller_at(3) == nullptr);
+    usb::usb_poll();
+    assert(usb::controller_count() == 3);
+
+    // MSI/MSI-X allocators and stubs.
+    msi_allocator_reset();
+    int first_vec = msi_allocator_next_vector();
+    int second_vec = msi_allocator_next_vector();
+    assert(first_vec == 32);
+    assert(second_vec == 33);
+
+    msi_config_t msi_cfg{};
+    msi_init_config(&msi_cfg);
+    assert(msi_cfg.vector != 0);
+    assert(msi_cfg.masked == false);
+    assert(msi_enable(&msi_cfg));
+    assert(msi_disable(&msi_cfg));
+
+    msix_entry_t msix_ent{};
+    msix_init_entry(&msix_ent);
+    assert(msix_ent.vector != 0);
+    assert(msix_ent.masked == false);
+    assert(msix_enable(&msix_ent));
+    assert(msix_disable(&msix_ent));
+
+    // xHCI legacy handoff and alignment helpers (MMIO base mocked to 0 under host).
+    assert(xhci_legacy_handoff(0));
+    assert(xhci_reset_with_delay(0, 0));
+    assert(xhci_require_alignment(0x1000, 64));
+    msi_config_t xhci_msi{};
+    assert(xhci_configure_msi(&xhci_msi));
+    assert(xhci_check_lowmem(0x100000));
+    assert(xhci_route_ports(0));
+    xhci_controller_t ctrl{};
+    assert(xhci_controller_init(&ctrl, 0));
+    uint8_t slot_id = 0;
+    assert(xhci_cmd_enable_slot(&ctrl, &slot_id));
+    assert(slot_id == 1);
+    assert(xhci_cmd_address_device(&ctrl, slot_id, 0x1234));
+    assert(xhci_cmd_configure_endpoint(&ctrl, slot_id, 0x5678));
+    assert(xhci_poll_events(&ctrl) > 0);
+    xhci_trb_ring_t tr;
+    assert(xhci_ring_init(&tr, 8));
+    usb_setup_packet_t setup{0x80, 6, 0x0100, 0, 18};
+    usb_transfer_t xfer{};
+    xfer.length = 18;
+    assert(xhci_build_control_transfer(&tr, &xfer, &setup, 0));
+
+    // Enumerated device descriptor should be present.
+    const usb_device_t* dev0 = usb::controller_count() > 0 ? usb_stack_device_at(0) : nullptr;
+    assert(dev0 != nullptr);
+    const usb_device_descriptor_t* ddesc = usb_device_get_descriptor(dev0);
+    assert(ddesc != nullptr);
+    assert(ddesc->idVendor == 0x1234);
+    assert(ddesc->idProduct == 0x5678);
+    // Shell poll uses usb_poll(), so run once.
+    usb::usb_poll();
+
+    // PS/2 fallback keyboard (host-injected scancodes).
     gKeyEvents = 0;
-    usb::UsbDevice dev;
-    usb::UsbConfiguration* usb_cfg = dev.configuration();
-    usb_cfg->interface_count = 1;
-    usb_cfg->interfaces[0].endpoint_count = 1;
-    usb_cfg->interfaces[0].endpoints[0].type = usb::UsbTransferType::Interrupt;
-    usb_cfg->interfaces[0].endpoints[0].address = 0x81;  // IN endpoint 1
-    usb_cfg->interfaces[0].endpoints[0].attributes = 0x03;
-    usb_cfg->interfaces[0].endpoints[0].max_packet_size = 8;
-    usb_cfg->interfaces[0].endpoints[0].interval = 1;
-    dev.set_slot_id(1);
-    dev.set_speed(usb::UsbSpeed::Full);
-    dev.set_configuration(1);
-
-    usb::XhciController ctrl;
-    assert(ctrl.init());
-
-    usb::UsbKeyboardDriver driver;
-    driver.bind(&ctrl, &dev);
-    assert(driver.usage_to_key(0x1E) == '1');
-
-    uint8_t press[8] = {0, 0, 0x04, 0, 0, 0, 0, 0};  // 'a'
-    driver.handle_report(press);
-    assert(gKeyEvents >= 1);
+    ps2::init();
+    ps2::debug_inject_scancode(0x1E);  // 'a' press
+    ps2::debug_inject_scancode(0x9E);  // 'a' release
+    ps2::poll();
+    assert(gKeyEvents >= 2);
     assert(gKeys[0] == 'a');
     assert(gPressed[0] == true);
-
-    uint8_t release[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    driver.handle_report(release);
-    assert(gKeyEvents >= 2);
     assert(gKeys[1] == 'a');
     assert(gPressed[1] == false);
 

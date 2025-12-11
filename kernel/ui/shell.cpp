@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 #include "renderer.hpp"
+#include "drivers/usb/usb_core.hpp"
+#include "drivers/usb/include/usb_core.h"
+#include "drivers/usb/include/usb_device.h"
 
 namespace {
 
@@ -17,6 +20,7 @@ constexpr uint32_t kMaxHistory = 6;
 
 char g_input[kMaxInput + 1]{};
 size_t g_input_len = 0;
+bool g_cursor_on = true;
 
 char g_history[kMaxHistory][kMaxInput + 1]{};
 size_t g_history_len = 0;
@@ -51,6 +55,90 @@ bool str_eq(const char* a, const char* b) {
     return a[i] == 0 && b[i] == 0;
 }
 
+void u32_to_str(uint32_t v, char* out, size_t cap) {
+    if (cap == 0) {
+        return;
+    }
+    char buf[10];
+    size_t digits = 0;
+    do {
+        buf[digits++] = static_cast<char>('0' + (v % 10));
+        v /= 10;
+    } while (v != 0 && digits < sizeof(buf));
+    size_t pos = 0;
+    while (digits > 0 && pos + 1 < cap) {
+        out[pos++] = buf[--digits];
+    }
+    out[pos] = 0;
+}
+
+void describe_usb(char* line, size_t cap) {
+    const uint32_t controllers = usb::controller_count();
+    const uint32_t devices = usb::device_count();
+    char num_buf[12];
+    size_t len = 0;
+    if (cap == 0) {
+        return;
+    }
+    line[0] = 0;
+    const char* prefix = "USB: ";
+    for (size_t i = 0; prefix[i] != 0 && len + 1 < cap; ++i) {
+        line[len++] = prefix[i];
+    }
+    line[len] = 0;
+
+    const char* ctl = "controllers=";
+    for (size_t i = 0; ctl[i] != 0 && len + 1 < cap; ++i) {
+        line[len++] = ctl[i];
+    }
+    line[len] = 0;
+
+    u32_to_str(controllers, num_buf, sizeof(num_buf));
+    for (size_t i = 0; num_buf[i] != 0 && len + 1 < cap; ++i) {
+        line[len++] = num_buf[i];
+    }
+    line[len] = 0;
+
+    const char* dev = " devices=";
+    for (size_t i = 0; dev[i] != 0 && len + 1 < cap; ++i) {
+        line[len++] = dev[i];
+    }
+    line[len] = 0;
+
+    u32_to_str(devices, num_buf, sizeof(num_buf));
+    for (size_t i = 0; num_buf[i] != 0 && len + 1 < cap; ++i) {
+        line[len++] = num_buf[i];
+    }
+    line[len] = 0;
+
+    // Append first device VID:PID if any.
+    if (devices > 0) {
+        const usb_device_t* dev = usb_stack_device_at(0);
+        if (dev) {
+            const usb_device_descriptor_t* ddesc = usb_device_get_descriptor(dev);
+            if (ddesc) {
+                const char* tail = " vid:pid=";
+                for (size_t i = 0; tail[i] != 0 && len + 1 < cap; ++i) {
+                    line[len++] = tail[i];
+                }
+                line[len] = 0;
+                u32_to_str(ddesc->idVendor, num_buf, sizeof(num_buf));
+                for (size_t i = 0; num_buf[i] != 0 && len + 1 < cap; ++i) {
+                    line[len++] = num_buf[i];
+                }
+                if (len + 1 < cap) {
+                    line[len++] = ':';
+                }
+                u32_to_str(ddesc->idProduct, num_buf, sizeof(num_buf));
+                for (size_t i = 0; num_buf[i] != 0 && len + 1 < cap; ++i) {
+                    line[len++] = num_buf[i];
+                }
+                line[len] = 0;
+            }
+        }
+    }
+}
+
 void push_history(const char* line) {
     if (str_len(line) == 0) {
         return;
@@ -82,8 +170,9 @@ void draw_prompt() {
     renderer_text(g_input, input_x, prompt_y, g_cfg.foreground, g_cfg.window);
 
     // Draw a simple cursor underscore after current input.
-    char cursor[2] = {'_', 0};
-    renderer_text(cursor, input_x + static_cast<uint32_t>(g_input_len) * 8, prompt_y, g_cfg.accent, g_cfg.window);
+    const uint32_t cx = input_x + static_cast<uint32_t>(g_input_len) * 8;
+    char cursor[2] = {g_cursor_on ? '_' : ' ', 0};
+    renderer_text(cursor, cx, prompt_y, g_cfg.accent, g_cfg.window);
 }
 
 }  // namespace
@@ -123,7 +212,11 @@ void shell_handle_key(char key) {
         if (str_eq(g_input, "clear")) {
             g_history_len = 0;
         } else if (str_eq(g_input, "help")) {
-            push_history("Commands: help, clear");
+            push_history("Commands: help, clear, usb");
+        } else if (str_eq(g_input, "usb")) {
+            char msg[64];
+            describe_usb(msg, sizeof(msg));
+            push_history(msg);
         } else {
             push_history(g_input);
         }
@@ -140,6 +233,12 @@ void shell_render() {
     renderer_rect_outline(g_cfg.win_x, g_cfg.win_y, g_cfg.win_w, g_cfg.win_h, g_cfg.accent);
     renderer_text("AstraOS Shell", g_cfg.win_x + kPadding, g_cfg.win_y + 4, g_cfg.foreground, g_cfg.title_bar);
     draw_history();
+    draw_prompt();
+}
+
+void shell_blink_tick() {
+    g_cursor_on = !g_cursor_on;
+    // Redraw only the prompt area cursor.
     draw_prompt();
 }
 
