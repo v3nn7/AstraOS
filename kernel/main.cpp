@@ -1,4 +1,44 @@
-// Minimal UEFI framebuffer demo kernel for AstraOS 0.0.1.1exp
+/*
+ * AstraOS Source-Available License (ASAL v2.1 – Restricted Forking)
+ * Copyright (c) 2025 Krystian "v3nn7"
+ * All rights reserved.
+ *
+ * Permission is granted to VIEW the source code of AstraOS (“Software”) for
+ * personal, educational, and non-commercial study purposes only.
+ *
+ * Unless explicit WRITTEN permission is granted by Krystian “v3nn7” R.,
+ * the following actions are STRICTLY prohibited:
+ *
+ * 1. Forking, copying, or cloning the Software or any portion of it.
+ * 2. Modifying, compiling, building, or distributing the Software.
+ * 3. Using the Software as part of another operating system, kernel,
+ *    bootloader, driver, library, or any other project.
+ * 4. Any form of commercial use, including selling, licensing, donations,
+ *    monetization, hosted services, paid support, sponsorships, or ads.
+ * 5. Redistributing the Software or derivative works, modified or unmodified.
+ * 6. Uploading the Software to other repositories, mirrors, or datasets.
+ * 7. Using the Software in AI training or machine learning datasets.
+ *
+ * === CONDITIONAL FORK PERMISSION ===
+ * Forking, modifying, compiling, or deriving from the Software is permitted ONLY if:
+ * - Explicit written approval is granted personally by Krystian "v3nn7" R., AND
+ * - The derivative work remains strictly NON-COMMERCIAL.
+ *
+ * Any breach of these terms voids all permissions immediately and permanently.
+ *
+ * === LIABILITY ===
+ * The Software is provided “AS IS”, without warranty of any kind.
+ * The author is not liable for any damages resulting from use or misuse.
+ *
+ * === CONTACT FOR PERMISSIONS ===
+ * All permission requests must be submitted EXCLUSIVELY via GitHub:
+ * - GitHub Issues on the official AstraOS repository
+ * - GitHub Discussions
+ * - Direct GitHub contact: https://github.com/v3nn7
+ *
+ * Requests via any other medium are automatically rejected.
+ */
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,6 +50,7 @@
 #include "ui/shell.hpp"
 #include <drivers/input/input_core.h>
 #include "util/logger.hpp"
+#include "klog.h"
 #include "efi/gop.hpp"
 #include "drivers/PCI/pci.h"
 #include <drivers/usb/usb_core.h>
@@ -258,21 +299,33 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     renderer_init(gop);
     logger_init();
     input_core_init();
+    ps2::init();
+    klog_printf(KLOG_INFO, "ps2: init issued");
     draw_splash();
     render_shell();
-    smp::init();
+    bool smp_ok = smp::init();
+    if (!smp_ok) {
+        klog_printf(KLOG_WARN, "smp: init failed, continuing BSP-only");
+    }
     pci_scan_log();
     dbg_log_main("main.cpp:kmain:usb", "before_usb_init", "H1", 0, "stage", "run-pre");
     usb_core_init();
     pci_usb_detect_scan();
+    bool usb_present = (usb_host_count() > 0);
+    if (!usb_present) {
+        klog_printf(KLOG_WARN, "usb: no host controllers detected; skipping usb poll");
+    }
     dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");
+    klog_printf(KLOG_INFO, "main: entering loop (usb_present=%d)", usb_present ? 1 : 0);
 #ifndef HOST_TEST
     /* Tymczasowo bez włączania przerwań – brak pełnej obsługi LAPIC/IDT dla spurious IRQ. */
     while (true) {
         ps2::poll();
-        if (auto hc = usb_host_find_by_type(USB_CONTROLLER_XHCI)) {
-            if (hc->ops && hc->ops->poll) {
-                hc->ops->poll(hc);
+        if (usb_present) {
+            if (auto hc = usb_host_find_by_type(USB_CONTROLLER_XHCI)) {
+                if (hc->ops && hc->ops->poll) {
+                    hc->ops->poll(hc);
+                }
             }
         }
         input_event_t ev;
@@ -285,8 +338,8 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
         }
         shell_blink_tick();
         static uint32_t hb = 0;
-        if ((hb++ % 500000u) == 0) {
-            klog("main: heartbeat");
+        if ((hb++ % 100000u) == 0) {
+            klog_printf(KLOG_INFO, "main: heartbeat hb=%u", hb);
         }
         __asm__ __volatile__("pause");
     }

@@ -8,6 +8,9 @@
 #include "klog.h"
 #include "interrupts.h"
 
+/* Forward declaration */
+static void xhci_irq_handler(struct interrupt_frame *frame);
+
 void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector) {
     /* Register simple handler in IDT for legacy IRQ; MSI path is handled in PCI layer */
     (void)hc;
@@ -21,7 +24,7 @@ void xhci_irq_service(xhci_controller_t *ctrl) {
     xhci_process_events(ctrl);
 }
 
-void xhci_irq_handler(struct interrupt_frame *frame) {
+static void xhci_irq_handler(struct interrupt_frame *frame) {
     (void)frame;
     klog_printf(KLOG_INFO, "xhci: irq fired");
     /* Walk controllers? For now assume single xHCI registered as first host */

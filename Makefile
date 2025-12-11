@@ -42,6 +42,7 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/idt.cpp \
                $(SRC_DIR)/arch/x86_64/smp.cpp \
                $(SRC_DIR)/drivers/acpi/ACPI_OSC_USB.cpp \
+               $(SRC_DIR)/drivers/acpi/ACPI_OSC_HUB.cpp \
                $(SRC_DIR)/drivers/input/ps2/ps2.cpp \
                $(SRC_DIR)/drivers/serial.cpp \
                $(SRC_DIR)/drivers/usb/usb_core.cpp \
@@ -177,7 +178,7 @@ iso: kernel $(ESP_IMG)
 		-isohybrid-gpt-basdat \
 		-o AstraOS.iso $(ISO_DIR)
 
-run:
+run: iso
 	$(QEMU) -machine q35,accel=kvm,kernel-irqchip=split \
 		-m 4G \
 		-smp 4 \

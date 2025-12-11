@@ -11,16 +11,18 @@
  */
 
 #pragma once
-#include "types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// ACPI _OSC helper for hub/root-complex features.
+#pragma once
 
-int ahci_init(void);
-int ahci_read_lba(uint64_t lba, void *buf, size_t sectors);
+#include <stddef.h>
+#include <stdint.h>
 
-#ifdef __cplusplus
-}
-#endif
+namespace acpi {
+
+// Request OS control of hub/root-complex features via ACPI _OSC.
+// Returns true when control is granted or when the platform lacks _OSC support.
+bool request_hub_osc();
+
+}  // namespace acpi
 

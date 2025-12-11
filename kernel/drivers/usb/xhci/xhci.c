@@ -13,12 +13,7 @@
 #include "string.h"
 
 extern uintptr_t virt_to_phys(const void *p);
-static uint32_t xhci_get_port_speed(xhci_controller_t *ctrl, uint32_t port) {
-    volatile uint32_t *op = (volatile uint32_t *)ctrl->op_regs;
-    uint32_t ps = xhci_read32((void *)op, XHCI_PORTSC(port));
-    uint32_t sp = (ps >> XHCI_PORTSC_SPEED_SHIFT) & 0xF;
-    return sp ? sp : 3; /* default HS if unknown */
-}
+
 static inline uint32_t xhci_read32(void *base, uint32_t off) {
     volatile uint32_t *p = (volatile uint32_t *)((uintptr_t)base + off);
     return *p;
@@ -32,6 +27,22 @@ static inline void xhci_write32(void *base, uint32_t off, uint32_t val) {
 static inline void xhci_write64(void *base, uint32_t off, uint64_t val) {
     volatile uint64_t *p = (volatile uint64_t *)((uintptr_t)base + off);
     *p = val;
+}
+
+static inline void xhci_set_trb_ptr(xhci_trb_t *trb, uint64_t ptr) {
+#ifdef ASTRA_XHCI_STRUCTS_PROVIDED
+    trb->parameter_low = (uint32_t)(ptr & 0xFFFFFFFFu);
+    trb->parameter_high = (uint32_t)(ptr >> 32);
+#else
+    trb->parameter = ptr;
+#endif
+}
+
+static uint32_t xhci_get_port_speed(xhci_controller_t *ctrl, uint32_t port) {
+    volatile uint32_t *op = (volatile uint32_t *)ctrl->op_regs;
+    uint32_t ps = xhci_read32((void *)op, XHCI_PORTSC(port));
+    uint32_t sp = (ps >> XHCI_PORTSC_SPEED_SHIFT) & 0xF;
+    return sp ? sp : 3; /* default HS if unknown */
 }
 
 static inline uint32_t xhci_port_read(xhci_controller_t *ctrl, uint32_t port) {
@@ -77,10 +88,7 @@ static int xhci_queue_kbd_irq(xhci_controller_t *ctrl, uint8_t slot, uint8_t ep_
         return -1;
     }
     /* Doorbell: target = ep */
-    if (ctrl->doorbell_regs) {
-        volatile uint32_t *db = (volatile uint32_t *)ctrl->doorbell_regs;
-        db[slot] = ep_dci;
-    }
+    xhci_ring_doorbell(ctrl, slot, ep_dci, 0);
     return 0;
 }
 
@@ -101,12 +109,6 @@ static void xhci_event_push(xhci_controller_t *ctrl, uint8_t type, uint8_t slot_
     if (ctrl->event_ring.enqueue == 0) {
         ctrl->event_ring.cycle_state = !ctrl->event_ring.cycle_state;
     }
-}
-
-static inline void xhci_ring_doorbell(xhci_controller_t *ctrl, uint8_t target) {
-    if (!ctrl || !ctrl->doorbell_regs) return;
-    volatile uint32_t *db = (volatile uint32_t *)ctrl->doorbell_regs;
-    db[target] = 0;
 }
 
 static int xhci_wait_event_type(xhci_controller_t *ctrl, uint8_t type, xhci_event_trb_t *out, uint32_t spin) {
@@ -137,7 +139,7 @@ static int xhci_wait_event_type(xhci_controller_t *ctrl, uint8_t type, xhci_even
 static int xhci_cmd_submit(xhci_controller_t *ctrl, xhci_trb_t *trb, xhci_event_trb_t *out) {
     if (!ctrl || !trb) return -1;
     if (xhci_cmd_ring_enqueue(&ctrl->cmd_ring, trb) != 0) return -1;
-    xhci_ring_doorbell(ctrl, 0);
+    xhci_ring_cmd_doorbell(ctrl);
     xhci_event_trb_t ev;
     int cc = xhci_wait_event_type(ctrl, TRB_EVENT_CMD_COMPLETION, &ev, 200000);
     if (cc < 0) {
@@ -369,6 +371,10 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     }
     /* Map MMIO into virtual space (cover CAP/OP/RTS/DB) */
     uintptr_t mapped = vmm_map_mmio((uintptr_t)bar0, 0x10000);
+    if (mapped == 0) {
+        klog_printf(KLOG_ERROR, "xhci: mmio map failed for bar=0x%llx", (unsigned long long)bar0);
+        return -1;
+    }
 
     pci_enable_busmaster(bus, slot, func);
 
@@ -404,6 +410,14 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     hc->ops = &xhci_ops;
     hc->private_data = ctrl;
 
+    /* Initialize the controller before registration/polling */
+    if (xhci_init(hc) != 0) {
+        klog_printf(KLOG_ERROR, "xhci: init failed for %02x:%02x.%u", bus, slot, func);
+        kfree(ctrl);
+        kfree(hc);
+        return -1;
+    }
+
     /* Register IRQ handler for legacy/MSI vector */
     xhci_register_irq_handler(hc, hc->irq);
 
@@ -418,13 +432,15 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
 int xhci_cmd_ring_init(xhci_controller_t *xhci) {
     if (!xhci) return -1;
     const uint32_t entries = 64;
-    xhci->cmd_ring.trbs = (xhci_trb_t *)dma_alloc(sizeof(xhci_trb_t) * entries, 64, &xhci->cmd_ring.phys_addr);
+    phys_addr_t phys = 0;
+    xhci->cmd_ring.trbs = (xhci_trb_t *)dma_alloc(sizeof(xhci_trb_t) * entries, 64, &phys);
     if (!xhci->cmd_ring.trbs) return -1;
     memset(xhci->cmd_ring.trbs, 0, sizeof(xhci_trb_t) * entries);
     xhci->cmd_ring.size = entries;
     xhci->cmd_ring.enqueue = 0;
     xhci->cmd_ring.dequeue = 0;
     xhci->cmd_ring.cycle_state = true;
+    xhci->cmd_ring.phys_addr = phys;
     /* link TRB to make it circular */
     xhci_build_link_trb(&xhci->cmd_ring.trbs[entries - 1],
                         xhci->cmd_ring.phys_addr, 1);
@@ -434,23 +450,28 @@ int xhci_cmd_ring_init(xhci_controller_t *xhci) {
 int xhci_event_ring_init(xhci_controller_t *xhci) {
     if (!xhci) return -1;
     const uint32_t entries = 64;
-    xhci->event_ring.trbs = (xhci_event_trb_t *)dma_alloc(sizeof(xhci_event_trb_t) * entries, 64, &xhci->event_ring.phys_addr);
+    phys_addr_t trb_phys = 0;
+    xhci->event_ring.trbs = (xhci_event_trb_t *)dma_alloc(sizeof(xhci_event_trb_t) * entries, 64, &trb_phys);
     if (!xhci->event_ring.trbs) return -1;
     memset(xhci->event_ring.trbs, 0, sizeof(xhci_event_trb_t) * entries);
     xhci->event_ring.size = entries;
     xhci->event_ring.dequeue = 0;
     xhci->event_ring.enqueue = 0;
     xhci->event_ring.cycle_state = true;
+    xhci->event_ring.phys_addr = trb_phys;
 
     /* ERST: single segment */
-    struct {
+    typedef struct {
         uint64_t addr;
         uint32_t size;
         uint32_t rsvd;
-    } __attribute__((packed)) *erst;
+    } __attribute__((packed)) erst_entry_t;
+
+    erst_entry_t *erst = NULL;
     phys_addr_t erst_phys = 0;
     erst = dma_alloc(sizeof(*erst), 64, &erst_phys);
     if (!erst) return -1;
+    memset(erst, 0, sizeof(*erst));
     erst[0].addr = xhci->event_ring.phys_addr;
     erst[0].size = entries;
     erst[0].rsvd = 0;
@@ -519,15 +540,6 @@ int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb) {
     return 1;
 }
 
-static inline void xhci_set_trb_ptr(xhci_trb_t *trb, uint64_t ptr) {
-#ifdef ASTRA_XHCI_STRUCTS_PROVIDED
-    trb->parameter_low = (uint32_t)(ptr & 0xFFFFFFFFu);
-    trb->parameter_high = (uint32_t)(ptr >> 32);
-#else
-    trb->parameter = ptr;
-#endif
-}
-
 void xhci_build_trb(xhci_trb_t *trb, uint64_t data_ptr, uint32_t length, uint32_t type, uint32_t flags) {
     if (!trb) {
         return;
@@ -585,10 +597,7 @@ int xhci_submit_control_transfer(xhci_controller_t *xhci, usb_transfer_t *transf
     xhci_transfer_ring_enqueue(ring, &status_trb);
 
     /* Ring the doorbell for slot/ep0 */
-    if (xhci->doorbell_regs) {
-        volatile uint32_t *db = (volatile uint32_t *)xhci->doorbell_regs;
-        db[slot] = ep;
-    }
+    xhci_ring_doorbell(xhci, slot, ep, 0);
 
     /* In stub mode we complete immediately */
     transfer->status = USB_TRANSFER_SUCCESS;

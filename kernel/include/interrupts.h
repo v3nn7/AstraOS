@@ -1,7 +1,23 @@
+/*
+ * AstraOS Source-Available License (ASAL v2.1)
+ * Copyright (c) 2025 Krystian "v3nn7"
+ * All rights reserved.
+ *
+ * Viewing allowed.
+ * Modification, forking, redistribution, and commercial use prohibited
+ * without explicit written permission from the author.
+ *
+ * Full license: see LICENSE.md or https://github.com/v3nn7
+ */
+
 #pragma once
 
 #include "types.h"
 #include "../util/io.hpp"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct interrupt_frame {
     uint64_t rip;
@@ -35,3 +51,7 @@ static inline uint64_t read_cr2(void) {
 static inline void invlpg(void *addr) {
     __asm__ volatile ("invlpg (%0)" :: "r"(addr) : "memory");
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,3 +1,5 @@
+#define HOST_TEST 1
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -5,7 +7,8 @@
 #define HAS_PLACEMENT_NEW
 #include <string.h>
 
-#define HOST_TEST 1
+#include "../kernel/include/types.h"
+#include "../kernel/drivers/acpi/ACPI_OSC_HUB.hpp"
 #ifdef HOST_TEST
 // Stub serial I/O to satisfy logger without touching hardware in host tests.
 void serial_init() {}
@@ -21,10 +24,30 @@ extern "C" void* kmemalign(size_t alignment, size_t size) {
     posix_memalign(&p, alignment, size);
     return p;
 }
+extern "C" void* dma_alloc(size_t size, size_t align, phys_addr_t* phys_out) {
+    void* p = nullptr;
+    if (align < sizeof(void*)) align = sizeof(void*);
+    if (posix_memalign(&p, align, size) != 0) return nullptr;
+    if (phys_out) *phys_out = reinterpret_cast<uintptr_t>(p);
+    return p;
+}
+extern "C" void dma_free(void* virt, size_t size) { (void)size; free(virt); }
 extern "C" uintptr_t virt_to_phys(const void* p) { return reinterpret_cast<uintptr_t>(p); }
-extern "C" uint32_t mmio_read32(uintptr_t) { return 0; }
-extern "C" uint8_t mmio_read8(uintptr_t) { return 0; }
-extern "C" void mmio_write32(uintptr_t, uint32_t) {}
+extern "C" uint8_t pci_cfg_read8(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
+extern "C" uint16_t pci_cfg_read16(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
+extern "C" uint32_t pci_cfg_read32(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
+extern "C" void pci_cfg_write8(uint8_t, uint8_t, uint8_t, uint16_t, uint8_t) {}
+extern "C" void pci_cfg_write16(uint8_t, uint8_t, uint8_t, uint16_t, uint16_t) {}
+extern "C" void pci_cfg_write32(uint8_t, uint8_t, uint8_t, uint16_t, uint32_t) {}
+extern "C" uint64_t pci_cfg_read_bar(uint8_t, uint8_t, uint8_t, uint8_t, bool* is64) {
+    if (is64) *is64 = false;
+    return 0;
+}
+extern "C" void pci_enable_busmaster(uint8_t, uint8_t, uint8_t) {}
+extern "C" void pci_config_init(uint64_t) {}
+extern "C" uint32_t mmio_read32(volatile uint32_t*) { return 0; }
+extern "C" uint8_t mmio_read8(volatile uint8_t*) { return 0; }
+extern "C" void mmio_write32(volatile uint32_t*, uint32_t) {}
 extern "C" bool pci_find_xhci(uintptr_t* base, uint8_t* b, uint8_t* d, uint8_t* f) {
     if (base) *base = 0;
     if (b) *b = 0;
@@ -54,6 +77,8 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 #include "../kernel/drivers/PCI/msi_allocator.c"
 #include "../kernel/drivers/PCI/pci_msi.c"
 #include "../kernel/drivers/PCI/msix.c"
+#include "../kernel/drivers/acpi/ACPI_OSC_HUB.cpp"
+#include "../kernel/drivers/ahci/ahci.c"
 #include "../kernel/drivers/usb/xhci/xhci_init.c"
 #include "../kernel/drivers/usb/xhci/xhci_ring.c"
 #include "../kernel/drivers/usb/xhci/xhci_events.c"
@@ -334,6 +359,24 @@ int main() {
     assert(gPressed[0] == true);
     assert(gKeys[1] == 'a');
     assert(gPressed[1] == false);
+
+    // AHCI host-test fake disk should return deterministic patterns.
+    uint8_t ahci_buf[AHCI_SECTOR_SIZE];
+    assert(ahci_init() == 0);
+    assert(ahci_read_lba(0, ahci_buf, 1) == 0);
+    for (size_t i = 0; i < AHCI_SECTOR_SIZE; ++i) {
+        assert(ahci_buf[i] == static_cast<uint8_t>(i & 0xFF));
+    }
+    uint8_t ahci_multi[AHCI_SECTOR_SIZE * 2];
+    assert(ahci_read_lba(1, ahci_multi, 2) == 0);
+    assert(ahci_multi[0] == static_cast<uint8_t>(1 ^ 0));
+    assert(ahci_multi[AHCI_SECTOR_SIZE] == static_cast<uint8_t>(2 ^ 0));
+    assert(ahci_multi[AHCI_SECTOR_SIZE + 10] == static_cast<uint8_t>(2 ^ 10));
+    assert(ahci_read_lba(AHCI_FAKE_SECTORS, ahci_buf, 1) != 0);
+
+    // ACPI hub _OSC stub should succeed and remain idempotent.
+    assert(acpi::request_hub_osc());
+    assert(acpi::request_hub_osc());
 
     return 0;
 }

@@ -1,5 +1,4 @@
 #include "event.h"
-#include "interrupts.h"
 #include "klog.h"
 #include "memory.h"
 #include "string.h"
@@ -7,6 +6,8 @@
 #include <drivers/usb/usb_hub.h>
 
 extern "C" {
+
+#include "interrupts.h"
 
 volatile uint32_t *apic_lapic_base = nullptr;
 
@@ -35,6 +36,8 @@ void gui_event_push_mouse_scroll(int32_t, int32_t, int32_t) {}
 uint32_t fb_width(void) { return 800; }
 uint32_t fb_height(void) { return 600; }
 void mouse_cursor_draw(int32_t, int32_t) {}
+
+void irq_register_handler(uint8_t, irq_handler_t) {}
 
 } // extern "C"
 

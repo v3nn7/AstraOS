@@ -3,6 +3,7 @@
 #include "memory.h"
 #include "string.h"
 #include "stdio.h"
+#include "interrupts.h"
 #include "../drivers/serial.hpp"
 #include "../util/logger.hpp"
 #include <drivers/usb/usb_hub.h>
@@ -54,3 +55,4 @@ void operator delete(void *p) { kfree(p); }
 void operator delete(void *p, unsigned long long) { kfree(p); }
 void operator delete[](void *p) { kfree(p); }
 void operator delete[](void *p, unsigned long long) { kfree(p); }
+

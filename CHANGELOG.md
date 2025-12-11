@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 -xHCI: Expanded MMIO mapping to 0x10000. Main loop now polls the controller when needed. Normal TRB for EP1 (8 -bytes) is armed programmatically and doorbelled using DCI=2.
 -HID: Boot-protocol keyboard parser integrated with Transfer Events; the IRQ buffer is automatically reissued -after each report.
 -Build/Run: Simplified QEMU configuration (kernel-irqchip=split, removed intel-iommu). Version bumped to 0.0.2.-PATCH.
+-ACPI: Added `request_hub_osc` helper and wired ACPI_OSC_HUB.cpp/hpp into the build with host-test coverage.
+-Core: Guarded USB polling when no host controllers are detected and log SMP init failures instead of assuming success.
+-Licensing: Added ASAL v2.1 header to key public headers (`interrupts.h`, `ahci.h`, `types.h`).
+-Build: `make run` now depends on `make iso`, so the ISO is generated before launching QEMU.
 
 ## 0.0.1.minor - 2025-12-11
 - Relocated USB and input headers under `kernel/include/drivers/...` and refreshed all driver includes to use `<drivers/...>` paths that match the new layout.
