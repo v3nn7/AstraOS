@@ -6,12 +6,20 @@
 
 namespace usb {
 
-static inline uint32_t controller_count() { return 0; }
-static inline uint32_t device_count() { return 0; }
-static inline int usb_init() { return 0; }
-static inline void usb_poll() {}
-static inline const usb_device_t* device_at(int) { return nullptr; }
-static inline const usb_device_t* usb_stack_device_at(int idx) { return device_at(idx); }
-static inline const usb_device_descriptor_t* usb_device_get_descriptor(const usb_device_t*) { return nullptr; }
+using usb_controller_t = usb_host_controller_t;
+
+uint32_t controller_count();
+uint32_t device_count();
+int usb_init();
+void usb_poll();
+const usb_controller_t* controller_at(int idx);
+const usb_device_t* device_at(int idx);
+const usb_device_t* usb_stack_device_at(int idx);
+const usb_device_descriptor_t* usb_device_get_descriptor(const usb_device_t* dev);
 
 }  // namespace usb
+
+/* Global helpers used by host tests */
+extern "C" bool usb_device_has_hid_keyboard(const usb_device_t* dev);
+extern "C" uint8_t usb_device_ep_in_addr(const usb_device_t* dev);
+extern "C" uint16_t usb_device_ep_in_max_packet(const usb_device_t* dev);

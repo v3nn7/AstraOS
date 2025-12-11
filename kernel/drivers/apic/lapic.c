@@ -1,0 +1,29 @@
+#include "lapic.h"
+#include "vmm.h"
+#include "acpi.h"
+
+static volatile uint32_t* lapic_base = 0;
+
+void lapic_write(uint32_t reg, uint32_t value) {
+    lapic_base[reg / 4] = value;
+}
+
+uint32_t lapic_read(uint32_t reg) {
+    return lapic_base[reg / 4];
+}
+
+void lapic_eoi() {
+    lapic_write(LAPIC_EOI, 0);
+}
+
+void lapic_send_ipi(uint32_t apic_id, uint32_t flags) {
+    lapic_write(LAPIC_ICR_HIGH, apic_id << 24);
+    lapic_write(LAPIC_ICR_LOW, flags);
+}
+
+void lapic_init() {
+    uint64_t phys = acpi_get_lapic_address();
+    lapic_base = (volatile uint32_t*)vmm_map_mmio(phys, 0x1000);
+
+    lapic_write(LAPIC_SVR, 0x100 | 0xFF); // enable LAPIC + vector 0xFF
+}

@@ -13,8 +13,12 @@
 #include <drivers/usb/usb_core.h>
 #include <drivers/usb/usb_core.hpp>
 #include <drivers/input/ps2/ps2.hpp>
+#include <drivers/serial.hpp>
 
 #define EFIAPI __attribute__((ms_abi))
+
+extern "C" void serial_write(const char* s);
+extern "C" void serial_init(void);
 
 extern "C" {
 
@@ -191,6 +195,52 @@ static void render_shell() {
     shell_render();
 }
 
+// #region agent log
+static bool dbg_serial_ready = false;
+static inline void dbg_ensure_serial() {
+    if (!dbg_serial_ready) {
+        serial_init();
+        dbg_serial_ready = true;
+    }
+}
+
+static inline void dbg_hex16(char* out, uint64_t v) {
+    out[0] = '0'; out[1] = 'x';
+    for (int i = 0; i < 16; ++i) {
+        uint8_t nib = (v >> (60 - 4 * i)) & 0xF;
+        out[2 + i] = (nib < 10) ? ('0' + nib) : ('a' + nib - 10);
+    }
+    out[18] = '\0';
+}
+
+static inline void dbg_log_main(const char* location, const char* message, const char* hypo,
+                                uint64_t key_val, const char* key_name, const char* runId) {
+    dbg_ensure_serial();
+    char hex[19]; dbg_hex16(hex, key_val);
+    char buf[256];
+    int p = 0;
+    auto append = [&](const char* s) {
+        while (*s && p < (int)(sizeof(buf) - 1)) buf[p++] = *s++;
+    };
+    append("{\"sessionId\":\"debug-session\",\"runId\":\"");
+    append(runId);
+    append("\",\"hypothesisId\":\"");
+    append(hypo);
+    append("\",\"location\":\"");
+    append(location);
+    append("\",\"message\":\"");
+    append(message);
+    append("\",\"data\":{\"");
+    append(key_name);
+    append("\":\"");
+    append(hex);
+    append("\"},\"timestamp\":0}");
+    buf[p] = '\0';
+    serial_write(buf);
+    serial_write("\n");
+}
+// #endregion
+
 extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
 #ifndef HOST_TEST
     __asm__ __volatile__("cli");
@@ -198,14 +248,15 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     init_idt();
     ps2::init();  // PS/2 fallback to release BIOS locks on some laptops
 #endif
+    dbg_log_main("main.cpp:kmain:start", "kmain_enter", "H1", (uint64_t)gop, "gop_ptr", "run-pre");
     renderer_init(gop);
     logger_init();
     draw_splash();
     render_shell();
     smp::init();
-    klog("main: before usb_init");
+    dbg_log_main("main.cpp:kmain:usb", "before_usb_init", "H1", 0, "stage", "run-pre");
     usb::usb_init();
-    klog("main: after usb_init");
+    dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");
 #ifndef HOST_TEST
     interrupts_enable();
     while (true) {

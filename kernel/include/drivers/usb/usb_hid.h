@@ -35,6 +35,17 @@ extern "C" {
 #define HID_MOUSE_BUTTON_RIGHT   0x02
 #define HID_MOUSE_BUTTON_MIDDLE  0x04
 
+typedef struct {
+    int8_t delta_x;
+    int8_t delta_y;
+    int8_t wheel;
+    uint8_t buttons;
+} hid_mouse_state_t;
+
+typedef struct {
+    uint8_t last_keys[6];
+} hid_keyboard_state_t;
+
 /* HID Functions */
 int usb_hid_init(void);
 void hid_init(void); /* Wrapper for drivers.h compatibility */
@@ -49,6 +60,10 @@ int usb_hid_mouse_read(usb_device_t *dev, int8_t *dx, int8_t *dy, uint8_t *butto
 int usb_hid_keyboard_read(usb_device_t *dev, uint8_t *modifiers, uint8_t *keys);
 void usb_hid_process_keyboard_report(usb_device_t *dev, uint8_t *report, size_t len);
 void usb_hid_process_mouse_report(usb_device_t *dev, uint8_t *report, size_t len);
+void hid_mouse_reset(hid_mouse_state_t *state);
+void hid_mouse_handle_report(hid_mouse_state_t *state, const uint8_t *report, size_t len);
+void hid_keyboard_reset(hid_keyboard_state_t *state);
+void hid_keyboard_handle_report(hid_keyboard_state_t *state, const uint8_t *report, size_t len);
 
 /* Integration Functions */
 void usb_hid_scan_devices(void);

@@ -16,6 +16,11 @@ int memcmp(const void *a, const void *b, size_t n);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
 
+/* Provide a libc-like memset wrapper that delegates to k_memset. */
+static inline void *memset(void *dest, int value, unsigned long n) {
+    return k_memset(dest, value, n);
+}
+
 #ifdef __cplusplus
 }
 #endif

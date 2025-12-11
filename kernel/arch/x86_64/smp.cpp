@@ -5,6 +5,39 @@
 #include "../x86_64/idt.hpp"
 #include "../../util/logger.hpp"
 #include <drivers/usb/usb_core.h>
+#include <drivers/serial.hpp>
+
+extern "C" void serial_write(const char* s);
+extern "C" void serial_init(void);
+
+// #region agent log
+static bool dbg_serial_ready = false;
+static inline void dbg_ensure_serial() {
+    if (!dbg_serial_ready) {
+        serial_init();
+        dbg_serial_ready = true;
+    }
+}
+
+static inline void dbg_log_smp(const char* loc, const char* msg, const char* hypo, uint64_t val, const char* key, const char* runId) {
+    dbg_ensure_serial();
+    char buf[128];
+    int p = 0;
+    auto app = [&](const char* s) { while (*s && p < (int)sizeof(buf)-1) buf[p++] = *s++; };
+    app("{\"sessionId\":\"debug-session\",\"runId\":\""); app(runId);
+    app("\",\"hypothesisId\":\""); app(hypo);
+    app("\",\"location\":\""); app(loc);
+    app("\",\"message\":\""); app(msg);
+    app("\",\"data\":{\""); app(key); app("\":");
+    // hex
+    char hex[19]; hex[0]='0'; hex[1]='x';
+    for (int i=0;i<16;i++){ uint8_t n=(val>>(60-4*i))&0xF; hex[2+i]=(n<10)?('0'+n):('a'+n-10);}
+    hex[18]='\0';
+    app("\""); app(hex); app("\"},\"timestamp\":0}");
+    buf[p]='\0';
+    serial_write(buf); serial_write("\n");
+}
+// #endregion
 
 extern "C" void* kmemalign(size_t alignment, size_t size);
 extern "C" uintptr_t virt_to_phys(const void* p);
@@ -120,20 +153,27 @@ bool start_aps() {
 }  // namespace
 
 bool init() {
+    dbg_log_smp("smp.cpp:init", "smp_init_enter", "H4", 0, "stage", "run-pre");
     klog("smp: init");
     if (!lapic::init()) {
+        dbg_log_smp("smp.cpp:init", "smp_lapic_fail", "H4", 0, "stage", "run-pre");
         klog("smp: lapic init failed");
         return false;
     }
     g_bsp_apic = lapic::id();
+    dbg_log_smp("smp.cpp:init", "smp_after_lapic", "H4", g_bsp_apic, "lapic_id", "run-pre");
     if (!parse_madt()) {
+        dbg_log_smp("smp.cpp:init", "smp_madt_fail", "H4", 0, "stage", "run-pre");
         klog("smp: madt parse failed");
         return false;
     }
+    dbg_log_smp("smp.cpp:init", "smp_after_madt", "H4", g_core_count, "cores", "run-pre");
     if (!start_aps()) {
+        dbg_log_smp("smp.cpp:init", "smp_start_aps_fail", "H4", 0, "stage", "run-pre");
         klog("smp: start APs failed");
         return false;
     }
+    dbg_log_smp("smp.cpp:init", "smp_init_done", "H4", 0, "stage", "run-pre");
     return true;
 }
 

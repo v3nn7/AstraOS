@@ -1,6 +1,6 @@
 #pragma once
-
-#include "types.h"
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,6 +8,17 @@ extern "C" {
 
 /* Higher-half direct map offset (set by physical memory manager). */
 extern uint64_t pmm_hhdm_offset;
+
+/* Initialize PMM from firmware memory map. */
+void pmm_init(uintptr_t memory_map, size_t memory_map_size, size_t desc_size);
+
+/* Allocate / free one 4KB physical page. */
+void* pmm_alloc_page(void);
+void  pmm_free_page(void* addr);
+
+/* Memory stats. */
+uint64_t pmm_total_memory(void);
+uint64_t pmm_free_memory(void);
 
 #ifdef __cplusplus
 }

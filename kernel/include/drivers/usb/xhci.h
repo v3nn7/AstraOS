@@ -1,6 +1,8 @@
 #pragma once
 
 #include <drivers/usb/usb_core.h>
+#include <drivers/usb/xhci_structs.h>
+#include <drivers/PCI/pci_msi.h>
 #include "types.h"
 #include "pmm.h"
 
@@ -133,12 +135,14 @@
 #define XHCI_TRB_CC_SECONDARY_BANDWIDTH_ERROR 35
 #define XHCI_TRB_CC_SPLIT_TRANSACTION_ERROR 36
 
+#ifndef ASTRA_XHCI_STRUCTS_PROVIDED
 /* TRB Structure (64 bytes for 64-bit systems) */
 typedef struct PACKED {
     uint64_t parameter;
     uint32_t status;
     uint32_t control;
 } xhci_trb_t;
+#endif
 
 /* TRB Control Field Bits */
 #define XHCI_TRB_CYCLE           (1 << 0)
@@ -257,6 +261,24 @@ typedef struct PACKED {
     uint32_t reserved6:6;
 } xhci_endpoint_context_t;
 
+typedef struct PACKED usb_setup_packet {
+    uint8_t bmRequestType;
+    uint8_t bRequest;
+    uint16_t wValue;
+    uint16_t wIndex;
+    uint16_t wLength;
+} usb_setup_packet_t;
+
+#ifndef ASTRA_XHCI_STRUCTS_PROVIDED
+typedef struct {
+    xhci_trb_t *trbs;
+    uint32_t size;
+    uint32_t dequeue;
+    uint32_t enqueue;
+    bool cycle_state;
+} xhci_trb_ring_t;
+#endif
+
 /* XHCI Controller Private Data */
 typedef struct {
     void *cap_regs;
@@ -318,4 +340,20 @@ void xhci_ring_doorbell(xhci_controller_t *xhci, uint8_t slot, uint8_t endpoint,
 
 /* XHCI Interrupt Functions */
 void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector);
+
+/* Lightweight helpers used by host tests */
+bool xhci_legacy_handoff(uintptr_t base);
+bool xhci_reset_with_delay(uintptr_t base, uint32_t delay_ms);
+bool xhci_require_alignment(size_t size, size_t align);
+bool xhci_check_lowmem(uintptr_t addr);
+bool xhci_route_ports(uintptr_t base);
+int xhci_controller_init(xhci_controller_t *ctrl, uintptr_t base);
+bool xhci_cmd_enable_slot(xhci_controller_t *ctrl, uint8_t *slot_id);
+bool xhci_cmd_address_device(xhci_controller_t *ctrl, uint8_t slot_id, uint32_t route);
+bool xhci_cmd_configure_endpoint(xhci_controller_t *ctrl, uint8_t slot_id, uint32_t ctx);
+int xhci_poll_events(xhci_controller_t *ctrl);
+bool xhci_ring_init(xhci_trb_ring_t *ring, uint32_t entries);
+bool xhci_build_control_transfer(xhci_trb_ring_t *ring, usb_transfer_t *transfer,
+                                 const usb_setup_packet_t *setup, uint32_t flags);
+bool xhci_configure_msi(msi_config_t *cfg);
 

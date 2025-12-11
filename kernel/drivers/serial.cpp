@@ -21,6 +21,8 @@ bool tx_empty() {
 
 }  // namespace
 
+extern "C" {
+
 void serial_init() {
 #ifdef HOST_TEST
     serial_ready = false;
@@ -53,3 +55,5 @@ void serial_write(const char* s) {
         serial_write_char(s[i]);
     }
 }
+
+}  // extern "C"

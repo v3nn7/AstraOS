@@ -37,7 +37,8 @@ LDFLAGS := /machine:x64 /subsystem:efi_application /entry:efi_main /nodefaultlib
 SRC_DIR := kernel
 ASM_SOURCES := $(SRC_DIR)/arch/x86_64/isr_stubs.S \
                $(SRC_DIR)/arch/x86_64/gdt_asm.S \
-               $(SRC_DIR)/arch/x86_64/idt_asm.S
+               $(SRC_DIR)/arch/x86_64/idt_asm.S \
+               $(SRC_DIR)/arch/x86_64/paging_asm.S
 CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/gdt.cpp \
                $(SRC_DIR)/arch/x86_64/idt.cpp \
@@ -52,7 +53,10 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
-               $(SRC_DIR)/util/memory.cpp
+               $(SRC_DIR)/util/memory.cpp \
+               $(SRC_DIR)/memory/pmm.cpp \
+               $(SRC_DIR)/memory/vmm.cpp \
+               $(SRC_DIR)/util/stubs.cpp
 
 C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/core/usb_core.c \
@@ -66,7 +70,9 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/host/ehci_qh.c \
              $(SRC_DIR)/drivers/usb/host/ehci_td.c \
              $(SRC_DIR)/drivers/usb/host/ohci.c \
-             $(SRC_DIR)/drivers/usb/host/pci_msi.c \
+             $(SRC_DIR)/drivers/PCI/pci_msi.c \
+             $(SRC_DIR)/drivers/PCI/msi_allocator.c \
+             $(SRC_DIR)/drivers/PCI/msix.c \
              $(SRC_DIR)/drivers/usb/host/pci_usb_detect.c \
              $(SRC_DIR)/drivers/usb/host/xhci.c \
              $(SRC_DIR)/drivers/usb/host/xhci_irq.c \
@@ -163,9 +169,10 @@ iso: kernel $(ESP_IMG)
 		-o AstraOS.iso $(ISO_DIR)
 
 run: iso
-	$(QEMU) -machine q35 -m 2G \
+	$(QEMU) -machine q35 -m 4G \
 		-bios $(OVMF_CODE) \
-		-serial stdio \
+		-serial file:/home/v3nn7/Projects/AstraOS/.cursor/debug.log \
+		-monitor stdio \
 		-no-reboot -no-shutdown \
 		-drive if=none,id=cdrom,file=AstraOS.iso,format=raw,media=cdrom \
 		-device ide-cd,drive=cdrom \

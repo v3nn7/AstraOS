@@ -1,0 +1,16 @@
+#pragma once
+#include <stdint.h>
+
+class HPET {
+public:
+    static void init();
+    static uint64_t counter();
+    static void sleep_us(uint64_t us);
+    static void sleep_ms(uint64_t ms);
+
+    static inline uint64_t frequency() { return hpet_frequency; }
+
+private:
+    static volatile uint64_t* hpet_base;
+    static uint64_t hpet_frequency;   // Hz
+};

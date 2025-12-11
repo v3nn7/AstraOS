@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 - Relocated USB and input headers under `kernel/include/drivers/...` and refreshed all driver includes to use `<drivers/...>` paths that match the new layout.
 - Updated the build to track the current USB/input sources and added `kernel/include` to the compiler search paths to keep the reorganized headers discoverable.
 - Adjusted USB structure docs to reflect the new include root.
+- Wired the new paging/VMM/PMM sources into the build; vmm-backed `virt_to_phys` now falls back to translation when HHDM is absent.
+- USB PCI detection now maps controller BARs through `vmm_map_mmio` for consistent uncached MMIO access.
+- Added x86_64 CR0/CR3/CR4 assembly helpers (`paging_asm.S`) and linked them so the new VMM can enable paging without undefined symbols.
+- Brought PCI MSI/MSI-X helpers into `drivers/PCI/` with stubbed allocators and setup paths, updating tests and the build to consume them.
+- Added xHCI structure header `xhci_structs.h` and wired xHCI stubs to honor its TRB/ring layouts.
+- Stubbed core USB stack pieces (device, transfer, HID, debug/helpers) so host tests can enumerate a fake HID keyboard/mouse and exercise control/interrupt flows.
 
 ## 0.0.1.1exp - 2025-12-10
 - Bumped version metadata to experimental iteration 0.0.1.1exp.

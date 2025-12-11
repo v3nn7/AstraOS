@@ -2,6 +2,9 @@
 
 #include "../drivers/serial.hpp"
 
+extern "C" void serial_write(const char* s);
+extern "C" void serial_init(void);
+
 namespace {
 uint32_t g_cursor_x = 12;
 uint32_t g_cursor_y = 40;

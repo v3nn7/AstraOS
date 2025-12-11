@@ -51,9 +51,9 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 #include "../kernel/drivers/usb/core/usb_transfer.c"
 #include "../kernel/drivers/usb/core/usb_device.c"
 #include "../kernel/drivers/usb/usb_core.cpp"
-#include "../kernel/drivers/usb/msi_allocator.c"
-#include "../kernel/drivers/usb/msi.c"
-#include "../kernel/drivers/usb/msix.c"
+#include "../kernel/drivers/PCI/msi_allocator.c"
+#include "../kernel/drivers/PCI/pci_msi.c"
+#include "../kernel/drivers/PCI/msix.c"
 #include "../kernel/drivers/usb/xhci/xhci_init.c"
 #include "../kernel/drivers/usb/xhci/xhci_ring.c"
 #include "../kernel/drivers/usb/xhci/xhci_events.c"
@@ -240,12 +240,29 @@ int main() {
     assert(msi_enable(&msi_cfg));
     assert(msi_disable(&msi_cfg));
 
+    msix_entry_t msix_check{};
+    msix_init_entry(&msix_check);
+    assert(msix_check.vector == 32);
+    assert(msix_enable(&msix_check));
+    assert(msix_disable(&msix_check));
+
     msix_entry_t msix_ent{};
     msix_init_entry(&msix_ent);
     assert(msix_ent.vector != 0);
     assert(msix_ent.masked == false);
     assert(msix_enable(&msix_ent));
     assert(msix_disable(&msix_ent));
+
+    uint8_t vec_out = 0;
+    assert(pci_enable_msi(0, 0, 0, 55, &vec_out) == 0);
+    assert(vec_out == 55);
+    uint8_t msix_vec = 0;
+    assert(pci_enable_msix(0, 0, 0, 0, 66, &msix_vec) == 0);
+    assert(msix_vec == 66);
+    assert(pci_disable_msi(0, 0, 0) == 0);
+    uint8_t setup_vec = 0;
+    assert(pci_setup_interrupt(0, 0, 0, 44, &setup_vec) == 0);
+    assert(setup_vec == 44);
 
     // xHCI legacy handoff and alignment helpers (MMIO base mocked to 0 under host).
     assert(xhci_legacy_handoff(0));
@@ -280,6 +297,8 @@ int main() {
     assert(usb_device_has_hid_keyboard(dev0));
     assert(usb_device_ep_in_addr(dev0) == 0x81);
     assert(usb_device_ep_in_max_packet(dev0) == 8);
+    assert(usb_device_find_by_vid_pid(0x1234, 0x5678) == dev0);
+    assert(usb_device_find_by_address(1) == dev0);
     // Shell poll uses usb_poll(), so run once.
     usb::usb_poll();
 

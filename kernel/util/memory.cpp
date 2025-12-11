@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "io.hpp"
+#include "vmm.h"
 
 extern "C" void* kmalloc(size_t sz) {
     static uint8_t heap[64 * 1024];
@@ -51,34 +52,41 @@ extern "C" void input_push_key(uint8_t, bool) {}
 #endif
 static constexpr uintptr_t kHhdmBase = static_cast<uintptr_t>(HHDM_BASE);
 
+extern "C" uint64_t pmm_hhdm_offset;
+
 // MMIO helpers (assume HHDM direct map; adjust HHDM_BASE via build if needed).
 extern "C" uint32_t mmio_read32(volatile uint32_t* addr) {
-    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(kHhdmBase + reinterpret_cast<uintptr_t>(addr));
+    uintptr_t base = (pmm_hhdm_offset != 0) ? pmm_hhdm_offset : 0;
+    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(base + reinterpret_cast<uintptr_t>(addr));
     return *p;
 }
 
 extern "C" uint8_t mmio_read8(volatile uint8_t* addr) {
-    volatile uint8_t* p = reinterpret_cast<volatile uint8_t*>(kHhdmBase + reinterpret_cast<uintptr_t>(addr));
+    uintptr_t base = (pmm_hhdm_offset != 0) ? pmm_hhdm_offset : 0;
+    volatile uint8_t* p = reinterpret_cast<volatile uint8_t*>(base + reinterpret_cast<uintptr_t>(addr));
     return *p;
 }
 
 extern "C" void mmio_write32(volatile uint32_t* addr, uint32_t val) {
-    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(kHhdmBase + reinterpret_cast<uintptr_t>(addr));
+    uintptr_t base = (pmm_hhdm_offset != 0) ? pmm_hhdm_offset : 0;
+    volatile uint32_t* p = reinterpret_cast<volatile uint32_t*>(base + reinterpret_cast<uintptr_t>(addr));
     *p = val;
 }
 
 extern "C" void mmio_write64(volatile uint64_t* addr, uint64_t val) {
-    volatile uint64_t* p = reinterpret_cast<volatile uint64_t*>(kHhdmBase + reinterpret_cast<uintptr_t>(addr));
+    uintptr_t base = (pmm_hhdm_offset != 0) ? pmm_hhdm_offset : 0;
+    volatile uint64_t* p = reinterpret_cast<volatile uint64_t*>(base + reinterpret_cast<uintptr_t>(addr));
     *p = val;
 }
 
 extern "C" uint64_t mmio_read64(volatile uint64_t* addr) {
-    volatile uint64_t* p = reinterpret_cast<volatile uint64_t*>(kHhdmBase + reinterpret_cast<uintptr_t>(addr));
+    uintptr_t base = (pmm_hhdm_offset != 0) ? pmm_hhdm_offset : 0;
+    volatile uint64_t* p = reinterpret_cast<volatile uint64_t*>(base + reinterpret_cast<uintptr_t>(addr));
     return *p;
 }
 
-/* Weak default for HHDM offset */
-extern "C" uint64_t pmm_hhdm_offset = kHhdmBase;
+/* Weak default for HHDM offset (0 = identity) */
+extern "C" uint64_t pmm_hhdm_offset = 0;
 
 extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_t* slot_out, uint8_t* func_out) {
 #ifdef HOST_TEST
@@ -175,5 +183,6 @@ extern "C" uintptr_t virt_to_phys(const void* p) {
     if (kHhdmBase != 0 && v >= kHhdmBase) {
         return v - kHhdmBase;
     }
-    return v;
+    uintptr_t t = vmm_translate(v);
+    return t ? t : v;
 }
