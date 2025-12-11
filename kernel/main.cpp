@@ -267,7 +267,8 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
         if ((hb++ % 5000u) == 0) {
             klog("main: heartbeat");
         }
-        __asm__ __volatile__("hlt");
+        /* Without a timer/interrupt source the CPU would sleep forever on HLT. */
+        __asm__ __volatile__("pause");
     }
 #else
     ps2::poll();

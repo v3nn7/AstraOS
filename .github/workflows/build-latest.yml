@@ -18,10 +18,10 @@ jobs:
       - name: Install deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang lld make mtools xorriso qemu-system-x86
+          sudo apt-get install -y clang lld make mtools xorriso
 
-      - name: Build (make run)
-        run: make run
+      - name: Build ISO (headless)
+        run: make iso
 
       - name: Get latest tag
         id: tag
@@ -33,6 +33,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          files: out/AstraOS.iso
+          files: AstraOS.iso
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

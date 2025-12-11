@@ -47,6 +47,7 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/acpi/ACPI_OSC_USB.cpp \
                $(SRC_DIR)/drivers/input/ps2/ps2.cpp \
                $(SRC_DIR)/drivers/serial.cpp \
+               $(SRC_DIR)/drivers/usb/usb_core.cpp \
                $(SRC_DIR)/drivers/usb/hid/hid_driver.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_parser.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_report_descriptor.cpp \
