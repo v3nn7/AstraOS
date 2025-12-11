@@ -189,6 +189,7 @@ uintptr_t VMM::map_mmio(uintptr_t phys, size_t size) {
 
     for (size_t off = 0; off < size; off += PAGE_SIZE) {
         map(virt + off, phys + off, WRITABLE | NO_CACHE | WRITE_THROUGH | PRESENT);
+        __asm__ __volatile__("invlpg (%0)" ::"r"(virt + off) : "memory");
     }
 
     return virt;
