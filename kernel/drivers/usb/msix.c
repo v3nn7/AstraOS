@@ -1,5 +1,6 @@
 #include "include/msix.h"
 #include "include/msi.h"
+#include "include/msi_defs.h"
 
 void msix_init_entry(msix_entry_t* entry) {
     if (!entry) {

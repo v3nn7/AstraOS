@@ -21,4 +21,7 @@ static inline hid_report_info_t hid_make_usage(uint16_t page, uint16_t id, uint8
     return info;
 }
 
+/* Validate a boot-protocol HID report blob (stub: non-empty check). */
+bool hid_parser_validate_boot_report(const uint8_t* report, size_t len);
+
 #endif /* USB_HID_H */

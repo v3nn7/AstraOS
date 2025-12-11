@@ -10,7 +10,7 @@ void msi_init_config(msi_config_t* cfg) {
 }
 
 bool msi_enable(const msi_config_t* cfg) {
-    return cfg != 0 && cfg->vector != 0;
+    return cfg != 0 && cfg->vector != 0 && cfg->masked == false;
 }
 
 bool msi_disable(const msi_config_t* cfg) {

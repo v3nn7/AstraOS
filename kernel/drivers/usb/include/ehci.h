@@ -11,4 +11,8 @@ typedef struct ehci_controller {
     volatile uint32_t *op_regs;
 } ehci_controller_t;
 
+bool ehci_init(ehci_controller_t* ctrl, uintptr_t mmio_base);
+bool ehci_reset_port(ehci_controller_t* ctrl, uint8_t port);
+bool ehci_poll(ehci_controller_t* ctrl);
+
 #endif /* EHCI_H */

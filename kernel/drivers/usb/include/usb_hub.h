@@ -25,5 +25,7 @@ bool usb_hub_enumerate(usb_hub_t* hub);
 
 uint8_t usb_hub_port_count(const usb_hub_t* hub);
 usb_hub_port_status_t usb_hub_port_status(const usb_hub_t* hub, uint8_t index);
+bool usb_hub_connect_port(usb_hub_t* hub, uint8_t index, usb_speed_t speed);
+bool usb_hub_disconnect_port(usb_hub_t* hub, uint8_t index);
 
 #endif /* USB_HUB_H */

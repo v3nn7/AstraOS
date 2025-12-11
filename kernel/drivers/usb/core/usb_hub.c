@@ -33,3 +33,20 @@ usb_hub_port_status_t usb_hub_port_status(const usb_hub_t* hub, uint8_t index) {
     }
     return hub->ports[index];
 }
+
+bool usb_hub_connect_port(usb_hub_t* hub, uint8_t index, usb_speed_t speed) {
+    if (!hub || index >= hub->port_count) {
+        return false;
+    }
+    hub->ports[index].connected = true;
+    hub->ports[index].speed = speed;
+    return true;
+}
+
+bool usb_hub_disconnect_port(usb_hub_t* hub, uint8_t index) {
+    if (!hub || index >= hub->port_count) {
+        return false;
+    }
+    hub->ports[index].connected = false;
+    return true;
+}

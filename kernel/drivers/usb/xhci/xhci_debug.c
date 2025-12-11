@@ -1,3 +1,7 @@
 #include "../include/xhci.h"
+#include <stdint.h>
 
-/* Debug helpers for tracing xHCI state will be implemented here. */
+void xhci_debug_dump_basic(const xhci_controller_t* ctrl) {
+    (void)ctrl;
+    /* Placeholder: would print key registers; omitted in stub. */
+}

@@ -25,6 +25,7 @@ bool msi_disable(const msi_config_t* cfg);
 /* Basic vector allocator helpers. */
 void msi_allocator_reset(void);
 int msi_allocator_next_vector(void);
+int msi_allocator_used(void);
 
 #ifdef __cplusplus
 }
