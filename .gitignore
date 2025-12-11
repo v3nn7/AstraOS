@@ -16,8 +16,12 @@ AstraKernel/CMakeCache.txt
 AstraKernel/CMakeFiles/
 AstraKernel/cmake_install.cmake
 AstraKernel/Makefile
+build/
 
 # IDE
 .vscode/
 .idea/
 
+
+#PRIVATE FILES
+modules-private/
