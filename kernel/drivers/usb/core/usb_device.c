@@ -23,6 +23,7 @@ usb_device_t *usb_device_alloc(void) {
     }
     memset(dev, 0, sizeof(usb_device_t));
     dev->state = USB_DEVICE_STATE_DEFAULT;
+    klog_printf(KLOG_INFO, "usb: device alloc");
     return dev;
 }
 
@@ -30,11 +31,13 @@ void usb_device_free(usb_device_t *dev) {
     if (!dev) {
         return;
     }
+    klog_printf(KLOG_INFO, "usb: device free addr=%u", dev->address);
     kfree(dev);
 }
 
 int usb_device_enumerate(usb_device_t *dev) {
     /* Stub enumeration always succeeds for host tests */
+    klog_printf(KLOG_INFO, "usb: enumerate addr=%u", dev ? dev->address : 0);
     return dev ? 0 : -1;
 }
 
@@ -43,6 +46,7 @@ int usb_device_set_address(usb_device_t *dev, uint8_t address) {
         return -1;
     }
     dev->address = address;
+    klog_printf(KLOG_INFO, "usb: set address %u", address);
     return 0;
 }
 
@@ -52,6 +56,7 @@ int usb_device_set_configuration(usb_device_t *dev, uint8_t config) {
     }
     dev->active_configuration = config;
     dev->state = USB_DEVICE_STATE_CONFIGURED;
+    klog_printf(KLOG_INFO, "usb: set config %u", config);
     return 0;
 }
 
@@ -91,6 +96,7 @@ int usb_device_add_endpoint(usb_device_t *dev, uint8_t address,
     ep->type = attributes & 0x3;
     ep->toggle = false;
     ep->controller_private = NULL;
+    klog_printf(KLOG_INFO, "usb: add ep 0x%02x type=%u mps=%u", address, ep->type, max_packet_size);
     return 0;
 }
 

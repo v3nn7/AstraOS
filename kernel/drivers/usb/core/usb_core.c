@@ -14,12 +14,14 @@ int usb_core_init(void) {
     g_host_controllers = NULL;
     g_driver_count = 0;
     memset(g_drivers, 0, sizeof(g_drivers));
+    klog_printf(KLOG_INFO, "usb: core init");
     return 0;
 }
 
 void usb_core_cleanup(void) {
     g_host_controllers = NULL;
     g_driver_count = 0;
+    klog_printf(KLOG_INFO, "usb: core cleanup");
 }
 
 int usb_host_register(usb_host_controller_t *hc) {
@@ -29,6 +31,7 @@ int usb_host_register(usb_host_controller_t *hc) {
     hc->next = g_host_controllers;
     g_host_controllers = hc;
     hc->enabled = true;
+    klog_printf(KLOG_INFO, "usb: host register %s type=%d", hc->name ? hc->name : "?", hc->type);
     return 0;
 }
 
@@ -41,6 +44,7 @@ int usb_host_unregister(usb_host_controller_t *hc) {
         if (*cur == hc) {
             *cur = hc->next;
             hc->next = NULL;
+            klog_printf(KLOG_INFO, "usb: host unregister %s", hc->name ? hc->name : "?");
             return 0;
         }
         cur = &(*cur)->next;
@@ -64,6 +68,7 @@ int usb_register_driver(usb_driver_t *drv) {
         return -1;
     }
     g_drivers[g_driver_count++] = drv;
+    klog_printf(KLOG_INFO, "usb: driver registered %s", drv->name ? drv->name : "?");
     return 0;
 }
 
@@ -76,6 +81,7 @@ int usb_bind_driver(usb_device_t *dev) {
         if (drv && drv->probe && drv->probe(dev) == 0) {
             if (!drv->init || drv->init(dev) == 0) {
                 dev->driver_data = drv;
+                klog_printf(KLOG_INFO, "usb: driver %s bound to addr=%u", drv->name ? drv->name : "?", dev->address);
                 return 0;
             }
         }

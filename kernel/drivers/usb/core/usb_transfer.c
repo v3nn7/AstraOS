@@ -29,6 +29,7 @@ usb_transfer_t *usb_transfer_alloc(usb_device_t *dev, usb_endpoint_t *ep, size_t
     }
     t->length = length;
     t->status = USB_TRANSFER_SUCCESS;
+    klog_printf(KLOG_INFO, "usb: xfer alloc len=%zu", length);
     return t;
 }
 
@@ -40,6 +41,7 @@ void usb_transfer_free(usb_transfer_t *transfer) {
         kfree(transfer->buffer);
     }
     kfree(transfer);
+    klog_printf(KLOG_INFO, "usb: xfer free");
 }
 
 static int submit_via_controller(usb_transfer_t *transfer) {
@@ -69,6 +71,8 @@ int usb_transfer_submit(usb_transfer_t *transfer) {
     if (!transfer) {
         return -1;
     }
+    klog_printf(KLOG_INFO, "usb: submit xfer len=%zu ep=0x%02x", transfer->length,
+                transfer->endpoint ? transfer->endpoint->address : 0);
     int rc = submit_via_controller(transfer);
     transfer->status = (rc == 0) ? USB_TRANSFER_SUCCESS : USB_TRANSFER_ERROR;
     transfer->actual_length = (rc == 0) ? transfer->length : 0;
@@ -105,6 +109,8 @@ int usb_control_transfer(usb_device_t *dev, uint8_t bmRequestType, uint8_t bRequ
     if (!dev) {
         return -1;
     }
+    klog_printf(KLOG_INFO, "usb: ctrl req bmRT=0x%02x bReq=0x%02x wValue=0x%04x wIndex=0x%04x len=%u",
+                bmRequestType, bRequest, wValue, wIndex, wLength);
 
     usb_endpoint_t ep;
     memset(&ep, 0, sizeof(ep));
@@ -134,6 +140,7 @@ int usb_interrupt_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
     t.endpoint = ep;
     t.buffer = (uint8_t *)data;
     t.length = length;
+    klog_printf(KLOG_INFO, "usb: int xfer ep=0x%02x len=%zu", ep ? ep->address : 0, length);
     return usb_transfer_submit(&t);
 }
 
@@ -146,6 +153,7 @@ int usb_bulk_transfer(usb_device_t *dev, usb_endpoint_t *ep, void *data,
     t.endpoint = ep;
     t.buffer = (uint8_t *)data;
     t.length = length;
+    klog_printf(KLOG_INFO, "usb: bulk xfer ep=0x%02x len=%zu", ep ? ep->address : 0, length);
     return usb_transfer_submit(&t);
 }
 

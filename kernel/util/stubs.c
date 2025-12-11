@@ -22,20 +22,6 @@ void *memcpy(void *dst, const void *src, unsigned long n) {
     return dst;
 }
 
-void klog_printf(klog_level_t level, const char *fmt, ...) {
-    (void)level;
-    serial_write("[LOG] ");
-    serial_write(fmt);
-    serial_write("\r\n");
-    klog(fmt);
-}
-
-void klog_init(void) {}
-void klog_set_level(klog_level_t level) { (void)level; }
-klog_level_t klog_get_level(void) { return KLOG_INFO; }
-const char *klog_level_name(klog_level_t level) { (void)level; return "info"; }
-size_t klog_copy_recent(char *out, size_t max_len) { (void)out; return max_len; }
-
 int usb_hub_register_driver(usb_driver_t *drv) { (void)drv; return 0; }
 
 void irq_register(uint8_t vec, irq_handler_t handler) { (void)vec; (void)handler; }

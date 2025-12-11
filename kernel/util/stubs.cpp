@@ -23,13 +23,6 @@ void *memcpy(void *dst, const void *src, unsigned long n) {
     return dst;
 }
 
-void klog_printf(klog_level_t, const char *, ...) {}
-void klog_init(void) {}
-void klog_set_level(klog_level_t) {}
-klog_level_t klog_get_level(void) { return KLOG_INFO; }
-const char *klog_level_name(klog_level_t) { return "info"; }
-size_t klog_copy_recent(char *, size_t) { return 0; }
-
 int usb_hub_register_driver(usb_driver_t *) { return 0; }
 
 void irq_register(uint8_t, irq_handler_t) {}
