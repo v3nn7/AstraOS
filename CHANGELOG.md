@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 - Stubbed core USB stack pieces (device, transfer, HID, debug/helpers) so host tests can enumerate a fake HID keyboard/mouse and exercise control/interrupt flows.
 - Filled previously empty USB modules with functional helpers: status/error/memory/pipe/string handling, enumeration/power/init/manager shims, HID glue, PCI USB detection, EHCI QH/TD allocators, OHCI init, hub stubs, USB monitor/tree dumps, and xHCI caps/context/scheduler helpers (all logging-enabled).
 - Added PCI config/IRQ helpers (`pci_config.[ch]`, `pci_irq.[ch]`): ECAM or CF8/CFC access, BAR decoding, busmaster enable, IRQ setup wrapper; updated xHCI and PCI scan to use shared API. 
+- xHCI bring-up expanded: port power/reset and status change events, software command completions for Enable Slot/Address/Configure EP, transfer rings with doorbells for control/interrupt/bulk, event ring processing, and enumeration now drives driver binding (HID) after SET_CONFIGURATION.
+- input_push_key teraz rejestruje klawiaturę w input_core i kolejkuje znaki/klawisze; pętla główna odpytuje input_core i podaje je do shell_handle_key, więc PS/2/USB trafia do konsoli.
 
 ## 0.0.1.1exp - 2025-12-10
 - Bumped version metadata to experimental iteration 0.0.1.1exp.

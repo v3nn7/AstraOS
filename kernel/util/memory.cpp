@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "klog.h"
+#include <drivers/input/input_core.h>
 
 #include "io.hpp"
 #include "vmm.h"
@@ -241,8 +242,20 @@ extern "C" void* memset(void* dest, int val, size_t n) {
 
 extern "C" void klog(const char*);
 
-// Stub to satisfy input subsystem; platform code should override.
-extern "C" void input_push_key(uint8_t, bool) {}
+// Feed keys into the input subsystem so PS/2/USB paths deliver to shell.
+static input_device_t* g_input_dev = nullptr;
+extern "C" void input_push_key(uint8_t key, bool pressed) {
+    if (!g_input_dev) {
+        g_input_dev = input_device_register(INPUT_DEVICE_KEYBOARD, "keyboard");
+    }
+    if (!g_input_dev) return;
+    if (pressed) {
+        input_key_char(g_input_dev, static_cast<char>(key));
+        input_key_press(g_input_dev, key, 0);
+    } else {
+        input_key_release(g_input_dev, key);
+    }
+}
 
 extern "C" uint64_t pmm_hhdm_offset;
 /* Default to identity until HHDM is explicitly mapped. */

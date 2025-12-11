@@ -8,6 +8,7 @@
 #include "arch/x86_64/smp.hpp"
 #include "ui/renderer.hpp"
 #include "ui/shell.hpp"
+#include <drivers/input/input_core.h>
 #include "util/logger.hpp"
 #include "efi/gop.hpp"
 #include "drivers/PCI/pci.h"
@@ -253,6 +254,7 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     /* TODO: wire real memory map into PMM/VMM; for now rely on HHDM fallback in vmm_map_mmio. */
     renderer_init(gop);
     logger_init();
+    input_core_init();
     draw_splash();
     render_shell();
     smp::init();
@@ -265,6 +267,14 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     while (true) {
         ps2::poll();
         usb::usb_poll();
+        input_event_t ev;
+        while (input_event_poll(&ev)) {
+            if (ev.type == INPUT_EVENT_KEY_CHAR && ev.key.ascii) {
+                shell_handle_key(ev.key.ascii);
+            } else if (ev.type == INPUT_EVENT_KEY_PRESS && ev.key.ascii) {
+                shell_handle_key(ev.key.ascii);
+            }
+        }
         shell_blink_tick();
         static uint32_t hb = 0;
         if ((hb++ % 500000u) == 0) {

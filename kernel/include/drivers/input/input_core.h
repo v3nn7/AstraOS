@@ -4,9 +4,13 @@
 
 /**
  * Input Subsystem Core
- * 
+ *
  * Provides unified input event layer independent of hardware (USB HID, PS/2, etc.)
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Input Event Types */
 typedef enum {
@@ -102,3 +106,6 @@ void input_mouse_move(input_device_t *dev, int32_t x, int32_t y, int32_t dx, int
 void input_mouse_button(input_device_t *dev, uint8_t button, bool pressed);
 void input_mouse_scroll(input_device_t *dev, int32_t delta);
 
+#ifdef __cplusplus
+}
+#endif
