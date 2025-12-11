@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Added xHCI structure header `xhci_structs.h` and wired xHCI stubs to honor its TRB/ring layouts.
 - xHCI PCI probe now reads BARs, enables bus mastering, sets up MSI/legacy IRQ via `pci_setup_interrupt`, allocates a controller instance, and registers it with the USB host core.
 - Stubbed core USB stack pieces (device, transfer, HID, debug/helpers) so host tests can enumerate a fake HID keyboard/mouse and exercise control/interrupt flows.
+- Filled previously empty USB modules with functional helpers: status/error/memory/pipe/string handling, enumeration/power/init/manager shims, HID glue, PCI USB detection, EHCI QH/TD allocators, OHCI init, hub stubs, USB monitor/tree dumps, and xHCI caps/context/scheduler helpers (all logging-enabled).
 
 ## 0.0.1.1exp - 2025-12-10
 - Bumped version metadata to experimental iteration 0.0.1.1exp.
