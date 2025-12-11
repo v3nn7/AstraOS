@@ -96,7 +96,8 @@ static uint8_t checksum(const uint8_t* p, uint32_t len) {
 }
 
 static void* phys_to_ptr(uint64_t phys) {
-    return (void*)(phys + (pmm_hhdm_offset ? pmm_hhdm_offset : 0));
+    /* UEFI typically identity maps low memory where ACPI tables live. */
+    return (void*)(uintptr_t)phys;
 }
 
 static void parse_madt(struct Madt* m) {

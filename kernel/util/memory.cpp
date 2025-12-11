@@ -47,11 +47,8 @@ extern "C" void klog(const char*);
 extern "C" void input_push_key(uint8_t, bool) {}
 
 extern "C" uint64_t pmm_hhdm_offset;
-/* Weak default for HHDM offset (0 = identity) */
-#ifndef HHDM_BASE
-#define HHDM_BASE 0xffff800000000000ULL
-#endif
-extern "C" uint64_t pmm_hhdm_offset = HHDM_BASE;
+/* Default to identity until HHDM is explicitly mapped. */
+extern "C" uint64_t pmm_hhdm_offset = 0;
 
 // MMIO helpers (assume HHDM direct map; adjust HHDM_BASE via build if needed).
 extern "C" uint32_t mmio_read32(volatile uint32_t* addr) {
