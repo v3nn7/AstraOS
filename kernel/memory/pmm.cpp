@@ -8,6 +8,7 @@ namespace {
     static size_t bitmap_size = 0;
     static uint64_t usable_mem = 0;
     static uint64_t total_pages = 0;
+    static uint64_t first_usable_phys = 0;
 
     inline void bitmap_set(size_t bit)   { bitmap[bit / 8] |=  (1 << (bit % 8)); }
     inline void bitmap_clear(size_t bit) { bitmap[bit / 8] &= ~(1 << (bit % 8)); }
@@ -19,11 +20,14 @@ namespace {
 /*            Initialize PMM using UEFI memory map                            */
 /* ------------------------------------------------------------------------- */
 
+extern "C" uint64_t pmm_hhdm_offset;
+
 void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
 
     /* Count total usable pages */
     usable_mem = 0;
     total_pages = 0;
+    first_usable_phys = 0;
 
     for (size_t off = 0; off < map_size; off += desc_size) {
 
@@ -38,6 +42,9 @@ void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
 
         /* EfiConventionalMemory = type 7 (usable RAM) */
         if (d->type == 7) {
+            if (first_usable_phys == 0) {
+                first_usable_phys = d->phys;
+            }
             usable_mem += d->pages * PAGE_SIZE;
             total_pages += d->pages;
         }
@@ -46,8 +53,16 @@ void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
     /* Allocate bitmap — 1 bit per page */
     bitmap_size = (total_pages + 7) / 8;
 
-    // put bitmap right after kernel (HIGH VA)
-    bitmap = (uint8_t*)0xffff800000000000; // możesz zmienić
+    /* Place bitmap at the start of first usable region */
+    uint64_t bitmap_phys = first_usable_phys;
+    uint64_t bitmap_pages = (bitmap_size + PAGE_SIZE - 1) / PAGE_SIZE;
+
+    extern uint64_t pmm_hhdm_offset;
+#ifdef HHDM_BASE
+    if (pmm_hhdm_offset == 0) pmm_hhdm_offset = HHDM_BASE;
+#endif
+
+    bitmap = reinterpret_cast<uint8_t*>(bitmap_phys + pmm_hhdm_offset);
     for (size_t i = 0; i < bitmap_size; i++) bitmap[i] = 0;
 
     /* Mark all pages from memory map */
@@ -66,10 +81,13 @@ void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
 
         for (uint64_t i = 0; i < d->pages; i++) {
 
-            if (d->type == 7) {
+            uint64_t page_phys = d->phys + i * PAGE_SIZE;
+            bool reserve_bitmap = (page_phys >= bitmap_phys) && (page_phys < bitmap_phys + bitmap_pages * PAGE_SIZE);
+
+            if (d->type == 7 && !reserve_bitmap) {
                 bitmap_clear(bit_index);   // free
             } else {
-                bitmap_set(bit_index);     // reserved
+                bitmap_set(bit_index);     // reserved (non-usable or bitmap itself)
             }
             bit_index++;
         }

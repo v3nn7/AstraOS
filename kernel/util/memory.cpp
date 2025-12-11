@@ -46,13 +46,12 @@ extern "C" void klog(const char*);
 // Stub to satisfy input subsystem; platform code should override.
 extern "C" void input_push_key(uint8_t, bool) {}
 
-// MMIO helpers with optional HHDM offset (define HHDM_BASE at build time).
+extern "C" uint64_t pmm_hhdm_offset;
+/* Weak default for HHDM offset (0 = identity) */
 #ifndef HHDM_BASE
 #define HHDM_BASE 0xffff800000000000ULL
 #endif
-static constexpr uintptr_t kHhdmBase = static_cast<uintptr_t>(HHDM_BASE);
-
-extern "C" uint64_t pmm_hhdm_offset;
+extern "C" uint64_t pmm_hhdm_offset = HHDM_BASE;
 
 // MMIO helpers (assume HHDM direct map; adjust HHDM_BASE via build if needed).
 extern "C" uint32_t mmio_read32(volatile uint32_t* addr) {
@@ -84,9 +83,6 @@ extern "C" uint64_t mmio_read64(volatile uint64_t* addr) {
     volatile uint64_t* p = reinterpret_cast<volatile uint64_t*>(base + reinterpret_cast<uintptr_t>(addr));
     return *p;
 }
-
-/* Weak default for HHDM offset (0 = identity) */
-extern "C" uint64_t pmm_hhdm_offset = 0;
 
 extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_t* slot_out, uint8_t* func_out) {
 #ifdef HOST_TEST
@@ -149,7 +145,7 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
                         uint64_t lo = base_addr;
                         base_addr = lo | hi;
                     }
-                    if (base_addr == 0 || (kHhdmBase == 0 && base_addr >= 0x1'0000'0000ULL)) {
+                    if (base_addr == 0) {
                         uint32_t attrs = bar0 & 0xF;
                         base_addr = force_bar32(bus, dev, func, attrs);
                     }
@@ -180,8 +176,8 @@ extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_
 
 extern "C" uintptr_t virt_to_phys(const void* p) {
     uintptr_t v = reinterpret_cast<uintptr_t>(p);
-    if (kHhdmBase != 0 && v >= kHhdmBase) {
-        return v - kHhdmBase;
+    if (pmm_hhdm_offset != 0 && v >= pmm_hhdm_offset) {
+        return v - pmm_hhdm_offset;
     }
     uintptr_t t = vmm_translate(v);
     return t ? t : v;
