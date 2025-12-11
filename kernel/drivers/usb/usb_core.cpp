@@ -65,6 +65,7 @@ void usb_init() {
         }
     } else {
         klog("xhci: controller not found");
+        usb_stack_enumerate_basic();
     }
 
     const usb_stack_state_t* state = usb_stack_state();

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #define HAS_PLACEMENT_NEW
+#include <string.h>
 
 #define HOST_TEST 1
 #ifdef HOST_TEST
@@ -46,6 +47,9 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 #include "../kernel/ui/renderer.cpp"
 #include "../kernel/ui/shell.cpp"
 #include "../kernel/drivers/usb/core/usb_core.c"
+#include "../kernel/drivers/usb/core/usb_request.c"
+#include "../kernel/drivers/usb/core/usb_transfer.c"
+#include "../kernel/drivers/usb/core/usb_device.c"
 #include "../kernel/drivers/usb/usb_core.cpp"
 #include "../kernel/drivers/usb/msi_allocator.c"
 #include "../kernel/drivers/usb/msi.c"
@@ -55,6 +59,10 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 #include "../kernel/drivers/usb/xhci/xhci_events.c"
 #include "../kernel/drivers/usb/xhci/xhci_commands.c"
 #include "../kernel/drivers/usb/xhci/xhci_transfer.c"
+#include "../kernel/drivers/usb/hid/hid.c"
+#include "../kernel/drivers/usb/hid/hid_keyboard.c"
+#include "../kernel/drivers/usb/hid/hid_mouse.c"
+#include "../kernel/drivers/usb/hid/hid_parser.c"
 #include "../kernel/drivers/ps2/ps2.cpp"
 #include "../kernel/arch/x86_64/lapic.cpp"
 #include "../kernel/arch/x86_64/smp.cpp"
@@ -270,6 +278,27 @@ int main() {
     assert(ddesc->idProduct == 0x5678);
     // Shell poll uses usb_poll(), so run once.
     usb::usb_poll();
+
+    // HID keyboard: press/release 'a'.
+    gKeyEvents = 0;
+    hid_keyboard_state_t hk{};
+    hid_keyboard_reset(&hk);
+    uint8_t press[8] = {0, 0, 0x04, 0, 0, 0, 0, 0};  // 'a'
+    hid_keyboard_handle_report(&hk, press, sizeof(press));
+    uint8_t release[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    hid_keyboard_handle_report(&hk, release, sizeof(release));
+    assert(gKeyEvents >= 2);
+    assert(gKeys[0] == 'a' && gPressed[0] == true);
+    assert(gKeys[1] == 'a' && gPressed[1] == false);
+
+    // HID mouse parsing.
+    hid_mouse_state_t hm{};
+    hid_mouse_reset(&hm);
+    uint8_t mrep[3] = {1, 5, 0xFB};
+    hid_mouse_handle_report(&hm, mrep, sizeof(mrep));
+    assert(hm.buttons == 1);
+    assert(hm.delta_x == 5);
+    assert(hm.delta_y == (int8_t)0xFB);
 
     // PS/2 fallback keyboard (host-injected scancodes).
     gKeyEvents = 0;

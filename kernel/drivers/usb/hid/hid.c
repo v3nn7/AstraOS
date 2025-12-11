@@ -1,3 +1,3 @@
 #include "../include/hid.h"
 
-/* Generic HID parsing helpers will be implemented here. */
+/* Generic HID helpers live here; for now construction is inline in headers. */

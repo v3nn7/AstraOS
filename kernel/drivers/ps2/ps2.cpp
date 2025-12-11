@@ -81,13 +81,6 @@ uint8_t read_data() {
 #endif
 }
 
-void write_data(uint8_t data) {
-    if (!wait_input_clear()) {
-        return;
-    }
-    outb(kDataPort, data);
-}
-
 void flush_output() {
 #ifndef HOST_TEST
     while (inb(kStatusPort) & kStatusOutput) {
@@ -174,16 +167,20 @@ void init_hw() {
     cfg &= ~kCfgSecondClock;
     cfg &= ~kCfgFirstInterrupt;  // keep IRQ masked until ready
     write_cmd(kCmdWriteConfig);
-    write_data(cfg);
+    if (!wait_input_clear()) return;
+    outb(kDataPort, cfg);
 
     // Enable first port clock and interrupts.
     cfg |= kCfgFirstClock;
     cfg |= kCfgFirstInterrupt;
     write_cmd(kCmdWriteConfig);
-    write_data(cfg);
+    if (!wait_input_clear()) return;
+    outb(kDataPort, cfg);
 
     // Enable scanning on the keyboard.
-    write_data(kEnableScanning);
+    if (wait_input_clear()) {
+        outb(kDataPort, kEnableScanning);
+    }
 
     // Enable first port.
     write_cmd(kCmdEnableFirst);

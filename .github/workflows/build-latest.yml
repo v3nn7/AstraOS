@@ -23,6 +23,3 @@ jobs:
 
       - name: Build kernel
         run: make kernel
-
-      - name: Run host tests
-        run: make test

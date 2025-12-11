@@ -121,12 +121,12 @@ bool usb_stack_enumerate_basic() {
     dev->interface_count = 1;
 
     usb_setup_packet_t setup;
-    usb_req_build_get_descriptor(&setup, USB_DT_DEVICE, 0, sizeof(usb_device_descriptor_t));
     usb_device_descriptor_t desc;
     usb_transfer_t xfer;
     memset(&setup, 0, sizeof(setup));
     memset(&desc, 0, sizeof(desc));
     memset(&xfer, 0, sizeof(xfer));
+    usb_req_build_get_descriptor(&setup, USB_DT_DEVICE, 0, sizeof(usb_device_descriptor_t));
     xfer.buffer = &desc;
     xfer.length = sizeof(desc);
     usb_submit_control(&xfer, &setup);
