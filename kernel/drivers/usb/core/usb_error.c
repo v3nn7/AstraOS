@@ -5,11 +5,11 @@
 #include "usb_status.h"
 #include "klog.h"
 
-static const char *usb_error_string(int status) {
+const char *usb_error_string(int status) {
     return usb_status_to_string(status);
 }
 
-static void usb_error_log(const char *context, int status) {
+void usb_error_log(const char *context, int status) {
     if (!context) {
         context = "usb";
     }

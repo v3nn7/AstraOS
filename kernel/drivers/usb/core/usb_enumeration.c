@@ -6,7 +6,7 @@
 #include "klog.h"
 #include "usb_status.h"
 
-__attribute__((unused)) static int usb_enumerate_device(usb_device_t *dev) {
+int usb_enumerate_device(usb_device_t *dev) {
     if (!dev) {
         return USB_STATUS_NO_DEVICE;
     }

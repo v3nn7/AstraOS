@@ -6,7 +6,7 @@
 #include "klog.h"
 #include <stddef.h>
 
-static void *usb_mem_alloc(size_t size) {
+void *usb_mem_alloc(size_t size) {
     if (size == 0) {
         return NULL;
     }
@@ -17,7 +17,7 @@ static void *usb_mem_alloc(size_t size) {
     return p;
 }
 
-static void *usb_mem_alloc_aligned(size_t alignment, size_t size) {
+void *usb_mem_alloc_aligned(size_t alignment, size_t size) {
     if (size == 0) {
         return NULL;
     }
@@ -32,7 +32,7 @@ static void *usb_mem_alloc_aligned(size_t alignment, size_t size) {
     return p;
 }
 
-static void usb_mem_free(void *ptr) {
+void usb_mem_free(void *ptr) {
     if (ptr) {
         kfree(ptr);
     }

@@ -84,6 +84,7 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_irq.c \
              $(SRC_DIR)/drivers/usb/hid/hid_keyboard.c \
              $(SRC_DIR)/drivers/usb/hid/hid_mouse.c \
+             $(SRC_DIR)/drivers/usb/hid/hid.c \
              $(SRC_DIR)/drivers/usb/hid/hid_usb_driver.c \
              $(SRC_DIR)/drivers/usb/util/usb_debug.c \
              $(SRC_DIR)/drivers/usb/util/usb_helpers.c \
