@@ -34,6 +34,15 @@ static void uint64_to_hex(char* out, uint64_t v) {
     out[18] = '\0';
 }
 
+static void uint32_to_hex(char* out, uint32_t v) {
+    out[0] = '0'; out[1] = 'x';
+    for (int i = 0; i < 8; ++i) {
+        uint8_t nib = (v >> (28 - 4 * i)) & 0xF;
+        out[2 + i] = (nib < 10) ? ('0' + nib) : ('a' + nib - 10);
+    }
+    out[10] = '\0';
+}
+
 static void uint64_to_dec(char* out, uint64_t v) {
     if (v == 0) {
         out[0] = '0';
@@ -121,6 +130,11 @@ void klog_printf(klog_level_t level, const char *fmt, ...) {
                 unsigned long long val = va_arg(args, unsigned long long);
                 char hex[20];
                 uint64_to_hex(hex, val);
+                append_str(buf, &pos, hex);
+            } else if (*p == 'x') {
+                unsigned int val = va_arg(args, unsigned int);
+                char hex[12];
+                uint32_to_hex(hex, val);
                 append_str(buf, &pos, hex);
             } else if (*p == 'z' && p[1] == 'u') {
                 p++;

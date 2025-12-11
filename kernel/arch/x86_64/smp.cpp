@@ -4,6 +4,8 @@
 #include "lapic.hpp"
 #include "../x86_64/idt.hpp"
 #include "../../util/logger.hpp"
+#include "../../include/klog.h"
+#include "../../include/acpi.h"
 #include <drivers/usb/usb_core.h>
 #include <drivers/serial.hpp>
 
@@ -84,7 +86,6 @@ struct __attribute__((packed)) MadtLapic {
     uint32_t flags;
 };
 
-// Placeholder: in real code, map ACPI and find MADT; here we just rely on BSP only if not provided.
 bool parse_madt() {
 #ifdef HOST_TEST
     g_core_count = 1;
@@ -94,12 +95,49 @@ bool parse_madt() {
     g_cores[0].stack_top = nullptr;
     return true;
 #else
-    // TODO: map RSDP/SDT and locate MADT; for now, assume only BSP.
-    g_core_count = 1;
-    g_bsp_apic = lapic::id();
-    g_cores[0].apic_id = g_bsp_apic;
-    g_cores[0].started = 1;
-    g_cores[0].stack_top = nullptr;
+    uint32_t bsp_apic_id = lapic::id();
+    uint8_t lapic_count = acpi_get_lapic_count();
+    
+    if (lapic_count == 0) {
+        klog_printf(KLOG_WARN, "smp: no LAPIC entries in MADT, using BSP only");
+        g_core_count = 1;
+        g_bsp_apic = bsp_apic_id;
+        g_cores[0].apic_id = bsp_apic_id;
+        g_cores[0].started = 1;
+        g_cores[0].stack_top = nullptr;
+        return true;
+    }
+    
+    g_core_count = 0;
+    g_bsp_apic = bsp_apic_id;
+    
+    for (uint8_t i = 0; i < lapic_count && g_core_count < kMaxCores; i++) {
+        uint8_t acpi_cpu_id, apic_id;
+        uint32_t flags;
+        if (!acpi_get_lapic_entry(i, &acpi_cpu_id, &apic_id, &flags)) continue;
+        
+        if ((flags & 1) == 0) {
+            klog_printf(KLOG_DEBUG, "smp: skipping disabled CPU acpi_id=%u apic_id=%u",
+                        acpi_cpu_id, apic_id);
+            continue;
+        }
+        
+        g_cores[g_core_count].apic_id = apic_id;
+        g_cores[g_core_count].started = (apic_id == bsp_apic_id) ? 1 : 0;
+        g_cores[g_core_count].stack_top = nullptr;
+        g_core_count++;
+    }
+    
+    if (g_core_count == 0) {
+        klog_printf(KLOG_WARN, "smp: no enabled CPUs found, using BSP only");
+        g_core_count = 1;
+        g_cores[0].apic_id = bsp_apic_id;
+        g_cores[0].started = 1;
+        g_cores[0].stack_top = nullptr;
+    }
+    
+    klog_printf(KLOG_INFO, "smp: found %u CPUs (BSP apic_id=%u)", 
+               g_core_count, bsp_apic_id);
     return true;
 #endif
 }
@@ -129,22 +167,50 @@ alignas(4096) static uint8_t g_trampoline[4096];
 
 bool start_aps() {
 #ifndef HOST_TEST
-    for (uint32_t i = 1; i < g_core_count; ++i) {
+    uint32_t started_count = 0;
+    for (uint32_t i = 0; i < g_core_count; ++i) {
         Core& c = g_cores[i];
-        if (c.apic_id == g_bsp_apic) continue;
+        if (c.apic_id == g_bsp_apic || c.started) continue;
+        
+        klog_printf(KLOG_DEBUG, "smp: starting AP apic_id=%u", c.apic_id);
+        
         c.stack_top = kmemalign(16, 8192);
+        if (!c.stack_top) {
+            klog_printf(KLOG_WARN, "smp: failed to allocate stack for AP apic_id=%u", c.apic_id);
+            continue;
+        }
+        
         build_trampoline(static_cast<uint8_t>(c.apic_id));
         uintptr_t vec = (virt_to_phys(g_trampoline) >> 12) & 0xFF;
-        // INIT IPI
+        
+        if (vec == 0 || vec > 0xFF) {
+            klog_printf(KLOG_ERROR, "smp: invalid trampoline vector 0x%llx for AP apic_id=%u", 
+                       (unsigned long long)vec, c.apic_id);
+            continue;
+        }
+        
+        klog_printf(KLOG_DEBUG, "smp: sending INIT IPI to apic_id=%u", c.apic_id);
         lapic::send_ipi(static_cast<uint8_t>(c.apic_id), 0x00004500);
-        // Small delay
-        for (volatile int d = 0; d < 100000; ++d) {
+        
+        for (volatile int d = 0; d < 200000; ++d) {
         }
-        // SIPI twice
+        
+        klog_printf(KLOG_DEBUG, "smp: sending SIPI to apic_id=%u vector=0x%02x", c.apic_id, (unsigned)vec);
         lapic::send_ipi(static_cast<uint8_t>(c.apic_id), 0x00004600 | vec);
-        for (volatile int d = 0; d < 100000; ++d) {
+        
+        for (volatile int d = 0; d < 200000; ++d) {
         }
+        
         lapic::send_ipi(static_cast<uint8_t>(c.apic_id), 0x00004600 | vec);
+        
+        for (volatile int d = 0; d < 200000; ++d) {
+        }
+        
+        started_count++;
+    }
+    
+    if (started_count > 0) {
+        klog_printf(KLOG_INFO, "smp: initiated startup for %u AP cores", started_count);
     }
 #endif
     return true;
@@ -154,26 +220,40 @@ bool start_aps() {
 
 bool init() {
     dbg_log_smp("smp.cpp:init", "smp_init_enter", "H4", 0, "stage", "run-pre");
-    klog("smp: init");
+    klog_printf(KLOG_INFO, "smp: initializing");
+    
     if (!lapic::init()) {
         dbg_log_smp("smp.cpp:init", "smp_lapic_fail", "H4", 0, "stage", "run-pre");
-        klog("smp: lapic init failed");
+        klog_printf(KLOG_ERROR, "smp: lapic init failed");
         return false;
     }
+    
     g_bsp_apic = lapic::id();
     dbg_log_smp("smp.cpp:init", "smp_after_lapic", "H4", g_bsp_apic, "lapic_id", "run-pre");
+    klog_printf(KLOG_INFO, "smp: BSP apic_id=%u", g_bsp_apic);
+    
     if (!parse_madt()) {
         dbg_log_smp("smp.cpp:init", "smp_madt_fail", "H4", 0, "stage", "run-pre");
-        klog("smp: madt parse failed");
+        klog_printf(KLOG_ERROR, "smp: madt parse failed");
         return false;
     }
+    
     dbg_log_smp("smp.cpp:init", "smp_after_madt", "H4", g_core_count, "cores", "run-pre");
-    if (!start_aps()) {
-        dbg_log_smp("smp.cpp:init", "smp_start_aps_fail", "H4", 0, "stage", "run-pre");
-        klog("smp: start APs failed");
-        return false;
+    
+    if (g_core_count > 1) {
+        klog_printf(KLOG_INFO, "smp: starting %u AP cores", g_core_count - 1);
+        if (!start_aps()) {
+            dbg_log_smp("smp.cpp:init", "smp_start_aps_fail", "H4", 0, "stage", "run-pre");
+            klog_printf(KLOG_WARN, "smp: start APs failed, continuing with BSP only");
+        } else {
+            klog_printf(KLOG_INFO, "smp: AP startup initiated");
+        }
+    } else {
+        klog_printf(KLOG_INFO, "smp: single core (BSP only)");
     }
-    dbg_log_smp("smp.cpp:init", "smp_init_done", "H4", 0, "stage", "run-pre");
+    
+    dbg_log_smp("smp.cpp:init", "smp_init_done", "H4", g_core_count, "cores", "run-pre");
+    klog_printf(KLOG_INFO, "smp: initialization complete, %u cores", g_core_count);
     return true;
 }
 

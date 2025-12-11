@@ -23,6 +23,12 @@ static struct {
     uint16_t flags;
 } iso[16];
 static uint8_t iso_count = 0;
+static struct {
+    uint8_t acpi_cpu_id;
+    uint8_t apic_id;
+    uint32_t flags;
+} lapic_entries[32];
+static uint8_t lapic_count = 0;
 
 /* Structures */
 struct __attribute__((packed)) Rsdp {
@@ -70,6 +76,14 @@ struct __attribute__((packed)) MadtLapicOverride {
     uint8_t len;
     uint16_t flags;
     uint32_t lapic_addr;
+};
+
+struct __attribute__((packed)) MadtLapic {
+    uint8_t type;
+    uint8_t len;
+    uint8_t acpi_cpu_id;
+    uint8_t apic_id;
+    uint32_t flags;
 };
 
 struct __attribute__((packed)) MadtIso {
@@ -123,7 +137,13 @@ static void parse_madt(struct Madt* m) {
         uint8_t type = ent[0];
         uint8_t len = ent[1];
         if (len < 2) break;
-        if (type == 1 && len >= sizeof(struct MadtIoApic)) { // IOAPIC
+        if (type == 0 && len >= sizeof(struct MadtLapic) && lapic_count < 32) { // LAPIC
+            struct MadtLapic* lap = (struct MadtLapic*)ent;
+            lapic_entries[lapic_count].acpi_cpu_id = lap->acpi_cpu_id;
+            lapic_entries[lapic_count].apic_id = lap->apic_id;
+            lapic_entries[lapic_count].flags = lap->flags;
+            lapic_count++;
+        } else if (type == 1 && len >= sizeof(struct MadtIoApic)) { // IOAPIC
             struct MadtIoApic* io = (struct MadtIoApic*)ent;
             ioapic_phys = io->addr;
             ioapic_gsi_base = io->gsi_base;
@@ -239,4 +259,18 @@ bool acpi_get_isa_irq_override(uint8_t src_irq, uint32_t *gsi_out, uint16_t *fla
         }
     }
     return false;
+}
+
+uint8_t acpi_get_lapic_count(void) {
+    acpi_init();
+    return lapic_count;
+}
+
+bool acpi_get_lapic_entry(uint8_t index, uint8_t *acpi_cpu_id, uint8_t *apic_id, uint32_t *flags) {
+    acpi_init();
+    if (index >= lapic_count) return false;
+    if (acpi_cpu_id) *acpi_cpu_id = lapic_entries[index].acpi_cpu_id;
+    if (apic_id) *apic_id = lapic_entries[index].apic_id;
+    if (flags) *flags = lapic_entries[index].flags;
+    return true;
 }

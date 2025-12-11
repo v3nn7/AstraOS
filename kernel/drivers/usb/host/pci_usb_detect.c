@@ -43,9 +43,9 @@ void pci_usb_detect_scan(void) {
     }
     /* Let the xHCI driver perform full probe+registration. */
     if (xhci_pci_probe(bus, slot, func) != 0) {
-        klog_printf(KLOG_ERROR, "pci: xHCI probe failed at %02x:%02x.%u", bus, slot, func);
+        klog_printf(KLOG_ERROR, "pci: xHCI probe failed at %x:%x.%u", bus, slot, func);
         return;
     }
-    klog_printf(KLOG_INFO, "pci: xHCI attached at %02x:%02x.%u base=0x%llx",
+    klog_printf(KLOG_INFO, "pci: xHCI attached at %x:%x.%u base=%llx",
                 (unsigned)bus, (unsigned)slot, (unsigned)func, (unsigned long long)base);
 }

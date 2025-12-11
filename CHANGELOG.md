@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.0.2.7 — 2025-12-11
+
+### Added
+- SMP: Real MADT parsing from ACPI. Added `acpi_get_lapic_count()` and `acpi_get_lapic_entry()` functions to retrieve CPU cores from MADT.
+- SMP: Improved AP startup sequence with better logging, error handling, and validation of trampoline addresses.
+- xHCI: Added detailed diagnostic logging for ERSTBA write/read operations to diagnose timeout issues.
+
+### Changed
+- xHCI: Added detailed logging for command submission and event waiting to diagnose timeout issues. Logs now include physical addresses for CRCR, ERSTBA, ERDP, DCBAAP, and command types.
+- xHCI: Added validation of low physical addresses and verification of ERSTBA/ERDP register writes. Added memory barrier after ERST configuration.
+- SMP: Replaced placeholder MADT parsing with real ACPI-based CPU core detection. Now properly filters disabled CPUs and logs all detected cores.
+- SMP: Enhanced logging using `klog_printf` instead of `klog` for better control and formatting.
+
+### Fixed
+- VMM/PMM: Restrict PMM usable regions strictly to UEFI type 7 (ConventionalMemory) and keep reserved/ACPI/BootServices memory out to avoid overwriting firmware/ACPI data. Identity mapping still caps reserved/MMIO (type 0) to the first 4 GiB; high-half mapping targets only usable RAM. DMA mappings set writable, kernel-only, uncached flags to prevent page faults during buffer writes.
+- PMM: Fixed memory map dump formatting (removed double "0x" prefix in hex output).
+- xHCI: Fixed format strings in logging (removed unsupported %02x, %08x specifiers, changed to %x or %llx).
+- xHCI: Fixed crcr_read type from uint32_t to uint64_t to prevent truncation of 64-bit register values.
+- xHCI: Added memory barrier after ERSTSZ write and additional logging for ERSTBA write verification.
+
 
 0.0.2.PATCH — 2025-12-11
 

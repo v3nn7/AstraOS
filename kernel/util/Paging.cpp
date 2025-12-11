@@ -178,3 +178,11 @@ void Paging::init() {
     cr0 |= (1 << 31);
     write_cr0(cr0);
 }
+
+extern "C" void paging_map_page(uint64_t virt, uint64_t phys, uint64_t flags) {
+    Paging::map(virt, phys, flags);
+}
+
+extern "C" void paging_map_page(uint64_t virt, uint64_t phys, uint64_t flags) {
+    Paging::map(virt, phys, flags);
+}

@@ -1,5 +1,6 @@
 #include "pmm.hpp"
 #include "klog.h"
+#include "vmm.h"
 
 namespace {
 
@@ -77,12 +78,21 @@ void PMM::init(uintptr_t mem_map, size_t map_size, size_t desc_size) {
             uint64_t attrs;
         } *d = (decltype(d))(mem_map + off);
 
+        // Treat only conventional memory (UEFI type 7) as usable.
         if (d->type == 7) {
             Region* r = &regions[region_count];
             r->phys_start = d->phys;
             r->page_count = d->pages;
             r->phys_end = r->phys_start + r->page_count * PAGE_SIZE;
             r->bitmap_bytes = (r->page_count + 7) / 8;
+            
+            size_t bitmap_pages = (r->bitmap_bytes + PAGE_SIZE - 1) / PAGE_SIZE;
+            for (size_t i = 0; i < bitmap_pages; i++) {
+                uint64_t bitmap_page_phys = r->phys_start + i * PAGE_SIZE;
+                if (bitmap_page_phys == 0) continue;
+                vmm_map(bitmap_page_phys + pmm_hhdm_offset, bitmap_page_phys, 0x3);
+            }
+            
             r->bitmap = reinterpret_cast<uint8_t*>(r->phys_start + pmm_hhdm_offset);
 
             for (size_t i = 0; i < r->bitmap_bytes; i++)
@@ -150,17 +160,22 @@ void* PMM::alloc_contiguous(size_t pages, size_t align, uint64_t max_phys, phys_
     if (align < 64) align = 64;
     if (align < PAGE_SIZE) align = PAGE_SIZE;
 
+    const uint64_t DMA_MIN_PHYS = 0x100000ULL;
+
     for (size_t ri = 0; ri < region_count; ri++) {
         Region* r = &regions[ri];
         if (r->page_count < pages) continue;
 
         if (max_phys > 0 && r->phys_start >= max_phys) continue;
 
+        if (r->phys_end <= DMA_MIN_PHYS) continue;
+
         for (size_t start = 0; start <= r->page_count - pages; start++) {
             uint64_t phys = r->phys_start + start * PAGE_SIZE;
             uint64_t block_end = phys + pages * PAGE_SIZE;
 
             if (max_phys > 0 && block_end > max_phys) break;
+            if (phys < DMA_MIN_PHYS) continue;
             if ((phys % align) != 0) continue;
 
             bool all_free = true;

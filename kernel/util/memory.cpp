@@ -258,8 +258,12 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 }
 
 extern "C" uint64_t pmm_hhdm_offset;
-/* Default to identity until HHDM is explicitly mapped. */
+/* Initialize from HHDM_BASE if defined, otherwise 0 (identity mapping) */
+#ifdef HHDM_BASE
+extern "C" uint64_t pmm_hhdm_offset = HHDM_BASE;
+#else
 extern "C" uint64_t pmm_hhdm_offset = 0;
+#endif
 
 // MMIO helpers (assume HHDM direct map; adjust HHDM_BASE via build if needed).
 extern "C" uint32_t mmio_read32(volatile uint32_t* addr) {

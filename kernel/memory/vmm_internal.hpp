@@ -23,7 +23,7 @@ namespace VMM {
         uint64_t entry[512];
     } __attribute__((aligned(4096)));
 
-    void init();
+    void init(uintptr_t mem_map, size_t map_size, size_t desc_size);
     void map(uint64_t virt, uint64_t phys, uint64_t flags);
     void unmap(uint64_t virt);
     uint64_t translate(uint64_t virt);

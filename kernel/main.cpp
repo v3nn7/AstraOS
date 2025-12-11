@@ -58,6 +58,11 @@
 #include <drivers/input/ps2/ps2.hpp>
 #include <drivers/serial.hpp>
 #include "pmm.h"
+#include "vmm.h"
+
+extern "C" {
+    void vmm_init_with_map(uintptr_t mem_map, size_t map_size, size_t desc_size);
+}
 
 #define EFIAPI __attribute__((ms_abi))
 
@@ -297,12 +302,21 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop, uintptr_t memory_map, s
 #endif
     dbg_log_main("main.cpp:kmain:start", "kmain_enter", "H1", (uint64_t)gop, "gop_ptr", "run-pre");
 
+    klog_init();
+    klog_printf(KLOG_INFO, "kmain: starting");
+
     if (memory_map != 0 && memory_map_size > 0 && descriptor_size > 0) {
         klog_printf(KLOG_INFO, "pmm: initializing with map_size=%llu desc_size=%llu", (unsigned long long)memory_map_size, (unsigned long long)descriptor_size);
         pmm_init(memory_map, memory_map_size, descriptor_size);
     } else {
         klog_printf(KLOG_WARN, "pmm: no memory map provided, PMM not initialized");
     }
+    if (memory_map != 0 && memory_map_size > 0 && descriptor_size > 0) {
+        vmm_init_with_map(memory_map, memory_map_size, descriptor_size);
+    } else {
+        vmm_init();
+    }
+    klog_printf(KLOG_INFO, "vmm: initialized");
 
     bool smp_ok = smp::init();
     if (!smp_ok) {

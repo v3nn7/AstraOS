@@ -15,7 +15,7 @@ void xhci_register_irq_handler(usb_host_controller_t *hc, uint8_t vector) {
     /* Register simple handler in IDT for legacy IRQ; MSI path is handled in PCI layer */
     (void)hc;
     irq_register_handler(vector, xhci_irq_handler);
-    klog_printf(KLOG_INFO, "xhci: irq handler registered vector=0x%02x", vector);
+    klog_printf(KLOG_INFO, "xhci: irq handler registered vector=%x", vector);
 }
 
 /* Simple poll-based IRQ service */

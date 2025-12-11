@@ -23,9 +23,9 @@ void pci_scan_log(void) {
                 uint8_t prog = (class_code >> 8) & 0xFF;
                 uint8_t irq = pci_cfg_read32(bus, dev, func, 0x3C) & 0xFF;
                 uint32_t bar0 = pci_cfg_read32(bus, dev, func, 0x10);
-                klog_printf(KLOG_INFO, "pci: %02x:%02x.%u class=%02x/%02x/%02x irq=%u bar0=0x%08x",
+                klog_printf(KLOG_INFO, "pci: %x:%x.%u class=%x/%x/%x irq=%u bar0=%llx",
                             (unsigned)bus, (unsigned)dev, (unsigned)func,
-                            base, sub, prog, irq, bar0);
+                            base, sub, prog, irq, (unsigned long long)bar0);
                 if (func == 0) {
                     uint32_t hdr = pci_cfg_read32(bus, dev, func, 0x0C);
                     if ((hdr & 0x00800000) == 0) break; // not multifunction

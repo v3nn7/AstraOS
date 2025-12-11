@@ -29,6 +29,11 @@ static inline void xhci_write64(void *base, uint32_t off, uint64_t val) {
     *p = val;
 }
 
+static inline uint64_t xhci_read64(void *base, uint32_t off) {
+    volatile uint64_t *p = (volatile uint64_t *)((uintptr_t)base + off);
+    return *p;
+}
+
 static inline void xhci_set_trb_ptr(xhci_trb_t *trb, uint64_t ptr) {
 #ifdef ASTRA_XHCI_STRUCTS_PROVIDED
     trb->parameter_low = (uint32_t)(ptr & 0xFFFFFFFFu);
@@ -113,37 +118,93 @@ static void xhci_event_push(xhci_controller_t *ctrl, uint8_t type, uint8_t slot_
 
 static int xhci_wait_event_type(xhci_controller_t *ctrl, uint8_t type, xhci_event_trb_t *out, uint32_t spin) {
     if (!ctrl || !ctrl->event_ring.trbs) return -1;
+    uint32_t check_count = 0;
+    
     while (spin--) {
         uint32_t idx = ctrl->event_ring.dequeue % ctrl->event_ring.size;
         xhci_event_trb_t *ev = &ctrl->event_ring.trbs[idx];
-        if (ev->cycle != (ctrl->event_ring.cycle_state ? 1 : 0)) {
+        uint8_t cycle_bit = ev->cycle;
+        uint8_t expected_cycle = ctrl->event_ring.cycle_state ? 1 : 0;
+        
+        if (cycle_bit != expected_cycle) {
+            if (check_count++ < 3) {
+                klog_printf(KLOG_DEBUG, "xhci: wait_event type=%u idx=%u cycle=%u expected=%u trb_type=%u", 
+                           type, idx, cycle_bit, expected_cycle, ev->trb_type);
+            }
             __asm__ __volatile__("pause");
             continue;
         }
+        
+        if (ev->trb_type == 0 && ev->completion_code == 0 && ev->data == 0) {
+            if (check_count++ < 3) {
+                klog_printf(KLOG_DEBUG, "xhci: wait_event empty TRB at idx=%u", idx);
+            }
+            __asm__ __volatile__("pause");
+            continue;
+        }
+        
         /* consume */
         if (out) memcpy(out, ev, sizeof(*out));
         ctrl->event_ring.dequeue = (idx + 1) % ctrl->event_ring.size;
         if (ctrl->event_ring.dequeue == 0) ctrl->event_ring.cycle_state = !ctrl->event_ring.cycle_state;
+        
         /* Ack ERDP */
         if (ctrl->rt_regs) {
             uint64_t erdp = ctrl->event_ring.phys_addr + ((uint64_t)ctrl->event_ring.dequeue * sizeof(xhci_event_trb_t));
             xhci_write64(ctrl->rt_regs, XHCI_ERDP(0), erdp | (1ull << 3));
         }
+        
         if (ev->trb_type == type) {
+            klog_printf(KLOG_DEBUG, "xhci: event received type=%u cc=%u slot=%u", 
+                       ev->trb_type, ev->completion_code, ev->slot_id);
             return ev->completion_code;
         }
+        
+        if (check_count++ < 3) {
+            klog_printf(KLOG_DEBUG, "xhci: wait_event got type=%u (expected %u) at idx=%u", 
+                       ev->trb_type, type, idx);
+        }
     }
+    
+    uint32_t idx = ctrl->event_ring.dequeue % ctrl->event_ring.size;
+    xhci_event_trb_t *ev = &ctrl->event_ring.trbs[idx];
+    klog_printf(KLOG_ERROR, "xhci: wait_event timeout type=%u dequeue=%u size=%u cycle_state=%u trb_cycle=%u trb_type=%u", 
+               type, ctrl->event_ring.dequeue, ctrl->event_ring.size,
+               ctrl->event_ring.cycle_state ? 1 : 0, ev->cycle, ev->trb_type);
     return -1;
 }
 
 static int xhci_cmd_submit(xhci_controller_t *ctrl, xhci_trb_t *trb, xhci_event_trb_t *out) {
     if (!ctrl || !trb) return -1;
-    if (xhci_cmd_ring_enqueue(&ctrl->cmd_ring, trb) != 0) return -1;
+    if (xhci_cmd_ring_enqueue(&ctrl->cmd_ring, trb) != 0) {
+        klog_printf(KLOG_ERROR, "xhci: cmd_ring_enqueue failed");
+        return -1;
+    }
+    
+    uint32_t cmd_type = (trb->control >> XHCI_TRB_TYPE_SHIFT) & 0x3F;
+    klog_printf(KLOG_DEBUG, "xhci: submitting cmd type=%u crcr=%llx", 
+               cmd_type, (unsigned long long)ctrl->cmd_ring.phys_addr);
+    
     xhci_ring_cmd_doorbell(ctrl);
+    __asm__ __volatile__("mfence" ::: "memory");
+    
     xhci_event_trb_t ev;
     int cc = xhci_wait_event_type(ctrl, TRB_EVENT_CMD_COMPLETION, &ev, 200000);
     if (cc < 0) {
-        klog_printf(KLOG_ERROR, "xhci: cmd timeout");
+        volatile uint32_t *op = (volatile uint32_t *)ctrl->op_regs;
+        uint32_t usbsts = xhci_read32((void *)op, XHCI_USBSTS);
+        uint64_t crcr_read = xhci_read64((void *)op, XHCI_CRCR);
+        uint64_t erstba_read = xhci_read64((void *)ctrl->rt_regs, XHCI_ERSTBA(0));
+        uint64_t erdp_read = xhci_read64((void *)ctrl->rt_regs, XHCI_ERDP(0));
+        
+        klog_printf(KLOG_ERROR, "xhci: cmd timeout type=%u usbsts=%x crcr=%llx (read=%llx) erstba=%llx (read=%llx) erdp=%llx (read=%llx)", 
+                   cmd_type, usbsts,
+                   (unsigned long long)ctrl->cmd_ring.phys_addr,
+                   (unsigned long long)crcr_read,
+                   (unsigned long long)ctrl->event_ring.segment_table_phys,
+                   (unsigned long long)erstba_read,
+                   (unsigned long long)ctrl->event_ring.phys_addr,
+                   (unsigned long long)erdp_read);
     }
     if (out) *out = ev;
     return cc;
@@ -189,29 +250,75 @@ int xhci_init(usb_host_controller_t *hc) {
     volatile uint8_t *cap = (volatile uint8_t *)ctrl->cap_regs;
     volatile uint32_t *op = (volatile uint32_t *)ctrl->op_regs;
 
-    uint32_t dboff = xhci_read32((void *)cap, XHCI_DBOFF);
-    uint32_t rtsoff = xhci_read32((void *)cap, XHCI_RTSOFF);
+    uint32_t dboff_raw = xhci_read32((void *)cap, XHCI_DBOFF);
+    uint32_t rtsoff_raw = xhci_read32((void *)cap, XHCI_RTSOFF);
+    uint32_t dboff = dboff_raw & ~0x3;
+    uint32_t rtsoff = rtsoff_raw & ~0x1F;
     ctrl->doorbell_regs = (void *)(base + dboff);
     ctrl->rt_regs = (void *)(base + rtsoff);
+    
+    klog_printf(KLOG_DEBUG, "xhci: dboff_raw=%x dboff=%x rtsoff_raw=%x rtsoff=%x rt_regs=%p base=%p", 
+               dboff_raw, dboff, rtsoff_raw, rtsoff, (void *)ctrl->rt_regs, (void *)base);
 
     /* Cache runtime/doorbell pointers and port count */
     hc->num_ports = ctrl->num_ports;
 
-    /* CRCR points to command ring */
+    /* ERST / IMAN / ERDP for interrupter 0 - MUST be done BEFORE starting controller */
+    volatile uint32_t *rt = (volatile uint32_t *)ctrl->rt_regs;
+    
+    if (ctrl->event_ring.phys_addr < 0x1000 || ctrl->event_ring.segment_table_phys < 0x1000) {
+        klog_printf(KLOG_WARN, "xhci: low physical addresses event_ring=%llx erst=%llx", 
+                   (unsigned long long)ctrl->event_ring.phys_addr,
+                   (unsigned long long)ctrl->event_ring.segment_table_phys);
+    }
+    
+    rt[XHCI_ERSTSZ(0) / 4] = ctrl->event_ring.size;
+    __asm__ __volatile__("mfence" ::: "memory");
+    
+    klog_printf(KLOG_DEBUG, "xhci: writing ERSTBA=%llx to offset=%x rt_regs=%p", 
+               (unsigned long long)ctrl->event_ring.segment_table_phys,
+               XHCI_ERSTBA(0), (void *)rt);
+    xhci_write64((void *)rt, XHCI_ERSTBA(0), ctrl->event_ring.segment_table_phys);
+    __asm__ __volatile__("mfence" ::: "memory");
+    
+    uint64_t erdp_val = ctrl->event_ring.phys_addr | (1ull << 3);
+    xhci_write64((void *)rt, XHCI_ERDP(0), erdp_val); /* set EHB */
+    __asm__ __volatile__("mfence" ::: "memory");
+    
+    rt[XHCI_IMAN(0) / 4] = (1 << 1) | (rt[XHCI_IMAN(0) / 4] & 0x1); /* enable interrupts (IE + preserve IP) */
+    rt[XHCI_IMOD(0) / 4] = 0;
+    __asm__ __volatile__("mfence" ::: "memory");
+    
+    uint64_t erstba_read = xhci_read64((void *)rt, XHCI_ERSTBA(0));
+    uint64_t erdp_read = xhci_read64((void *)rt, XHCI_ERDP(0));
+    
+    klog_printf(KLOG_INFO, "xhci: ERSTSZ=%u ERSTBA=%llx (read=%llx) ERDP=%llx (read=%llx) event_ring_phys=%llx", 
+               ctrl->event_ring.size,
+               (unsigned long long)ctrl->event_ring.segment_table_phys,
+               (unsigned long long)erstba_read,
+               (unsigned long long)erdp_val,
+               (unsigned long long)erdp_read,
+               (unsigned long long)ctrl->event_ring.phys_addr);
+    
+    if (erstba_read != ctrl->event_ring.segment_table_phys) {
+        klog_printf(KLOG_WARN, "xhci: ERSTBA write failed! wrote=%llx read=%llx", 
+                   (unsigned long long)ctrl->event_ring.segment_table_phys,
+                   (unsigned long long)erstba_read);
+    }
+
+    /* CRCR points to command ring - set AFTER event ring is configured */
     uint64_t crcr = ctrl->cmd_ring.phys_addr | XHCI_CRCR_RCS;
     xhci_write64((void *)op, XHCI_CRCR, crcr);
-
-    /* ERST / IMAN / ERDP for interrupter 0 */
-    volatile uint32_t *rt = (volatile uint32_t *)ctrl->rt_regs;
-    rt[XHCI_ERSTSZ(0) / 4] = ctrl->event_ring.size;
-    rt[XHCI_ERSTBA(0) / 4] = (uint32_t)(ctrl->event_ring.segment_table_phys & 0xFFFFFFFFu);
-    rt[(XHCI_ERSTBA(0) + 4) / 4] = (uint32_t)(ctrl->event_ring.segment_table_phys >> 32);
-    xhci_write64((void *)rt, XHCI_ERDP(0), ctrl->event_ring.phys_addr | (1ull << 3)); /* set EHB */
-    rt[XHCI_IMAN(0) / 4] |= (1 << 1) | 0x1; /* enable interrupts (IE + preserve IP) */
-    rt[XHCI_IMOD(0) / 4] = 0;
+    __asm__ __volatile__("mfence" ::: "memory");
+    uint64_t crcr_read = xhci_read64((void *)op, XHCI_CRCR);
+    klog_printf(KLOG_INFO, "xhci: CRCR=%llx (read=%llx) cmd_ring_phys=%llx", 
+               (unsigned long long)crcr, (unsigned long long)crcr_read,
+               (unsigned long long)ctrl->cmd_ring.phys_addr);
 
     /* DCBAAP */
-    xhci_write64((void *)op, XHCI_DCBAAP, virt_to_phys(ctrl->dcbaap));
+    phys_addr_t dcbaap_phys = virt_to_phys(ctrl->dcbaap);
+    xhci_write64((void *)op, XHCI_DCBAAP, dcbaap_phys);
+    klog_printf(KLOG_INFO, "xhci: DCBAAP=%llx", (unsigned long long)dcbaap_phys);
     /* CONFIG: enable all slots */
     *((volatile uint32_t *)((uintptr_t)op + XHCI_CONFIG)) = ctrl->num_slots;
 
@@ -268,7 +375,7 @@ int xhci_reset_port(usb_host_controller_t *hc, uint8_t port) {
     }
     ctrl->port_status[port] = ps;
     xhci_event_push(ctrl, TRB_EVENT_PORT_STATUS, 0, 0, XHCI_TRB_CC_SUCCESS, ps);
-    klog_printf(KLOG_INFO, "xhci: reset port %u status=0x%08x", port, ps);
+    klog_printf(KLOG_INFO, "xhci: reset port %u status=%x", port, ps);
     return 0;
 }
 
@@ -281,7 +388,7 @@ static int submit_stub(usb_transfer_t *transfer) {
     if (transfer->callback) {
         transfer->callback(transfer);
     }
-    klog_printf(KLOG_INFO, "xhci: submit stub len=%zu ep=0x%02x", transfer->length,
+    klog_printf(KLOG_INFO, "xhci: submit stub len=%zu ep=%x", transfer->length,
                 transfer->endpoint ? transfer->endpoint->address : 0);
     return 0;
 }
@@ -372,7 +479,7 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     /* Map MMIO into virtual space (cover CAP/OP/RTS/DB) */
     uintptr_t mapped = vmm_map_mmio((uintptr_t)bar0, 0x10000);
     if (mapped == 0) {
-        klog_printf(KLOG_ERROR, "xhci: mmio map failed for bar=0x%llx", (unsigned long long)bar0);
+        klog_printf(KLOG_ERROR, "xhci: mmio map failed for bar=%llx", (unsigned long long)bar0);
         return -1;
     }
 
@@ -393,9 +500,9 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     memset(hc, 0, sizeof(*hc));
     memset(ctrl, 0, sizeof(*ctrl));
     ctrl->cap_regs = (void *)mapped;
-    ctrl->op_regs = (void *)mapped;
-    ctrl->rt_regs = (void *)mapped;
-    ctrl->doorbell_regs = (void *)mapped;
+    ctrl->op_regs = NULL;
+    ctrl->rt_regs = NULL;
+    ctrl->doorbell_regs = NULL;
     ctrl->num_ports = 0;
     ctrl->num_slots = 0;
     ctrl->has_msi = (vector != 0);
@@ -412,7 +519,7 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
 
     /* Initialize the controller before registration/polling */
     if (xhci_init(hc) != 0) {
-        klog_printf(KLOG_ERROR, "xhci: init failed for %02x:%02x.%u", bus, slot, func);
+        klog_printf(KLOG_ERROR, "xhci: init failed for %x:%x.%u", bus, slot, func);
         kfree(ctrl);
         kfree(hc);
         return -1;
@@ -422,7 +529,7 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
     xhci_register_irq_handler(hc, hc->irq);
 
     usb_host_register(hc);
-    klog_printf(KLOG_INFO, "xhci: pci probe bus=%u slot=%u func=%u bar=0x%llx mapped=0x%llx irq=%u (msi=%s)",
+    klog_printf(KLOG_INFO, "xhci: pci probe bus=%u slot=%u func=%u bar=%llx mapped=%llx irq=%u (msi=%s)",
                 (unsigned)bus, (unsigned)slot, (unsigned)func,
                 (unsigned long long)bar0, (unsigned long long)mapped,
                 (unsigned)hc->irq, ctrl->has_msi ? "yes" : "no");
@@ -431,11 +538,16 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
 
 int xhci_cmd_ring_init(xhci_controller_t *xhci) {
     if (!xhci) return -1;
-    const uint32_t entries = 64;
+    const uint32_t entries = 256;
     phys_addr_t phys = 0;
     xhci->cmd_ring.trbs = (xhci_trb_t *)dma_alloc(sizeof(xhci_trb_t) * entries, 64, &phys);
     if (!xhci->cmd_ring.trbs) return -1;
     memset(xhci->cmd_ring.trbs, 0, sizeof(xhci_trb_t) * entries);
+    
+    for (uint32_t i = 0; i < entries; i++) {
+        xhci->cmd_ring.trbs[i].control |= XHCI_TRB_CYCLE;
+    }
+    
     xhci->cmd_ring.size = entries;
     xhci->cmd_ring.enqueue = 0;
     xhci->cmd_ring.dequeue = 0;
@@ -457,19 +569,19 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
     xhci->event_ring.size = entries;
     xhci->event_ring.dequeue = 0;
     xhci->event_ring.enqueue = 0;
-    xhci->event_ring.cycle_state = true;
+    xhci->event_ring.cycle_state = 1;
     xhci->event_ring.phys_addr = trb_phys;
 
-    /* ERST: single segment */
+    /* ERST: single segment - must be 16-byte aligned */
     typedef struct {
         uint64_t addr;
         uint32_t size;
         uint32_t rsvd;
-    } __attribute__((packed)) erst_entry_t;
+    } __attribute__((packed, aligned(16))) erst_entry_t;
 
     erst_entry_t *erst = NULL;
     phys_addr_t erst_phys = 0;
-    erst = dma_alloc(sizeof(*erst), 64, &erst_phys);
+    erst = dma_alloc(sizeof(*erst), 16, &erst_phys);
     if (!erst) return -1;
     memset(erst, 0, sizeof(*erst));
     erst[0].addr = xhci->event_ring.phys_addr;
@@ -477,7 +589,7 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
     erst[0].rsvd = 0;
     xhci->event_ring.segment_table = erst;
     xhci->event_ring.segment_table_phys = erst_phys;
-    klog_printf(KLOG_INFO, "xhci: event ring started entries=%u erst=0x%llx", entries,
+    klog_printf(KLOG_INFO, "xhci: event ring started entries=%u erst=%llx", entries,
                 (unsigned long long)erst_phys);
     return 0;
 }
@@ -493,6 +605,11 @@ int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t end
         return -1;
     }
     memset(ring->trbs, 0, sizeof(xhci_trb_t) * entries);
+    
+    for (uint32_t i = 0; i < entries; i++) {
+        ring->trbs[i].control |= XHCI_TRB_CYCLE;
+    }
+    
     ring->size = entries;
     ring->enqueue = 0;
     ring->dequeue = 0;
@@ -517,7 +634,11 @@ int xhci_cmd_ring_enqueue(xhci_command_ring_t *ring, xhci_trb_t *trb) {
     uint32_t idx = ring->enqueue;
     memcpy(&ring->trbs[idx], trb, sizeof(xhci_trb_t));
     if (ring->cycle_state) ring->trbs[idx].control |= XHCI_TRB_CYCLE;
+    else ring->trbs[idx].control &= ~XHCI_TRB_CYCLE;
     ring->enqueue = (idx + 1) % ring->size;
+    if (ring->enqueue == 0) {
+        ring->cycle_state = !ring->cycle_state;
+    }
     if (ring->enqueue == ring->dequeue) return -1; /* overflow */
     return 0;
 }
@@ -527,7 +648,11 @@ int xhci_transfer_ring_enqueue(xhci_transfer_ring_t *ring, xhci_trb_t *trb) {
     uint32_t idx = ring->enqueue;
     memcpy(&ring->trbs[idx], trb, sizeof(xhci_trb_t));
     if (ring->cycle_state) ring->trbs[idx].control |= XHCI_TRB_CYCLE;
+    else ring->trbs[idx].control &= ~XHCI_TRB_CYCLE;
     ring->enqueue = (idx + 1) % ring->size;
+    if (ring->enqueue == 0) {
+        ring->cycle_state = !ring->cycle_state;
+    }
     if (ring->enqueue == ring->dequeue) return -1;
     return 0;
 }
@@ -555,7 +680,7 @@ void xhci_build_link_trb(xhci_trb_t *trb, uint64_t next_ring_addr, uint8_t toggl
     }
     xhci_set_trb_ptr(trb, next_ring_addr);
     trb->status = 0;
-    trb->control = (XHCI_TRB_TYPE_LINK << XHCI_TRB_TYPE_SHIFT) | (toggle_cycle ? XHCI_TRB_TC : 0);
+    trb->control = (XHCI_TRB_TYPE_LINK << XHCI_TRB_TYPE_SHIFT) | (toggle_cycle ? XHCI_TRB_TC : 0) | XHCI_TRB_CYCLE;
 }
 
 int xhci_submit_control_transfer(xhci_controller_t *xhci, usb_transfer_t *transfer) {
@@ -643,7 +768,7 @@ int xhci_process_events(xhci_controller_t *xhci) {
                 klog_printf(KLOG_INFO, "xhci: cmd completion slot=%u cc=%u", ev->slot_id, ev->completion_code);
                 break;
             case TRB_EVENT_PORT_STATUS:
-                klog_printf(KLOG_INFO, "xhci: port status change data=0x%llx", (unsigned long long)ev->data);
+                klog_printf(KLOG_INFO, "xhci: port status change data=%llx", (unsigned long long)ev->data);
                 break;
             case TRB_EVENT_TRANSFER:
                 klog_printf(KLOG_INFO, "xhci: transfer complete slot=%u ep=%u cc=%u",
@@ -670,7 +795,7 @@ int xhci_process_events(xhci_controller_t *xhci) {
 }
 
 bool xhci_legacy_handoff(uintptr_t base) {
-    klog_printf(KLOG_INFO, "xhci: legacy handoff base=0x%lx", (unsigned long)base);
+    klog_printf(KLOG_INFO, "xhci: legacy handoff base=%llx", (unsigned long long)base);
     return true; /* BIOS handoff not implemented */
 }
 
