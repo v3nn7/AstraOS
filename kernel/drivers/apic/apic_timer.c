@@ -9,7 +9,14 @@ void apic_timer_calibrate() {
 
     // Wait 10ms using PIT or HPET
     extern void sleep_10ms();
+#ifdef HOST_TEST
+    /* Busy wait fallback for host builds */
+    for (volatile int i = 0; i < 1000000; ++i) {
+        __asm__ __volatile__("pause");
+    }
+#else
     sleep_10ms();
+#endif
 
     uint32_t delta = 0xFFFFFFFF - lapic_read(LAPIC_CURR_COUNT);
     bus_freq = delta * 100; // ticks per second
@@ -24,6 +31,15 @@ void apic_timer_init(uint32_t vector) {
 void apic_timer_sleep_ms(uint32_t ms) {
     for (uint32_t i = 0; i < ms; i++) {
         lapic_write(LAPIC_INIT_COUNT, bus_freq / 1000);
-        while (lapic_read(LAPIC_CURR_COUNT) != 0) { asm volatile("pause"); }
+        while (lapic_read(LAPIC_CURR_COUNT) != 0) { __asm__ __volatile__("pause"); }
+    }
+}
+
+/* Simple fallback delay ~10ms using LAPIC timer calibration tick. */
+void sleep_10ms(void) {
+    lapic_write(LAPIC_DIVIDE, 0x3); // /16
+    lapic_write(LAPIC_INIT_COUNT, bus_freq / 100);
+    while (lapic_read(LAPIC_CURR_COUNT) != 0) {
+        __asm__ __volatile__("pause");
     }
 }

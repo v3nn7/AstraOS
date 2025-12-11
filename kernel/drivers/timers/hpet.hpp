@@ -10,7 +10,7 @@ public:
 
     static inline uint64_t frequency() { return hpet_frequency; }
 
-private:
+    /* Exposed for low-level helpers in hpet.cpp */
     static volatile uint64_t* hpet_base;
     static uint64_t hpet_frequency;   // Hz
 };

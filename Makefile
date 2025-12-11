@@ -42,15 +42,15 @@ ASM_SOURCES := $(SRC_DIR)/arch/x86_64/isr_stubs.S \
 CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/gdt.cpp \
                $(SRC_DIR)/arch/x86_64/idt.cpp \
-               $(SRC_DIR)/arch/x86_64/lapic.cpp \
                $(SRC_DIR)/arch/x86_64/smp.cpp \
-               $(SRC_DIR)/acpi/ACPI_OSC_USB.cpp \
+               $(SRC_DIR)/drivers/acpi/ACPI_OSC_USB.cpp \
                $(SRC_DIR)/drivers/input/ps2/ps2.cpp \
                $(SRC_DIR)/drivers/serial.cpp \
                $(SRC_DIR)/drivers/usb/usb_core.cpp \
                $(SRC_DIR)/drivers/usb/hid/hid_driver.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_parser.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_report_descriptor.cpp \
+               $(SRC_DIR)/drivers/timers/hpet.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
@@ -60,6 +60,10 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/util/stubs.cpp
 
 C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
+             $(SRC_DIR)/drivers/apic/lapic.c \
+             $(SRC_DIR)/drivers/apic/ioapic.c \
+             $(SRC_DIR)/drivers/apic/apic_timer.c \
+             $(SRC_DIR)/drivers/acpi/acpi_stub.c \
              $(SRC_DIR)/drivers/usb/core/usb_core.c \
              $(SRC_DIR)/drivers/usb/core/usb_descriptors.c \
              $(SRC_DIR)/drivers/usb/core/usb_device.c \
@@ -75,8 +79,8 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/PCI/msi_allocator.c \
              $(SRC_DIR)/drivers/PCI/msix.c \
              $(SRC_DIR)/drivers/usb/host/pci_usb_detect.c \
-             $(SRC_DIR)/drivers/usb/host/xhci.c \
-             $(SRC_DIR)/drivers/usb/host/xhci_irq.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_irq.c \
              $(SRC_DIR)/drivers/usb/hid/hid_keyboard.c \
              $(SRC_DIR)/drivers/usb/hid/hid_mouse.c \
              $(SRC_DIR)/drivers/usb/hid/hid_usb_driver.c \

@@ -1,6 +1,6 @@
 #include "hpet.hpp"
 #include "acpi.h"
-#include "vmm.hpp"
+#include "vmm.h"
 
 volatile uint64_t* HPET::hpet_base = nullptr;
 uint64_t HPET::hpet_frequency = 0;

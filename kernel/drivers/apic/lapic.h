@@ -1,6 +1,10 @@
 #pragma once
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define LAPIC_ID        0x020
 #define LAPIC_VERSION   0x030
 #define LAPIC_TPR       0x080
@@ -21,3 +25,7 @@ void lapic_eoi();
 void lapic_write(uint32_t reg, uint32_t value);
 uint32_t lapic_read(uint32_t reg);
 void lapic_send_ipi(uint32_t apic_id, uint32_t flags);
+
+#ifdef __cplusplus
+}
+#endif
