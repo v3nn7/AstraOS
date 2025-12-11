@@ -155,12 +155,15 @@ void usb_init(void) {
     /* Scan root hub ports for connected devices */
     usb_host_controller_t *hc = usb_host_find_by_type(USB_CONTROLLER_XHCI);
     if (hc) {
-        klog_printf(KLOG_WARN, "usb: skipping XHCI port scan (disabled to avoid MMIO hang)");
+        klog_printf(KLOG_INFO, "usb: found XHCI controller, scanning ports...");
+        usb_scan_root_ports(hc);
     } else {
         klog_printf(KLOG_WARN, "usb: no XHCI controller found, USB devices will not work");
     }
 
-    klog_printf(KLOG_INFO, "usb: skipping HID device scan (USB disabled)");
+    /* Scan for HID devices */
+    klog_printf(KLOG_INFO, "usb: scanning for HID devices...");
+    usb_hid_scan_devices();
 
     klog_printf(KLOG_INFO, "usb: initialization complete (exit)");
 }

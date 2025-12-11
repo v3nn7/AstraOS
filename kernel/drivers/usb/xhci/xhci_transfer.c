@@ -20,7 +20,15 @@ struct usb_transfer;
 #define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE32(regs, offset, val) mmio_write32((volatile uint32_t *)((uintptr_t)(regs) + (offset)), val)
 #define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
-#define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
+#include "memory.h"
+
+#define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
+#define XHCI_WRITE32(regs, offset, val) mmio_write32((volatile uint32_t *)((uintptr_t)(regs) + (offset)), val)
+
+static inline void xhci_write64(void *base, uint32_t off, uint64_t v) {
+    XHCI_WRITE32(base, off, (uint32_t)(v & 0xFFFFFFFFu));
+    XHCI_WRITE32(base, off + 4, (uint32_t)(v >> 32));
+}
 
 /**
  * Submit control transfer using TRBs
@@ -201,9 +209,10 @@ int xhci_process_events(xhci_controller_t *xhci) {
         }
         
         /* Update event ring dequeue pointer */
-        uint64_t erdp = XHCI_READ64(xhci->rt_regs, XHCI_ERDP(0));
+        uint64_t erdp = ((uint64_t)XHCI_READ32(xhci->rt_regs, XHCI_ERDP(0) + 4) << 32) |
+                        XHCI_READ32(xhci->rt_regs, XHCI_ERDP(0));
         erdp &= ~XHCI_ERDP_EHB; /* Clear event handler busy */
-        XHCI_WRITE64(xhci->rt_regs, XHCI_ERDP(0), erdp);
+        xhci_write64(xhci->rt_regs, XHCI_ERDP(0), erdp);
     }
     
     return events_processed;

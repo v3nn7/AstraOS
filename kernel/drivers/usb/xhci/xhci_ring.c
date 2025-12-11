@@ -13,12 +13,16 @@
 #include "string.h"
 #include "pmm.h"
 #include "mmio.h"
+#include "memory.h"
 
 /* Helper macros for MMIO access */
 #define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE32(regs, offset, val) mmio_write32((volatile uint32_t *)((uintptr_t)(regs) + (offset)), val)
-#define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
-#define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
+
+static inline void xhci_write64(void *base, uint32_t off, uint64_t v) {
+    XHCI_WRITE32(base, off, (uint32_t)(v & 0xFFFFFFFFu));
+    XHCI_WRITE32(base, off + 4, (uint32_t)(v >> 32));
+}
 
 /* Runtime Register Offsets */
 #define XHCI_ERSTBA(n)          (0x20 + ((n) * 0x20))
@@ -77,7 +81,7 @@ static int xhci_command_ring_alloc(xhci_command_ring_t *ring, uint32_t size) {
     ring->dequeue = 0;
     ring->enqueue = 0;
     ring->cycle_state = true; /* Start with cycle bit = 1 */
-    ring->phys_addr = (phys_addr_t)(uintptr_t)ring->trbs; /* TODO: Get real physical address */
+    ring->phys_addr = (phys_addr_t)virt_to_phys(ring->trbs);
     
     klog_printf(KLOG_INFO, "xhci_ring: allocated command ring size=%u at %p", ring_size, ring->trbs);
     return 0;
@@ -116,7 +120,7 @@ static int xhci_event_ring_alloc(xhci_event_ring_t *ring, uint32_t size) {
     ring->dequeue = 0;
     ring->enqueue = 0;
     ring->cycle_state = true;
-    ring->phys_addr = (phys_addr_t)(uintptr_t)ring->trbs;
+    ring->phys_addr = (phys_addr_t)virt_to_phys(ring->trbs);
     ring->segment_table = NULL;
     ring->segment_table_phys = 0;
     
@@ -268,7 +272,7 @@ int xhci_cmd_ring_init(xhci_controller_t *xhci) {
     
     /* Set command ring pointer in operational registers */
     uint64_t cmd_ring_addr = xhci->cmd_ring.phys_addr;
-    XHCI_WRITE64(xhci->op_regs, XHCI_CRCR, cmd_ring_addr | XHCI_CRCR_RCS);
+    xhci_write64(xhci->op_regs, XHCI_CRCR, cmd_ring_addr | XHCI_CRCR_RCS);
     
     klog_printf(KLOG_INFO, "xhci: command ring initialized at %p", (void *)cmd_ring_addr);
     return 0;
@@ -301,15 +305,15 @@ int xhci_event_ring_init(xhci_controller_t *xhci) {
     erst[0].ring_segment_size = XHCI_RING_SIZE;
     
     xhci->event_ring.segment_table = erst;
-    xhci->event_ring.segment_table_phys = (phys_addr_t)(uintptr_t)erst;
+    xhci->event_ring.segment_table_phys = (phys_addr_t)virt_to_phys(erst);
     
     /* Set ERST pointer in runtime registers */
     uint64_t erst_addr = xhci->event_ring.segment_table_phys;
-    XHCI_WRITE64(xhci->rt_regs, XHCI_ERSTBA(0), erst_addr);
+    xhci_write64(xhci->rt_regs, XHCI_ERSTBA(0), erst_addr);
     XHCI_WRITE32(xhci->rt_regs, XHCI_ERSTSZ(0), 1); /* 1 segment */
     
     /* Set event ring dequeue pointer */
-    XHCI_WRITE64(xhci->rt_regs, XHCI_ERDP(0), event_ring_addr | XHCI_ERDP_EHB);
+    xhci_write64(xhci->rt_regs, XHCI_ERDP(0), event_ring_addr | XHCI_ERDP_EHB);
     
     klog_printf(KLOG_INFO, "xhci: event ring initialized at %p", (void *)event_ring_addr);
     return 0;

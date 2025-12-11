@@ -14,6 +14,7 @@
 #include "klog.h"
 #include "string.h"
 #include "mmio.h"
+#include "memory.h"
 
 /* Forward declarations */
 extern int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint);
@@ -27,8 +28,11 @@ extern int xhci_transfer_ring_enqueue(xhci_transfer_ring_t *ring, xhci_trb_t *tr
 /* Helper macros for MMIO access */
 #define XHCI_READ32(regs, offset) mmio_read32((volatile uint32_t *)((uintptr_t)(regs) + (offset)))
 #define XHCI_WRITE32(regs, offset, val) mmio_write32((volatile uint32_t *)((uintptr_t)(regs) + (offset)), val)
-#define XHCI_READ64(regs, offset) mmio_read64((volatile uint64_t *)((uintptr_t)(regs) + (offset)))
-#define XHCI_WRITE64(regs, offset, val) mmio_write64((volatile uint64_t *)((uintptr_t)(regs) + (offset)), val)
+
+static inline void xhci_write64(void *base, uint32_t off, uint64_t v) {
+    XHCI_WRITE32(base, off, (uint32_t)(v & 0xFFFFFFFFu));
+    XHCI_WRITE32(base, off + 4, (uint32_t)(v >> 32));
+}
 
 /**
  * Initialize XHCI controller
@@ -61,16 +65,20 @@ int xhci_init(usb_host_controller_t *hc) {
     
     /* Validate MMIO access - try reading CAPLENGTH */
     uint32_t test_read = XHCI_READ32(xhci->cap_regs, 0);
-    klog_printf(KLOG_INFO, "xhci: MMIO test read from offset 0 = 0x%08x", test_read);
+    if (test_read == 0xFFFFFFFFu) {
+        klog_printf(KLOG_ERROR, "xhci: MMIO test read returned 0xFFFFFFFF (unmapped BAR?)");
+        return -1;
+    }
+    klog_printf(KLOG_INFO, "xhci: MMIO test read [0x0] = 0x%08x", test_read);
     xhci->cap_length = XHCI_READ32(xhci->cap_regs, XHCI_CAPLENGTH) & 0xFF;
     xhci->op_regs = (void *)((uintptr_t)xhci->cap_regs + xhci->cap_length);
     
     /* Get Runtime Registers offset */
-    uint32_t rtsoff = XHCI_READ32(xhci->cap_regs, XHCI_RTSOFF) & 0xFFFF;
+    uint32_t rtsoff = XHCI_READ32(xhci->cap_regs, XHCI_RTSOFF) & ~0x1Fu;
     xhci->rt_regs = (void *)((uintptr_t)xhci->cap_regs + rtsoff);
     
     /* Get Doorbell Registers offset */
-    uint32_t dboff = XHCI_READ32(xhci->cap_regs, XHCI_DBOFF) & 0xFFFF;
+    uint32_t dboff = XHCI_READ32(xhci->cap_regs, XHCI_DBOFF) & ~0x3u;
     xhci->doorbell_regs = (void *)((uintptr_t)xhci->cap_regs + dboff);
 
     xhci->hci_version = XHCI_READ32(xhci->cap_regs, XHCI_HCIVERSION);
@@ -94,8 +102,9 @@ int xhci_init(usb_host_controller_t *hc) {
                 xhci->hci_version, xhci->num_slots, xhci->num_ports,
                 xhci->max_interrupters, xhci->has_64bit_addressing);
     
-    klog_printf(KLOG_INFO, "xhci: cap_regs=%p op_regs=%p rt_regs=%p doorbell=%p",
-                xhci->cap_regs, xhci->op_regs, xhci->rt_regs, xhci->doorbell_regs);
+    klog_printf(KLOG_INFO, "xhci: cap_regs=%p op_regs=%p rt_regs=%p doorbell=%p rtsoff=0x%08x dboff=0x%08x caplen=0x%02x",
+                xhci->cap_regs, xhci->op_regs, xhci->rt_regs, xhci->doorbell_regs,
+                rtsoff, dboff, xhci->cap_length);
 
     /* Reset controller */
     klog_printf(KLOG_INFO, "xhci: resetting controller...");
@@ -153,14 +162,14 @@ int xhci_init(usb_host_controller_t *hc) {
     }
 
     /* Set DCBAAP pointer */
-    uint64_t dcbaap_phys = (uint64_t)(uintptr_t)xhci->dcbaap; /* TODO: Get real physical address */
-    XHCI_WRITE64(xhci->op_regs, XHCI_DCBAAP, dcbaap_phys);
+    uint64_t dcbaap_phys = virt_to_phys(xhci->dcbaap);
+    xhci_write64(xhci->op_regs, XHCI_DCBAAP, dcbaap_phys);
     klog_printf(KLOG_INFO, "xhci: DCBAAP set to 0x%016llx", (unsigned long long)dcbaap_phys);
 
     /* Set Command Ring Control Register (CRCR) */
-    uint64_t crcr = (uint64_t)(uintptr_t)xhci->cmd_ring.trbs;
+    uint64_t crcr = virt_to_phys(xhci->cmd_ring.trbs);
     crcr |= XHCI_CRCR_RCS; /* Ring Cycle State */
-    XHCI_WRITE64(xhci->op_regs, XHCI_CRCR, crcr);
+    xhci_write64(xhci->op_regs, XHCI_CRCR, crcr);
     klog_printf(KLOG_INFO, "xhci: CRCR set to 0x%016llx (command ring ready)", (unsigned long long)crcr);
 
     /* Enable interrupter 0 */

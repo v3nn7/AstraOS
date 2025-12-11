@@ -10,3 +10,6 @@
 
 #define PAGE_WRITE        (1u << 0)
 #define PAGE_CACHE_DISABLE (1u << 1)
+
+/* Translate virtual address to physical (uses HHDM if present) */
+uintptr_t virt_to_phys(const void *p);

@@ -78,7 +78,7 @@ extern "C" uint64_t mmio_read64(volatile uint64_t* addr) {
 }
 
 /* Weak default for HHDM offset */
-extern "C" uint64_t pmm_hhdm_offset __attribute__((weak)) = 0;
+extern "C" uint64_t pmm_hhdm_offset = kHhdmBase;
 
 extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_t* slot_out, uint8_t* func_out) {
 #ifdef HOST_TEST
