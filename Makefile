@@ -2,8 +2,6 @@ CXX              := clang++
 CC               := clang
 HOST_CXX         := clang++
 LINKER           := lld-link
-RUSTC            := rustc
-RUST_TARGET      ?=
 HHDM_BASE        ?= 0xffff800000000000
 QEMU             ?= qemu-system-x86_64
 OVMF_CODE        ?= /home/v3nn7/OVMF/ovmf-code-x86_64.fd
@@ -51,6 +49,7 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_parser.cpp \
                $(SRC_DIR)/drivers/usb/hid/parser/hid_report_descriptor.cpp \
                $(SRC_DIR)/drivers/timers/hpet.cpp \
+               $(SRC_DIR)/sched/scheduler.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
@@ -88,6 +87,7 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/hid/hid_mouse.c \
              $(SRC_DIR)/drivers/usb/hid/hid.c \
              $(SRC_DIR)/drivers/usb/hid/hid_usb_driver.c \
+             $(SRC_DIR)/drivers/ahci/ahci.c \
              $(SRC_DIR)/drivers/usb/util/usb_debug.c \
              $(SRC_DIR)/drivers/usb/util/usb_helpers.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_doorbell.c \
@@ -96,14 +96,10 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/memory/dma.c \
              $(SRC_DIR)/util/klog.c \
              $(SRC_DIR)/util/stubs.c
-RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
-RUST_SOURCES := crypto/mod.rs crypto/sha256.rs crypto/rng.rs
-RUSTFLAGS := -O -C panic=abort $(if $(RUST_TARGET),--target $(RUST_TARGET),)
 COBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SOURCES))
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SOURCES)) \
         $(patsubst $(SRC_DIR)/%.S,$(OBJ_DIR)/%.o,$(ASM_SOURCES)) \
-        $(COBJS) \
-        $(RUST_OBJS)
+        $(COBJS)
 HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST -Ikernel -Ikernel/include
 
 .PHONY: all kernel iso run test clean distclean
@@ -150,9 +146,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.S | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/crypto/crypto.o: $(RUST_SOURCES) | $(OBJ_DIR)
-	@mkdir -p $(dir $@)
-	$(RUSTC) $(RUSTFLAGS) --emit=obj -o $@ crypto/mod.rs
+$(OBJ_DIR)/crypto/crypto.obj:
 
 $(KERNEL_BIN): $(OBJS) linker.ld | $(KERNEL_BIN_DIR)
 	$(LINKER) $(OBJS) $(LDFLAGS) /out:$@

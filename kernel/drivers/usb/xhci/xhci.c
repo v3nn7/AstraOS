@@ -5,6 +5,7 @@
 #include <drivers/usb/xhci.h>
 #include <drivers/PCI/pci_config.h>
 #include <drivers/PCI/pci_irq.h>
+#include "dma.h"
 #include "kmalloc.h"
 #include "klog.h"
 #include "string.h"
@@ -145,44 +146,105 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
 }
 
 int xhci_cmd_ring_init(xhci_controller_t *xhci) {
-    (void)xhci;
+    if (!xhci) return -1;
+    const uint32_t entries = 64;
+    xhci->cmd_ring.trbs = (xhci_trb_t *)dma_alloc(sizeof(xhci_trb_t) * entries, 64, &xhci->cmd_ring.phys_addr);
+    if (!xhci->cmd_ring.trbs) return -1;
+    memset(xhci->cmd_ring.trbs, 0, sizeof(xhci_trb_t) * entries);
+    xhci->cmd_ring.size = entries;
+    xhci->cmd_ring.enqueue = 0;
+    xhci->cmd_ring.dequeue = 0;
+    xhci->cmd_ring.cycle_state = true;
+    /* link TRB to make it circular */
+    xhci_build_link_trb(&xhci->cmd_ring.trbs[entries - 1],
+                        xhci->cmd_ring.phys_addr, 1);
     return 0;
 }
 
 int xhci_event_ring_init(xhci_controller_t *xhci) {
-    (void)xhci;
+    if (!xhci) return -1;
+    const uint32_t entries = 64;
+    xhci->event_ring.trbs = (xhci_event_trb_t *)dma_alloc(sizeof(xhci_event_trb_t) * entries, 64, &xhci->event_ring.phys_addr);
+    if (!xhci->event_ring.trbs) return -1;
+    memset(xhci->event_ring.trbs, 0, sizeof(xhci_event_trb_t) * entries);
+    xhci->event_ring.size = entries;
+    xhci->event_ring.dequeue = 0;
+    xhci->event_ring.enqueue = 0;
+    xhci->event_ring.cycle_state = true;
+
+    /* ERST: single segment */
+    struct {
+        uint64_t addr;
+        uint32_t size;
+        uint32_t rsvd;
+    } __attribute__((packed)) *erst;
+    phys_addr_t erst_phys = 0;
+    erst = dma_alloc(sizeof(*erst), 64, &erst_phys);
+    if (!erst) return -1;
+    erst[0].addr = xhci->event_ring.phys_addr;
+    erst[0].size = entries;
+    erst[0].rsvd = 0;
+    xhci->event_ring.segment_table = erst;
+    xhci->event_ring.segment_table_phys = erst_phys;
     return 0;
 }
 
 int xhci_transfer_ring_init(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint) {
-    (void)xhci;
-    (void)slot;
-    (void)endpoint;
+    if (!xhci || slot >= 32 || endpoint >= 32) return -1;
+    const uint32_t entries = 64;
+    xhci_transfer_ring_t *ring = (xhci_transfer_ring_t *)dma_alloc(sizeof(xhci_transfer_ring_t), 64, NULL);
+    if (!ring) return -1;
+    ring->trbs = (xhci_trb_t *)dma_alloc(sizeof(xhci_trb_t) * entries, 64, &ring->phys_addr);
+    if (!ring->trbs) {
+        dma_free(ring, sizeof(xhci_transfer_ring_t));
+        return -1;
+    }
+    memset(ring->trbs, 0, sizeof(xhci_trb_t) * entries);
+    ring->size = entries;
+    ring->enqueue = 0;
+    ring->dequeue = 0;
+    ring->cycle_state = true;
+    xhci->transfer_rings[slot][endpoint] = ring;
+    /* link TRB */
+    xhci_build_link_trb(&ring->trbs[entries - 1], ring->phys_addr, 1);
     return 0;
 }
 
 void xhci_transfer_ring_free(xhci_controller_t *xhci, uint32_t slot, uint32_t endpoint) {
-    (void)xhci;
-    (void)slot;
-    (void)endpoint;
+    if (!xhci || slot >= 32 || endpoint >= 32) return;
+    xhci_transfer_ring_t *ring = xhci->transfer_rings[slot][endpoint];
+    if (!ring) return;
+    if (ring->trbs) dma_free(ring->trbs, sizeof(xhci_trb_t) * ring->size);
+    dma_free(ring, sizeof(xhci_transfer_ring_t));
+    xhci->transfer_rings[slot][endpoint] = NULL;
 }
 
 int xhci_cmd_ring_enqueue(xhci_command_ring_t *ring, xhci_trb_t *trb) {
-    (void)ring;
-    (void)trb;
+    if (!ring || !trb) return -1;
+    uint32_t idx = ring->enqueue;
+    memcpy(&ring->trbs[idx], trb, sizeof(xhci_trb_t));
+    if (ring->cycle_state) ring->trbs[idx].control |= XHCI_TRB_CYCLE;
+    ring->enqueue = (idx + 1) % ring->size;
+    if (ring->enqueue == ring->dequeue) return -1; /* overflow */
     return 0;
 }
 
 int xhci_transfer_ring_enqueue(xhci_transfer_ring_t *ring, xhci_trb_t *trb) {
-    (void)ring;
-    (void)trb;
+    if (!ring || !trb) return -1;
+    uint32_t idx = ring->enqueue;
+    memcpy(&ring->trbs[idx], trb, sizeof(xhci_trb_t));
+    if (ring->cycle_state) ring->trbs[idx].control |= XHCI_TRB_CYCLE;
+    ring->enqueue = (idx + 1) % ring->size;
+    if (ring->enqueue == ring->dequeue) return -1;
     return 0;
 }
 
 int xhci_event_ring_dequeue(xhci_event_ring_t *ring, xhci_event_trb_t *trb) {
-    (void)ring;
-    (void)trb;
-    return 0;
+    if (!ring || !trb) return -1;
+    if (ring->dequeue == ring->enqueue) return 0; /* no events */
+    memcpy(trb, &ring->trbs[ring->dequeue], sizeof(xhci_event_trb_t));
+    ring->dequeue = (ring->dequeue + 1) % ring->size;
+    return 1;
 }
 
 static inline void xhci_set_trb_ptr(xhci_trb_t *trb, uint64_t ptr) {
@@ -218,18 +280,23 @@ int xhci_submit_control_transfer(xhci_controller_t *xhci, usb_transfer_t *transf
 }
 
 int xhci_process_events(xhci_controller_t *xhci) {
-    (void)xhci;
+    if (!xhci) return -1;
+    /* stub: just pretend one event processed */
     return 0;
 }
 
 bool xhci_legacy_handoff(uintptr_t base) {
-    (void)base;
+    /* For now assume BIOS handoff not required; just log */
+    klog_printf(KLOG_INFO, "xhci: legacy handoff base=0x%lx", (unsigned long)base);
     return true;
 }
 
 bool xhci_reset_with_delay(uintptr_t base, uint32_t delay_ms) {
-    (void)base;
     (void)delay_ms;
+    /* Stub: write reset bit and pretend ready */
+    volatile uint32_t *op = (volatile uint32_t *)(base);
+    op[XHCI_USBCMD / 4] |= XHCI_CMD_HCRST;
+    klog_printf(KLOG_INFO, "xhci: reset controller");
     return true;
 }
 
@@ -254,8 +321,21 @@ int xhci_controller_init(xhci_controller_t *ctrl, uintptr_t base) {
     memset(ctrl, 0, sizeof(*ctrl));
     ctrl->cap_regs = (void *)base;
     ctrl->op_regs = (void *)base;
-    ctrl->num_ports = 1;
-    ctrl->num_slots = 4;
+    ctrl->rt_regs = (void *)(base + 0x1000);
+    ctrl->doorbell_regs = (void *)(base + 0x2000);
+
+    uint32_t hcs1 = *((volatile uint32_t *)((uintptr_t)ctrl->cap_regs + XHCI_HCSPARAMS1));
+    ctrl->num_ports = (hcs1 >> 24) & 0xFF;
+    ctrl->num_slots = hcs1 & 0xFF;
+    if (ctrl->num_ports == 0) ctrl->num_ports = 1;
+    if (ctrl->num_slots == 0) ctrl->num_slots = 4;
+
+    /* allocate DCBAA */
+    phys_addr_t dcbaa_phys = 0;
+    ctrl->dcbaap = (uint64_t *)dma_alloc(sizeof(uint64_t) * (ctrl->num_slots + 1), 64, &dcbaa_phys);
+    if (!ctrl->dcbaap) return -1;
+    memset(ctrl->dcbaap, 0, sizeof(uint64_t) * (ctrl->num_slots + 1));
+
     return 0;
 }
 
