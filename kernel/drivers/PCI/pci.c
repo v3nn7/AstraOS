@@ -3,21 +3,12 @@
  */
 
 #include "pci.h"
+#include "pci_config.h"
 #include "klog.h"
-#include "../../util/io.hpp"
-
-static inline uint32_t pci_cfg_read32(uint8_t bus, uint8_t dev, uint8_t func, uint8_t off) {
-    uint32_t addr = (1u << 31) |
-                    ((uint32_t)bus << 16) |
-                    ((uint32_t)dev << 11) |
-                    ((uint32_t)func << 8) |
-                    (off & 0xFC);
-    outl(0xCF8, addr);
-    return inl(0xCFC);
-}
 
 void pci_scan_log(void) {
-    klog_printf(KLOG_INFO, "pci: scanning (CF8/CFC)");
+    pci_config_init(0);
+    klog_printf(KLOG_INFO, "pci: scanning (ECAM if available, else CF8/CFC)");
     for (uint16_t bus = 0; bus < 256; ++bus) {
         for (uint8_t dev = 0; dev < 32; ++dev) {
             for (uint8_t func = 0; func < 8; ++func) {

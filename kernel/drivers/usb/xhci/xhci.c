@@ -3,7 +3,8 @@
  */
 
 #include <drivers/usb/xhci.h>
-#include "util/io.hpp"
+#include <drivers/PCI/pci_config.h>
+#include <drivers/PCI/pci_irq.h>
 #include "kmalloc.h"
 #include "klog.h"
 #include "string.h"
@@ -18,40 +19,6 @@ static usb_host_ops_t xhci_ops = {
     .poll = xhci_poll,
     .cleanup = xhci_cleanup,
 };
-
-static inline uint32_t pci_cfg_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off) {
-    uint32_t addr = (1u << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) |
-                    (off & 0xFC);
-    outl(0xCF8, addr);
-    return inl(0xCFC);
-}
-
-static inline void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off, uint32_t val) {
-    uint32_t addr = (1u << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) |
-                    (off & 0xFC);
-    outl(0xCF8, addr);
-    outl(0xCFC, val);
-}
-
-static inline uint64_t pci_read_bar(uint8_t bus, uint8_t slot, uint8_t func, uint8_t bar_off) {
-    uint32_t lo = pci_cfg_read32(bus, slot, func, bar_off);
-    if (lo & 0x1) {
-        return 0; /* I/O BAR not supported for xHCI */
-    }
-    uint64_t base = lo & 0xFFFFFFF0u;
-    uint32_t type = (lo >> 1) & 0x3;
-    if (type == 0x2) {
-        uint32_t hi = pci_cfg_read32(bus, slot, func, bar_off + 4);
-        base |= ((uint64_t)hi) << 32;
-    }
-    return base;
-}
-
-static inline void pci_enable_busmaster(uint8_t bus, uint8_t slot, uint8_t func) {
-    uint32_t cmd = pci_cfg_read32(bus, slot, func, 0x04);
-    cmd |= 0x6; /* memory space + bus master */
-    pci_cfg_write32(bus, slot, func, 0x04, cmd);
-}
 
 int xhci_init(usb_host_controller_t *hc) {
     (void)hc;
@@ -129,7 +96,8 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
         return -1; /* not xHCI */
     }
 
-    uint64_t bar0 = pci_read_bar(bus, slot, func, 0x10);
+    bool bar64 = false;
+    uint64_t bar0 = pci_cfg_read_bar(bus, slot, func, 0x10, &bar64);
     if (bar0 == 0) {
         /* Fallback to typical MMIO hole to keep boot going */
         bar0 = 0xFEBF0000u;
@@ -137,9 +105,9 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
 
     pci_enable_busmaster(bus, slot, func);
 
-    uint8_t legacy_irq = pci_cfg_read32(bus, slot, func, 0x3C) & 0xFF;
+    uint8_t legacy_irq = pci_cfg_read8(bus, slot, func, 0x3C);
     uint8_t vector = 0;
-    pci_setup_interrupt(bus, slot, func, legacy_irq, &vector);
+    pci_configure_irq(bus, slot, func, legacy_irq, &vector);
 
     usb_host_controller_t *hc = (usb_host_controller_t *)kmalloc(sizeof(usb_host_controller_t));
     xhci_controller_t *ctrl = (xhci_controller_t *)kmalloc(sizeof(xhci_controller_t));
