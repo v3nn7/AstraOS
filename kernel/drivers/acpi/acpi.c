@@ -17,6 +17,12 @@ static uint64_t hpet_phys = 0xFED00000ULL;
 static uint64_t ecam_phys = 0;
 static uint8_t ecam_bus_start = 0;
 static uint8_t ecam_bus_end = 0;
+static struct {
+    uint8_t src_irq;
+    uint32_t gsi;
+    uint16_t flags;
+} iso[16];
+static uint8_t iso_count = 0;
 
 /* Structures */
 struct __attribute__((packed)) Rsdp {
@@ -64,6 +70,15 @@ struct __attribute__((packed)) MadtLapicOverride {
     uint8_t len;
     uint16_t flags;
     uint32_t lapic_addr;
+};
+
+struct __attribute__((packed)) MadtIso {
+    uint8_t type;
+    uint8_t len;
+    uint8_t bus;
+    uint8_t src;
+    uint32_t gsi;
+    uint16_t flags;
 };
 
 struct __attribute__((packed)) HpetTable {
@@ -115,6 +130,12 @@ static void parse_madt(struct Madt* m) {
         } else if (type == 5 && len >= sizeof(struct MadtLapicOverride)) { // LAPIC override
             struct MadtLapicOverride* lo = (struct MadtLapicOverride*)ent;
             lapic_phys = lo->lapic_addr;
+        } else if (type == 2 && len >= sizeof(struct MadtIso) && iso_count < 16) { // ISO
+            struct MadtIso* is = (struct MadtIso*)ent;
+            iso[iso_count].src_irq = is->src;
+            iso[iso_count].gsi = is->gsi;
+            iso[iso_count].flags = is->flags;
+            iso_count++;
         }
         offset += len;
     }
@@ -206,4 +227,16 @@ void acpi_get_pcie_ecam(uint64_t *phys_base, uint8_t *start_bus, uint8_t *end_bu
     if (phys_base) *phys_base = ecam_phys;
     if (start_bus) *start_bus = ecam_bus_start;
     if (end_bus) *end_bus = ecam_bus_end;
+}
+
+bool acpi_get_isa_irq_override(uint8_t src_irq, uint32_t *gsi_out, uint16_t *flags_out) {
+    acpi_init();
+    for (uint8_t i = 0; i < iso_count; ++i) {
+        if (iso[i].src_irq == src_irq) {
+            if (gsi_out) *gsi_out = iso[i].gsi;
+            if (flags_out) *flags_out = iso[i].flags;
+            return true;
+        }
+    }
+    return false;
 }
