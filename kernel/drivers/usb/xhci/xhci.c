@@ -3,9 +3,55 @@
  */
 
 #include <drivers/usb/xhci.h>
+#include "util/io.hpp"
 #include "kmalloc.h"
 #include "klog.h"
 #include "string.h"
+static usb_host_ops_t xhci_ops = {
+    .init = xhci_init,
+    .reset = xhci_reset,
+    .reset_port = xhci_reset_port,
+    .transfer_control = xhci_transfer_control,
+    .transfer_interrupt = xhci_transfer_interrupt,
+    .transfer_bulk = xhci_transfer_bulk,
+    .transfer_isoc = xhci_transfer_isoc,
+    .poll = xhci_poll,
+    .cleanup = xhci_cleanup,
+};
+
+static inline uint32_t pci_cfg_read32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off) {
+    uint32_t addr = (1u << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) |
+                    (off & 0xFC);
+    outl(0xCF8, addr);
+    return inl(0xCFC);
+}
+
+static inline void pci_cfg_write32(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off, uint32_t val) {
+    uint32_t addr = (1u << 31) | ((uint32_t)bus << 16) | ((uint32_t)slot << 11) | ((uint32_t)func << 8) |
+                    (off & 0xFC);
+    outl(0xCF8, addr);
+    outl(0xCFC, val);
+}
+
+static inline uint64_t pci_read_bar(uint8_t bus, uint8_t slot, uint8_t func, uint8_t bar_off) {
+    uint32_t lo = pci_cfg_read32(bus, slot, func, bar_off);
+    if (lo & 0x1) {
+        return 0; /* I/O BAR not supported for xHCI */
+    }
+    uint64_t base = lo & 0xFFFFFFF0u;
+    uint32_t type = (lo >> 1) & 0x3;
+    if (type == 0x2) {
+        uint32_t hi = pci_cfg_read32(bus, slot, func, bar_off + 4);
+        base |= ((uint64_t)hi) << 32;
+    }
+    return base;
+}
+
+static inline void pci_enable_busmaster(uint8_t bus, uint8_t slot, uint8_t func) {
+    uint32_t cmd = pci_cfg_read32(bus, slot, func, 0x04);
+    cmd |= 0x6; /* memory space + bus master */
+    pci_cfg_write32(bus, slot, func, 0x04, cmd);
+}
 
 int xhci_init(usb_host_controller_t *hc) {
     (void)hc;
@@ -70,9 +116,63 @@ void xhci_cleanup(usb_host_controller_t *hc) {
 }
 
 int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
-    (void)bus;
-    (void)slot;
-    (void)func;
+    uint32_t id = pci_cfg_read32(bus, slot, func, 0x00);
+    if (id == 0xFFFFFFFFu) {
+        return -1;
+    }
+
+    uint32_t class_code = pci_cfg_read32(bus, slot, func, 0x08);
+    uint8_t base = (class_code >> 24) & 0xFF;
+    uint8_t sub = (class_code >> 16) & 0xFF;
+    uint8_t prog = (class_code >> 8) & 0xFF;
+    if (!(base == 0x0C && sub == 0x03 && prog == 0x30)) {
+        return -1; /* not xHCI */
+    }
+
+    uint64_t bar0 = pci_read_bar(bus, slot, func, 0x10);
+    if (bar0 == 0) {
+        /* Fallback to typical MMIO hole to keep boot going */
+        bar0 = 0xFEBF0000u;
+    }
+
+    pci_enable_busmaster(bus, slot, func);
+
+    uint8_t legacy_irq = pci_cfg_read32(bus, slot, func, 0x3C) & 0xFF;
+    uint8_t vector = 0;
+    pci_setup_interrupt(bus, slot, func, legacy_irq, &vector);
+
+    usb_host_controller_t *hc = (usb_host_controller_t *)kmalloc(sizeof(usb_host_controller_t));
+    xhci_controller_t *ctrl = (xhci_controller_t *)kmalloc(sizeof(xhci_controller_t));
+    if (!hc || !ctrl) {
+        if (hc) kfree(hc);
+        if (ctrl) kfree(ctrl);
+        return -1;
+    }
+
+    memset(hc, 0, sizeof(*hc));
+    memset(ctrl, 0, sizeof(*ctrl));
+    ctrl->cap_regs = (void *)bar0;
+    ctrl->op_regs = (void *)bar0;
+    ctrl->rt_regs = (void *)bar0;
+    ctrl->doorbell_regs = (void *)bar0;
+    ctrl->num_ports = 0;
+    ctrl->num_slots = 0;
+    ctrl->has_msi = (vector != 0);
+    ctrl->irq = vector ? vector : legacy_irq;
+
+    hc->type = USB_CONTROLLER_XHCI;
+    hc->name = "xhci";
+    hc->regs_base = (void *)bar0;
+    hc->irq = ctrl->irq;
+    hc->num_ports = 0;
+    hc->enabled = true;
+    hc->ops = &xhci_ops;
+    hc->private_data = ctrl;
+
+    usb_host_register(hc);
+    klog_printf(KLOG_INFO, "xhci: pci probe bus=%u slot=%u func=%u bar=0x%llx irq=%u (msi=%s)",
+                (unsigned)bus, (unsigned)slot, (unsigned)func,
+                (unsigned long long)bar0, (unsigned)hc->irq, ctrl->has_msi ? "yes" : "no");
     return 0;
 }
 

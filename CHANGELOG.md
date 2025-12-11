@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Added x86_64 CR0/CR3/CR4 assembly helpers (`paging_asm.S`) and linked them so the new VMM can enable paging without undefined symbols.
 - Brought PCI MSI/MSI-X helpers into `drivers/PCI/` with stubbed allocators and setup paths, updating tests and the build to consume them.
 - Added xHCI structure header `xhci_structs.h` and wired xHCI stubs to honor its TRB/ring layouts.
+- xHCI PCI probe now reads BARs, enables bus mastering, sets up MSI/legacy IRQ via `pci_setup_interrupt`, allocates a controller instance, and registers it with the USB host core.
 - Stubbed core USB stack pieces (device, transfer, HID, debug/helpers) so host tests can enumerate a fake HID keyboard/mouse and exercise control/interrupt flows.
 
 ## 0.0.1.1exp - 2025-12-10
