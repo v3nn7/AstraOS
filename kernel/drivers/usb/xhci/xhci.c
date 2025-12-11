@@ -12,7 +12,7 @@
 #include "klog.h"
 #include "string.h"
 
-extern uintptr_t virt_to_phys(const void *p);
+extern phys_addr_t virt_to_phys(void *p);
 
 static inline uint32_t xhci_read32(void *base, uint32_t off) {
     volatile uint32_t *p = (volatile uint32_t *)((uintptr_t)base + off);

@@ -3,10 +3,10 @@
  * Copyright (c) 2025 Krystian "v3nn7"
  * All rights reserved.
  *
- * Permission is granted to VIEW the source code of AstraOS (“Software”) for
+ * Permission is granted to VIEW the source code of AstraOS ("Software") for
  * personal, educational, and non-commercial study purposes only.
  *
- * Unless explicit WRITTEN permission is granted by Krystian “v3nn7” R.,
+ * Unless explicit WRITTEN permission is granted by Krystian "v3nn7" R.,
  * the following actions are STRICTLY prohibited:
  *
  * 1. Forking, copying, or cloning the Software or any portion of it.
@@ -27,7 +27,7 @@
  * Any breach of these terms voids all permissions immediately and permanently.
  *
  * === LIABILITY ===
- * The Software is provided “AS IS”, without warranty of any kind.
+ * The Software is provided "AS IS", without warranty of any kind.
  * The author is not liable for any damages resulting from use or misuse.
  *
  * === CONTACT FOR PERMISSIONS ===
@@ -57,6 +57,7 @@
 #include <drivers/usb/usb_core.hpp>
 #include <drivers/input/ps2/ps2.hpp>
 #include <drivers/serial.hpp>
+#include "pmm.h"
 
 #define EFIAPI __attribute__((ms_abi))
 
@@ -87,20 +88,24 @@ struct EFI_TABLE_HEADER {
     uint32_t Reserved;
 };
 
-// Forward declarations for function pointer types we call.
 using EFI_LOCATE_PROTOCOL = EFI_STATUS(EFIAPI*)(EFI_GUID* Protocol, void* Registration, void** Interface);
 using EFI_EXIT_BOOT_SERVICES = EFI_STATUS(EFIAPI*)(EFI_HANDLE ImageHandle, uint64_t MapKey);
 using EFI_EXIT = EFI_STATUS(EFIAPI*)(EFI_HANDLE ImageHandle, EFI_STATUS ExitStatus, size_t ExitDataSize, void* ExitData);
+using EFI_GET_MEMORY_MAP = EFI_STATUS(EFIAPI*)(size_t* MemoryMapSize, void* MemoryMap, uint64_t* MapKey, size_t* DescriptorSize, uint32_t* DescriptorVersion);
+using EFI_ALLOCATE_POOL = EFI_STATUS(EFIAPI*)(uint32_t PoolType, size_t Size, void** Buffer);
+using EFI_ALLOCATE_PAGES = EFI_STATUS(EFIAPI*)(uint32_t Type, uint32_t MemoryType, size_t Pages, EFI_PHYSICAL_ADDRESS* Memory);
+using EFI_FREE_PAGES = EFI_STATUS(EFIAPI*)(EFI_PHYSICAL_ADDRESS Memory, size_t Pages);
+using EFI_FREE_POOL = EFI_STATUS(EFIAPI*)(void* Buffer);
 
 struct EFI_BOOT_SERVICES {
     EFI_TABLE_HEADER Hdr;
     void* RaiseTPL;
     void* RestoreTPL;
-    void* AllocatePages;
-    void* FreePages;
-    void* GetMemoryMap;
-    void* AllocatePool;
-    void* FreePool;
+    EFI_ALLOCATE_PAGES AllocatePages;
+    EFI_FREE_PAGES FreePages;
+    EFI_GET_MEMORY_MAP GetMemoryMap;
+    EFI_ALLOCATE_POOL AllocatePool;
+    EFI_FREE_POOL FreePool;
     void* CreateEvent;
     void* SetTimer;
     void* WaitForEvent;
@@ -159,14 +164,13 @@ struct EFI_SYSTEM_TABLE {
 }  // extern "C"
 
 constexpr EFI_STATUS EFI_SUCCESS = 0;
+constexpr EFI_STATUS EFI_BUFFER_TOO_SMALL = 5;
 
-// Standard GOP GUID.
 static EFI_GUID kGraphicsOutputProtocolGuid{
     0x9042a9de, 0x23dc, 0x4a38, {0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a}};
 
 [[maybe_unused]] static void halt_forever() {
 #ifdef HOST_TEST
-    // In host tests we cannot execute HLT, so just return.
     return;
 #else
     while (true) {
@@ -221,7 +225,6 @@ static void render_shell() {
 
     shell_init(cfg);
 
-    // Demonstrate a couple of prompt interactions to leave visible content.
     shell_handle_key('h');
     shell_handle_key('e');
     shell_handle_key('l');
@@ -241,7 +244,6 @@ static void render_shell() {
     shell_render();
 }
 
-// #region agent log
 static bool dbg_serial_ready = false;
 static inline void dbg_ensure_serial() {
     if (!dbg_serial_ready) {
@@ -285,17 +287,28 @@ static inline void dbg_log_main(const char* location, const char* message, const
     serial_write(buf);
     serial_write("\n");
 }
-// #endregion
 
-extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
+extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop, uintptr_t memory_map, size_t memory_map_size, size_t descriptor_size) {
 #ifndef HOST_TEST
     __asm__ __volatile__("cli");
     init_gdt();
     init_idt();
-    ps2::init();  // PS/2 fallback to release BIOS locks on some laptops
+    ps2::init();
 #endif
     dbg_log_main("main.cpp:kmain:start", "kmain_enter", "H1", (uint64_t)gop, "gop_ptr", "run-pre");
-    /* TODO: wire real memory map into PMM/VMM; for now rely on HHDM fallback in vmm_map_mmio. */
+
+    if (memory_map != 0 && memory_map_size > 0 && descriptor_size > 0) {
+        klog_printf(KLOG_INFO, "pmm: initializing with map_size=%llu desc_size=%llu", (unsigned long long)memory_map_size, (unsigned long long)descriptor_size);
+        pmm_init(memory_map, memory_map_size, descriptor_size);
+    } else {
+        klog_printf(KLOG_WARN, "pmm: no memory map provided, PMM not initialized");
+    }
+
+    bool smp_ok = smp::init();
+    if (!smp_ok) {
+        klog_printf(KLOG_WARN, "smp: init failed, continuing BSP-only");
+    }
+
     renderer_init(gop);
     logger_init();
     input_core_init();
@@ -303,10 +316,7 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     klog_printf(KLOG_INFO, "ps2: init issued");
     draw_splash();
     render_shell();
-    bool smp_ok = smp::init();
-    if (!smp_ok) {
-        klog_printf(KLOG_WARN, "smp: init failed, continuing BSP-only");
-    }
+
     pci_scan_log();
     dbg_log_main("main.cpp:kmain:usb", "before_usb_init", "H1", 0, "stage", "run-pre");
     usb_core_init();
@@ -318,7 +328,6 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");
     klog_printf(KLOG_INFO, "main: entering loop (usb_present=%d)", usb_present ? 1 : 0);
 #ifndef HOST_TEST
-    /* Tymczasowo bez włączania przerwań – brak pełnej obsługi LAPIC/IDT dla spurious IRQ. */
     while (true) {
         ps2::poll();
         if (usb_present) {
@@ -350,13 +359,60 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
 #endif
 }
 
-extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE /*image_handle*/, EFI_SYSTEM_TABLE* system_table) {
+extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE* system_table) {
+    if (!system_table || !system_table->BootServices) {
+        return 1;
+    }
+
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = nullptr;
     EFI_STATUS status = system_table->BootServices->LocateProtocol(&kGraphicsOutputProtocolGuid, nullptr,
                                                                    reinterpret_cast<void**>(&gop));
     if (status != EFI_SUCCESS || gop == nullptr) {
         return status;
     }
-    kmain(gop);
+
+    size_t memory_map_size = 0;
+    size_t descriptor_size = 0;
+    uint32_t descriptor_version = 0;
+    uint64_t map_key = 0;
+
+    status = system_table->BootServices->GetMemoryMap(&memory_map_size, nullptr, &map_key, &descriptor_size, &descriptor_version);
+    if (status != EFI_BUFFER_TOO_SMALL && (status == EFI_SUCCESS || memory_map_size == 0 || descriptor_size == 0)) {
+        kmain(gop, 0, 0, 0);
+        return EFI_SUCCESS;
+    }
+
+    memory_map_size += 2 * descriptor_size;
+    void* memory_map = nullptr;
+    status = system_table->BootServices->AllocatePool(0, memory_map_size, &memory_map);
+    if (status != EFI_SUCCESS || memory_map == nullptr) {
+        kmain(gop, 0, 0, 0);
+        return EFI_SUCCESS;
+    }
+
+    for (;;) {
+        size_t current_size = memory_map_size;
+        status = system_table->BootServices->GetMemoryMap(&current_size, memory_map, &map_key, &descriptor_size, &descriptor_version);
+        if (status == EFI_SUCCESS) {
+            status = system_table->BootServices->ExitBootServices(image_handle, map_key);
+            if (status == EFI_SUCCESS) {
+                kmain(gop, reinterpret_cast<uintptr_t>(memory_map), current_size, descriptor_size);
+                return EFI_SUCCESS;
+            }
+            break;
+        }
+        if (status != EFI_BUFFER_TOO_SMALL) {
+            break;
+        }
+        system_table->BootServices->FreePool(memory_map);
+        memory_map_size = current_size;
+        status = system_table->BootServices->AllocatePool(0, memory_map_size, &memory_map);
+        if (status != EFI_SUCCESS || memory_map == nullptr) {
+            break;
+        }
+    }
+
+    system_table->BootServices->FreePool(memory_map);
+    kmain(gop, 0, 0, 0);
     return EFI_SUCCESS;
 }

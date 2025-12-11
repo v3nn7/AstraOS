@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 0.0.2.PATCH — 2025-12-11
 
+-PMM: Complete rewrite with proper multi-region support. Each UEFI region (type 7) has its own bitmap. Regions are sorted by phys_start. alloc_page() returns HHDM-mapped virtual addresses. alloc_contiguous() finds contiguous blocks within single regions with alignment and max_phys support. Fixed DMA allocation failures by ensuring all pages come from the same physical region.
+-DMA: Simplified allocator using pmm_alloc_contiguous_dma() directly. All allocations are <4GB and properly aligned (min 64 bytes). Returns HHDM virtual addresses with physical addresses in phys_out parameter.
 -xHCI: Added full implementations for Enable Slot, Address Device, and Configure Endpoint commands on the   -Command Ring. Implemented setup of Input Context, Device Context, and Endpoint Contexts (DCBAA, EP0, EP1). -Doorbell handling added for command submission. Event Ring (ERDP/IMAN, cycle state) now processes events -correctly, including re-queuing interrupt TRBs for EP1 (keyboard). Transfer Events now parse HID reports and -automatically resubmit the TRB.
 -xHCI: Expanded MMIO mapping to 0x10000. Main loop now polls the controller when needed. Normal TRB for EP1 (8 -bytes) is armed programmatically and doorbelled using DCI=2.
 -HID: Boot-protocol keyboard parser integrated with Transfer Events; the IRQ buffer is automatically reissued -after each report.
@@ -13,6 +15,8 @@ All notable changes to this project will be documented in this file.
 -Core: Guarded USB polling when no host controllers are detected and log SMP init failures instead of assuming success.
 -Licensing: Added ASAL v2.1 header to key public headers (`interrupts.h`, `ahci.h`, `types.h`).
 -Build: `make run` now depends on `make iso`, so the ISO is generated before launching QEMU.
+-DMA: Added ASAL v2.1 header, exported paging_map_dma, re-used the single virt_to_phys implementation, provided phys_to_virt, and fixed C build issues (NULL vs nullptr).
+-PMM: Removed unused bitmap counter to silence -Wunused warnings during build.
 
 ## 0.0.1.minor - 2025-12-11
 - Relocated USB and input headers under `kernel/include/drivers/...` and refreshed all driver includes to use `<drivers/...>` paths that match the new layout.

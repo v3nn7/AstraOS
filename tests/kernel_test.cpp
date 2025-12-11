@@ -33,6 +33,20 @@ extern "C" void* dma_alloc(size_t size, size_t align, phys_addr_t* phys_out) {
 }
 extern "C" void dma_free(void* virt, size_t size) { (void)size; free(virt); }
 extern "C" uintptr_t virt_to_phys(const void* p) { return reinterpret_cast<uintptr_t>(p); }
+extern "C" uint64_t pmm_hhdm_offset = 0xffff800000000000ULL;
+extern "C" void pmm_init(uintptr_t, size_t, size_t) {}
+extern "C" void* pmm_alloc_page(void) { return malloc(4096); }
+extern "C" void pmm_free_page(void* p) { free(p); }
+extern "C" void* pmm_alloc_contiguous_dma(size_t pages, size_t align, uint64_t max_phys, phys_addr_t* phys_out) {
+    void* p = nullptr;
+    size_t size = pages * 4096;
+    if (align < 64) align = 64;
+    if (posix_memalign(&p, align, size) != 0) return nullptr;
+    uintptr_t phys = reinterpret_cast<uintptr_t>(p);
+    if (max_phys > 0 && phys >= max_phys) { free(p); return nullptr; }
+    if (phys_out) *phys_out = phys;
+    return p;
+}
 extern "C" uint8_t pci_cfg_read8(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
 extern "C" uint16_t pci_cfg_read16(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
 extern "C" uint32_t pci_cfg_read32(uint8_t, uint8_t, uint8_t, uint16_t) { return 0; }
@@ -377,6 +391,25 @@ int main() {
     // ACPI hub _OSC stub should succeed and remain idempotent.
     assert(acpi::request_hub_osc());
     assert(acpi::request_hub_osc());
+
+    // PMM and DMA tests
+    void* page1 = pmm_alloc_page();
+    assert(page1 != nullptr);
+    pmm_free_page(page1);
+
+    phys_addr_t phys_out = 0;
+    void* contig16 = pmm_alloc_contiguous_dma(16, 4096, 0x100000000ULL, &phys_out);
+    assert(contig16 != nullptr);
+    assert(phys_out < 0x100000000ULL);
+    assert(phys_out % 4096 == 0);
+    pmm_free_page(contig16);
+
+    phys_addr_t dma_phys = 0;
+    void* dma_buf = dma_alloc(4096, 64, &dma_phys);
+    assert(dma_buf != nullptr);
+    assert(dma_phys < 0x100000000ULL);
+    assert(dma_phys % 64 == 0);
+    dma_free(dma_buf, 4096);
 
     return 0;
 }
