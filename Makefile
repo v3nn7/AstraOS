@@ -76,6 +76,7 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/host/ehci_td.c \
              $(SRC_DIR)/drivers/usb/host/ohci.c \
              $(SRC_DIR)/drivers/PCI/pci_msi.c \
+             $(SRC_DIR)/drivers/PCI/pci.c \
              $(SRC_DIR)/drivers/PCI/msi_allocator.c \
              $(SRC_DIR)/drivers/PCI/msix.c \
              $(SRC_DIR)/drivers/usb/host/pci_usb_detect.c \

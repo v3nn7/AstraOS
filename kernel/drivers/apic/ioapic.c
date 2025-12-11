@@ -26,10 +26,31 @@ uint32_t ioapic_get_gsi_base() {
 }
 
 void ioapic_redirect_irq(uint8_t irq, uint32_t apic_id, uint8_t vector) {
-    uint32_t idx = 0x10 + irq * 2;
+    if (!ioapic) return;
+    if (irq < gsi_base) return;
+    uint32_t idx = 0x10 + (irq - gsi_base) * 2;
 
     ioapic_write(idx, vector);              // low dword
     ioapic_write(idx + 1, apic_id << 24);   // high dword
+    klog_printf(KLOG_INFO, "ioapic: redirect irq=%u vec=0x%02x apic_id=%u", irq, vector, apic_id);
+}
+
+void ioapic_mask_irq(uint8_t irq) {
+    if (!ioapic) return;
+    if (irq < gsi_base) return;
+    uint32_t idx = 0x10 + (irq - gsi_base) * 2;
+    uint32_t low = ioapic_read(idx);
+    low |= (1u << 16); // mask
+    ioapic_write(idx, low);
+}
+
+void ioapic_unmask_irq(uint8_t irq) {
+    if (!ioapic) return;
+    if (irq < gsi_base) return;
+    uint32_t idx = 0x10 + (irq - gsi_base) * 2;
+    uint32_t low = ioapic_read(idx);
+    low &= ~(1u << 16); // unmask
+    ioapic_write(idx, low);
 }
 
 void ioapic_init() {

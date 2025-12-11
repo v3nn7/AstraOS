@@ -10,6 +10,7 @@
 #include "ui/shell.hpp"
 #include "util/logger.hpp"
 #include "efi/gop.hpp"
+#include "drivers/PCI/pci.h"
 #include <drivers/usb/usb_core.h>
 #include <drivers/usb/usb_core.hpp>
 #include <drivers/input/ps2/ps2.hpp>
@@ -255,6 +256,7 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     draw_splash();
     render_shell();
     smp::init();
+    pci_scan_log();
     dbg_log_main("main.cpp:kmain:usb", "before_usb_init", "H1", 0, "stage", "run-pre");
     usb::usb_init();
     dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");

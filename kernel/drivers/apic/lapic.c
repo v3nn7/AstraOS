@@ -28,6 +28,11 @@ void lapic_send_ipi(uint32_t apic_id, uint32_t flags) {
     lapic_write(LAPIC_ICR_LOW, flags);
 }
 
+uint32_t lapic_get_id(void) {
+    if (!lapic_base) return 0;
+    return lapic_read(LAPIC_ID) >> 24;
+}
+
 void lapic_init() {
     uint64_t phys = acpi_get_lapic_address();
     if (phys == 0) {
@@ -40,5 +45,6 @@ void lapic_init() {
     }
 
     lapic_write(LAPIC_SVR, 0x100 | 0xFF); // enable LAPIC + vector 0xFF
-    klog_printf(KLOG_INFO, "lapic: mapped phys=0x%llx", (unsigned long long)phys);
+    klog_printf(KLOG_INFO, "lapic: mapped phys=0x%llx id=%u",
+                (unsigned long long)phys, (unsigned)lapic_get_id());
 }

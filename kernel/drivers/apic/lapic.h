@@ -29,6 +29,7 @@ void lapic_eoi();
 void lapic_write(uint32_t reg, uint32_t value);
 uint32_t lapic_read(uint32_t reg);
 void lapic_send_ipi(uint32_t apic_id, uint32_t flags);
+uint32_t lapic_get_id(void);
 
 #ifdef __cplusplus
 }
