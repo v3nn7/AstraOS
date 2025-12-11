@@ -56,6 +56,7 @@ bool xhci_require_alignment(uint64_t ptr, uint64_t align);
 bool xhci_configure_msi(msi_config_t* cfg_out);
 bool xhci_check_lowmem(uint64_t phys_addr);
 bool xhci_route_ports(uintptr_t mmio_base);
+bool xhci_validate_alignment(uint64_t ptr, uint64_t align);
 
 /* Ring helpers. */
 bool xhci_ring_init(xhci_trb_ring_t* ring, uint32_t trb_count);
@@ -71,6 +72,7 @@ bool xhci_event_pop(xhci_event_ring_t* evt, xhci_trb_t* out);
 bool xhci_controller_init(xhci_controller_t* ctrl, uintptr_t mmio_base);
 uint32_t xhci_poll_events(xhci_controller_t* ctrl);
 bool xhci_reap_and_arm(xhci_controller_t* ctrl);
+uint8_t xhci_ports_scan(xhci_controller_t* ctrl);
 
 /* Command helpers (simulated completions). */
 bool xhci_cmd_enable_slot(xhci_controller_t* ctrl, uint8_t* slot_out);

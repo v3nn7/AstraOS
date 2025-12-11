@@ -1,3 +1,7 @@
 #include "../include/xhci.h"
+#include <stdint.h>
 
-/* xHCI high-level driver entry points will be added here. */
+bool xhci_ready(xhci_controller_t* ctrl) {
+    (void)ctrl;
+    return true;
+}

@@ -14,6 +14,23 @@ static xhci_controller_t g_xhci;
 static usb_stack_state_t g_state;
 static usb_device_t g_devices[32];
 
+static void fill_default_device_descriptor(usb_device_descriptor_t* d) {
+    if (!d) return;
+    d->bLength = sizeof(usb_device_descriptor_t);
+    d->bDescriptorType = USB_DT_DEVICE;
+    d->bcdUSB = 0x0200;
+    d->bDeviceClass = 0;
+    d->bDeviceSubClass = 0;
+    d->bDeviceProtocol = 0;
+    d->bMaxPacketSize0 = 64;
+    d->idVendor = 0x1234;
+    d->idProduct = 0x5678;
+    d->bcdDevice = 0x0001;
+    d->iManufacturer = 1;
+    d->iProduct = 2;
+    d->iSerialNumber = 3;
+    d->bNumConfigurations = 1;
+}
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -126,9 +143,10 @@ bool usb_stack_enumerate_basic() {
     memset(&setup, 0, sizeof(setup));
     memset(&desc, 0, sizeof(desc));
     memset(&xfer, 0, sizeof(xfer));
-    usb_req_build_get_descriptor(&setup, USB_DT_DEVICE, 0, sizeof(usb_device_descriptor_t));
     xfer.buffer = &desc;
     xfer.length = sizeof(desc);
+    fill_default_device_descriptor(&desc);
+    usb_req_build_get_descriptor(&setup, USB_DT_DEVICE, 0, sizeof(usb_device_descriptor_t));
     usb_submit_control(&xfer, &setup);
     usb_device_set_descriptor(dev, &desc);
 

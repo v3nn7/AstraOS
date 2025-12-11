@@ -80,6 +80,17 @@ bool xhci_reset_with_delay(uintptr_t mmio_base, uint8_t cap_length) {
         }
         busy_sleep(1000);
     }
+    /* Some firmware needs a second reset attempt. */
+    usbcmd = xhci_read32(op_base, 0x00);
+    usbcmd |= (1u << 1);
+    xhci_write32(op_base, 0x00, usbcmd);
+    for (int i = 0; i < 10000; ++i) {  // longer wait
+        uint32_t sts = xhci_read32(op_base, 0x04);
+        if ((sts & (1u << 11)) == 0) {
+            return true;
+        }
+        busy_sleep(2000);
+    }
     klog("xhci: reset wait timeout");
     return false;
 }
@@ -88,6 +99,9 @@ bool xhci_require_alignment(uint64_t ptr, uint64_t align) {
     return (ptr % align) == 0;
 }
 
+bool xhci_validate_alignment(uint64_t ptr, uint64_t align) {
+    return xhci_require_alignment(ptr, align);
+}
 bool xhci_configure_msi(msi_config_t* cfg_out) {
     if (!cfg_out) {
         return false;
@@ -101,8 +115,13 @@ bool xhci_check_lowmem(uint64_t phys_addr) {
 }
 
 bool xhci_route_ports(uintptr_t mmio_base) {
-    (void)mmio_base;
-    klog("xhci: port routing requested (no-op on host)");
+    if (mmio_base == 0) {
+        klog("xhci: port routing stub (no mmio)");
+        return true;
+    }
+    /* In a full impl we would program USB2/USB3 port routing registers.
+       Here we just log that routing was requested. */
+    klog("xhci: port routing requested");
     return true;
 }
 
@@ -139,6 +158,12 @@ bool xhci_controller_init(xhci_controller_t* ctrl, uintptr_t mmio_base) {
     memset(dcbaa, 0, sizeof(uint64_t) * 256);
     if (ctrl->op_regs) {
         ctrl->op_regs->dcbaap = virt_to_phys(dcbaa);
+        if (!xhci_check_lowmem(ctrl->op_regs->dcbaap)) {
+            klog("xhci: warning DCBAA above 4GB; real hw may fail");
+        }
+        if (!xhci_validate_alignment(ctrl->op_regs->dcbaap, 64)) {
+            klog("xhci: DCBAA alignment violation");
+        }
     }
 
     if (!xhci_ring_init(&ctrl->cmd_ring, 64)) {
@@ -150,6 +175,13 @@ bool xhci_controller_init(xhci_controller_t* ctrl, uintptr_t mmio_base) {
 
     /* Program CRCR and ERST registers if accessible. */
     uint64_t cmd_phys = virt_to_phys(ctrl->cmd_ring.trbs);
+    uint64_t evt_phys = virt_to_phys(ctrl->evt_ring.ring.trbs);
+    if (!xhci_validate_alignment(cmd_phys, 64)) {
+        klog("xhci: cmd ring alignment violation");
+    }
+    if (!xhci_validate_alignment(evt_phys, 64)) {
+        klog("xhci: event ring alignment violation");
+    }
     if (ctrl->op_regs) {
         ctrl->op_regs->crcr = cmd_phys | 1u;  // set RCS
     }
