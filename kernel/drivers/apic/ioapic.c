@@ -1,6 +1,7 @@
 #include "ioapic.h"
 #include "vmm.h"
 #include "acpi.h"
+#include "klog.h"
 
 #define IOAPIC_REGSEL  0x00
 #define IOAPIC_WIN     0x10
@@ -9,11 +10,13 @@ static volatile uint32_t* ioapic = 0;
 static uint32_t gsi_base = 0;
 
 void ioapic_write(uint8_t reg, uint32_t val) {
+    if (!ioapic) return;
     ioapic[IOAPIC_REGSEL / 4] = reg;
     ioapic[IOAPIC_WIN / 4] = val;
 }
 
 uint32_t ioapic_read(uint8_t reg) {
+    if (!ioapic) return 0;
     ioapic[IOAPIC_REGSEL / 4] = reg;
     return ioapic[IOAPIC_WIN / 4];
 }
@@ -35,8 +38,14 @@ void ioapic_init() {
 
     if (phys == 0) {
         /* No IOAPIC reported; skip init. */
+        klog_printf(KLOG_WARN, "ioapic: not found");
         return;
     }
 
     ioapic = (volatile uint32_t*)vmm_map_mmio(phys, 0x20);
+    if (!ioapic) {
+        klog_printf(KLOG_ERROR, "ioapic: map failed");
+        return;
+    }
+    klog_printf(KLOG_INFO, "ioapic: mapped phys=0x%llx gsi_base=%u", (unsigned long long)phys, gsi_base);
 }

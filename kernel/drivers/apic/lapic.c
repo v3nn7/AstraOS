@@ -1,6 +1,7 @@
 #include "lapic.h"
 #include "vmm.h"
 #include "acpi.h"
+#include "klog.h"
 
 static volatile uint32_t* lapic_base = 0;
 
@@ -34,8 +35,10 @@ void lapic_init() {
     }
     lapic_base = (volatile uint32_t*)vmm_map_mmio(phys, 0x1000);
     if (!lapic_base) {
+        klog_printf(KLOG_ERROR, "lapic: map failed");
         return;
     }
 
     lapic_write(LAPIC_SVR, 0x100 | 0xFF); // enable LAPIC + vector 0xFF
+    klog_printf(KLOG_INFO, "lapic: mapped phys=0x%llx", (unsigned long long)phys);
 }

@@ -20,11 +20,19 @@ extern "C" {
 #define LAPIC_CURR_COUNT 0x390
 #define LAPIC_DIVIDE    0x3E0
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void lapic_init();
 void lapic_eoi();
 void lapic_write(uint32_t reg, uint32_t value);
 uint32_t lapic_read(uint32_t reg);
 void lapic_send_ipi(uint32_t apic_id, uint32_t flags);
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 }
