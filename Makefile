@@ -93,6 +93,7 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_doorbell.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_ring.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_transfer.c \
+             $(SRC_DIR)/memory/dma.c \
              $(SRC_DIR)/util/klog.c \
              $(SRC_DIR)/util/stubs.c
 RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
