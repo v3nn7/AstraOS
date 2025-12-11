@@ -20,22 +20,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang lld make mtools xorriso systemd-boot-efi
 
-      - name: Build ISO (headless)
+      - name: Build ISO
         run: make iso
 
-      - name: Get latest tag (fallback to v0.0.0 if none)
-        id: tag
+      - name: Get latest release ID
+        id: release
         run: |
-          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || true)
-          if [ -z "$LATEST_TAG" ]; then
-            LATEST_TAG="v0.0.0"
-          fi
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          JSON=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          ID=$(echo "$JSON" | grep '"id":' | head -1 | sed 's/[^0-9]//g')
+          echo "release_id=$ID" >> $GITHUB_OUTPUT
 
       - name: Upload ISO to latest release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          files: AstraOS.iso
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.release.outputs.release_id }}/assets?name=AstraOS.iso
+          asset_path: ./out/AstraOS.iso
+          asset_name: AstraOS.iso
+          asset_content_type: application/octet-stream
