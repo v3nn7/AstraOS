@@ -178,6 +178,11 @@ uint64_t VMM::translate(uint64_t virt) {
 uintptr_t VMM::map_mmio(uintptr_t phys, size_t size) {
     size = (size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
 
+    /* Fallback: if paging not initialized yet, rely on firmware identity map. */
+    if (pml4 == nullptr) {
+        return phys;
+    }
+
     uintptr_t virt = alloc_virt_region(size);
     dbg_log_vmm("vmm.cpp:map_mmio:enter", "map_mmio_enter", "H3", phys, "phys", "run-pre");
     dbg_log_vmm("vmm.cpp:map_mmio:pml4", "map_mmio_pml4", "H1", (uint64_t)pml4, "pml4_ptr", "run-pre");

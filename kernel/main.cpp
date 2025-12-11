@@ -249,6 +249,7 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     ps2::init();  // PS/2 fallback to release BIOS locks on some laptops
 #endif
     dbg_log_main("main.cpp:kmain:start", "kmain_enter", "H1", (uint64_t)gop, "gop_ptr", "run-pre");
+    /* TODO: wire real memory map into PMM/VMM; for now rely on HHDM fallback in vmm_map_mmio. */
     renderer_init(gop);
     logger_init();
     draw_splash();
@@ -258,16 +259,15 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     usb::usb_init();
     dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");
 #ifndef HOST_TEST
-    interrupts_enable();
+    /* Tymczasowo bez włączania przerwań – brak pełnej obsługi LAPIC/IDT dla spurious IRQ. */
     while (true) {
         ps2::poll();
         usb::usb_poll();
         shell_blink_tick();
         static uint32_t hb = 0;
-        if ((hb++ % 5000u) == 0) {
+        if ((hb++ % 500000u) == 0) {
             klog("main: heartbeat");
         }
-        /* Without a timer/interrupt source the CPU would sleep forever on HLT. */
         __asm__ __volatile__("pause");
     }
 #else
