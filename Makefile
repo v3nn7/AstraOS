@@ -52,8 +52,7 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
-               $(SRC_DIR)/util/memory.cpp \
-               $(SRC_DIR)/util/stubs.cpp
+               $(SRC_DIR)/util/memory.cpp
 
 C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/core/usb_core.c \
@@ -78,7 +77,8 @@ C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
              $(SRC_DIR)/drivers/usb/util/usb_helpers.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_doorbell.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_ring.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_transfer.c
+             $(SRC_DIR)/drivers/usb/xhci/xhci_transfer.c \
+             $(SRC_DIR)/util/stubs.c
 RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
 RUST_SOURCES := crypto/mod.rs crypto/sha256.rs crypto/rng.rs
 RUSTFLAGS := -O -C panic=abort $(if $(RUST_TARGET),--target $(RUST_TARGET),)
