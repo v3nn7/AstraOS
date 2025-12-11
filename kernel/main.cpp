@@ -28,6 +28,9 @@ using EFI_STATUS = uint64_t;
 using EFI_HANDLE = void*;
 using EFI_PHYSICAL_ADDRESS = uint64_t;
 
+extern "C" bool pci_find_xhci(uintptr_t* mmio_base_out, uint8_t* bus_out, uint8_t* slot_out, uint8_t* func_out);
+extern "C" void pci_usb_detect_scan(void);
+
 struct EFI_GUID {
     uint32_t Data1;
     uint16_t Data2;
@@ -260,13 +263,18 @@ extern "C" void kmain(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop) {
     smp::init();
     pci_scan_log();
     dbg_log_main("main.cpp:kmain:usb", "before_usb_init", "H1", 0, "stage", "run-pre");
-    usb::usb_init();
+    usb_core_init();
+    pci_usb_detect_scan();
     dbg_log_main("main.cpp:kmain:usb", "after_usb_init", "H1", 0, "stage", "run-pre");
 #ifndef HOST_TEST
     /* Tymczasowo bez włączania przerwań – brak pełnej obsługi LAPIC/IDT dla spurious IRQ. */
     while (true) {
         ps2::poll();
-        usb::usb_poll();
+        if (auto hc = usb_host_find_by_type(USB_CONTROLLER_XHCI)) {
+            if (hc->ops && hc->ops->poll) {
+                hc->ops->poll(hc);
+            }
+        }
         input_event_t ev;
         while (input_event_poll(&ev)) {
             if (ev.type == INPUT_EVENT_KEY_CHAR && ev.key.ascii) {

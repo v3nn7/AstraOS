@@ -1,3 +1,4 @@
+#ifdef HOST_TEST
 /**
  * Simple host-side USB stub used by unit tests.
  */
@@ -157,3 +158,19 @@ extern "C" uint16_t usb_device_ep_in_max_packet(const usb_device_t *dev) {
     }
     return 0;
 }
+#else
+/* Kernel build: provide minimal no-op wrappers to satisfy shell queries. */
+#include <drivers/usb/usb_device.h>
+#include <drivers/usb/usb_descriptors.h>
+#include <drivers/usb/usb_core.h>
+#include <stdint.h>
+namespace usb {
+uint32_t controller_count() { return 0; }
+uint32_t device_count() { return 0; }
+const usb_device_t *usb_stack_device_at(int) { return nullptr; }
+const usb_device_descriptor_t *usb_device_get_descriptor(const usb_device_t *) { return nullptr; }
+}
+extern "C" int usb_device_has_hid_keyboard(const usb_device_t *) { return false; }
+extern "C" uint8_t usb_device_ep_in_addr(const usb_device_t *) { return 0; }
+extern "C" uint16_t usb_device_ep_in_max_packet(const usb_device_t *) { return 0; }
+#endif

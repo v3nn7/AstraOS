@@ -177,17 +177,24 @@ iso: kernel $(ESP_IMG)
 		-isohybrid-gpt-basdat \
 		-o AstraOS.iso $(ISO_DIR)
 
-run: iso
-	$(QEMU) -machine q35 -m 4G \
+run:
+	$(QEMU) -machine q35,accel=kvm,kernel-irqchip=split \
+		-m 4G \
+		-smp 4 \
 		-bios $(OVMF_CODE) \
 		-serial file:/home/v3nn7/Projects/AstraOS/.cursor/debug.log \
 		-monitor stdio \
 		-no-reboot -no-shutdown \
+		-usb \
+		-d int,cpu_reset,guest_errors \
+		-device qemu-xhci,id=xhci,addr=0x14 \
+		-device usb-hub,bus=xhci.0,port=1 \
+		-device usb-kbd,bus=xhci.0,port=2 \
+		-device pci-bridge,chassis_nr=2,id=pci_bridge0 \
 		-drive if=none,id=cdrom,file=AstraOS.iso,format=raw,media=cdrom \
 		-device ide-cd,drive=cdrom \
-		-device qemu-xhci,id=xhci \
-		-device usb-kbd,bus=xhci.0 \
 		-boot d
+
 
 clean:
 	rm -f kernel.efi

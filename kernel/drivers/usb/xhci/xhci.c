@@ -50,6 +50,34 @@ static usb_host_ops_t xhci_ops = {
     .cleanup = xhci_cleanup,
 };
 
+/* Minimal interrupt endpoint buffer for keyboard */
+static uint8_t *g_kbd_buf = NULL;
+static phys_addr_t g_kbd_buf_phys = 0;
+
+static int xhci_queue_kbd_irq(xhci_controller_t *ctrl, uint8_t slot, uint8_t ep) {
+    if (!ctrl || !ctrl->transfer_rings[slot][ep]) return -1;
+    if (!g_kbd_buf) {
+        g_kbd_buf = dma_alloc(8, 16, &g_kbd_buf_phys);
+        if (!g_kbd_buf) return -1;
+        memset(g_kbd_buf, 0, 8);
+    }
+    xhci_transfer_ring_t *ring = ctrl->transfer_rings[slot][ep];
+    xhci_trb_t trb = {0};
+    xhci_set_trb_ptr(&trb, g_kbd_buf_phys);
+    trb.status = 8; /* length */
+    trb.control = (XHCI_TRB_TYPE_NORMAL << XHCI_TRB_TYPE_SHIFT) | XHCI_TRB_IOC;
+    if (ring->cycle_state) trb.control |= XHCI_TRB_CYCLE;
+    if (xhci_transfer_ring_enqueue(ring, &trb) != 0) {
+        return -1;
+    }
+    /* Doorbell: target = ep */
+    if (ctrl->doorbell_regs) {
+        volatile uint32_t *db = (volatile uint32_t *)ctrl->doorbell_regs;
+        db[slot] = ep;
+    }
+    return 0;
+}
+
 static void xhci_event_push(xhci_controller_t *ctrl, uint8_t type, uint8_t slot_id, uint8_t ep_id, uint8_t cc, uint64_t data) {
     if (!ctrl || !ctrl->event_ring.trbs || ctrl->event_ring.size == 0) return;
     uint32_t idx = ctrl->event_ring.enqueue % ctrl->event_ring.size;
@@ -137,6 +165,23 @@ int xhci_init(usb_host_controller_t *hc) {
     uint32_t cmd = xhci_read32((void *)op, XHCI_USBCMD);
     cmd |= XHCI_CMD_RUN | XHCI_CMD_INTE;
     xhci_write32((void *)op, XHCI_USBCMD, cmd);
+
+    /* Pre-allocate slot 1 and interrupt EP1 ring for keyboard polling */
+    uint8_t slot = 0;
+    if (xhci_cmd_enable_slot(ctrl, &slot) && slot == 1) {
+        /* configure EP0 already handled; set up EP1 as interrupt IN */
+        if (!ctrl->transfer_rings[slot][1]) {
+            xhci_transfer_ring_init(ctrl, slot, 1);
+        }
+        /* Set endpoint context EP1 dequeue pointer if device context exists */
+        if (ctrl->device_contexts[slot]) {
+            xhci_device_ctx_t *dev_ctx = (xhci_device_ctx_t *)ctrl->device_contexts[slot];
+            dev_ctx->ep_ctx[1].tr_dequeue_ptr = ctrl->transfer_rings[slot][1]->phys_addr;
+            dev_ctx->ep_ctx[1].max_packet_size = 8;
+            dev_ctx->ep_ctx[1].ep_state = 1; /* running */
+        }
+        xhci_queue_kbd_irq(ctrl, slot, 1);
+    }
 
     /* Power ports if possible */
     xhci_route_ports(base);
@@ -269,8 +314,8 @@ int xhci_pci_probe(uint8_t bus, uint8_t slot, uint8_t func) {
         /* Fallback to typical MMIO hole to keep boot going */
         bar0 = 0xFEBF0000u;
     }
-    /* Map MMIO into virtual space */
-    uintptr_t mapped = vmm_map_mmio((uintptr_t)bar0, 0x4000);
+    /* Map MMIO into virtual space (cover CAP/OP/RTS/DB) */
+    uintptr_t mapped = vmm_map_mmio((uintptr_t)bar0, 0x10000);
 
     pci_enable_busmaster(bus, slot, func);
 
@@ -512,28 +557,48 @@ int xhci_process_events(xhci_controller_t *xhci) {
         xhci_write32((void *)op, XHCI_USBSTS, sts & ~XHCI_STS_PCD);
     }
 
-    while (xhci->event_ring.dequeue != xhci->event_ring.enqueue) {
-        xhci_event_trb_t ev;
-        memset(&ev, 0, sizeof(ev));
-        int got = xhci_event_ring_dequeue(&xhci->event_ring, &ev);
-        if (got <= 0) break;
+    /* Hardware event ring processing: consume TRBs with matching cycle */
+    while (1) {
+        uint32_t idx = xhci->event_ring.dequeue % xhci->event_ring.size;
+        xhci_event_trb_t *ev = &xhci->event_ring.trbs[idx];
+        uint8_t cycle = ev->cycle;
+        if (cycle != (xhci->event_ring.cycle_state ? 1 : 0)) {
+            break;
+        }
+        xhci->event_ring.dequeue = (idx + 1) % xhci->event_ring.size;
+        if (xhci->event_ring.dequeue == 0) {
+            xhci->event_ring.cycle_state = !xhci->event_ring.cycle_state;
+        }
         processed++;
-        switch (ev.trb_type) {
+
+        switch (ev->trb_type) {
             case TRB_EVENT_CMD_COMPLETION:
-                klog_printf(KLOG_INFO, "xhci: cmd completion slot=%u cc=%u", ev.slot_id, ev.completion_code);
+                klog_printf(KLOG_INFO, "xhci: cmd completion slot=%u cc=%u", ev->slot_id, ev->completion_code);
                 break;
             case TRB_EVENT_PORT_STATUS:
-                klog_printf(KLOG_INFO, "xhci: port status change data=0x%llx", (unsigned long long)ev.data);
+                klog_printf(KLOG_INFO, "xhci: port status change data=0x%llx", (unsigned long long)ev->data);
                 break;
             case TRB_EVENT_TRANSFER:
                 klog_printf(KLOG_INFO, "xhci: transfer complete slot=%u ep=%u cc=%u",
-                            ev.slot_id, ev.endpoint_id, ev.completion_code);
+                            ev->slot_id, ev->endpoint_id, ev->completion_code);
+                /* For keyboard EP1 slot1, parse the buffer */
+                if (ev->slot_id == 1 && ev->endpoint_id == 1 && g_kbd_buf) {
+                    usb_hid_process_keyboard_report(NULL, g_kbd_buf, 8);
+                    memset(g_kbd_buf, 0, 8);
+                    xhci_queue_kbd_irq(xhci, 1, 1);
+                }
                 break;
             default:
-                klog_printf(KLOG_DEBUG, "xhci: event type=%u", ev.trb_type);
+                klog_printf(KLOG_DEBUG, "xhci: event type=%u", ev->trb_type);
                 break;
         }
+
+        /* Advance ERDP to acknowledge */
+        volatile uint32_t *rt = (volatile uint32_t *)xhci->rt_regs;
+        uint64_t erdp = xhci->event_ring.phys_addr + ((uint64_t)xhci->event_ring.dequeue * sizeof(xhci_event_trb_t));
+        xhci_write64((void *)rt, XHCI_ERDP(0), erdp | (1ull << 3));
     }
+
     return processed;
 }
 
