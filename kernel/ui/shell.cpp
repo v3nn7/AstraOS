@@ -5,9 +5,9 @@
 #include <stdint.h>
 
 #include "renderer.hpp"
-#include "drivers/usb/usb_core.hpp"
-#include "drivers/usb/include/usb_core.h"
-#include "drivers/usb/include/usb_device.h"
+#include <drivers/usb/usb_core.h>
+#include <drivers/usb/usb_device.h>
+#include <drivers/usb/usb_core.hpp>
 
 namespace {
 
@@ -113,9 +113,9 @@ void describe_usb(char* line, size_t cap) {
 
     // Append first device VID:PID if any.
     if (devices > 0) {
-        const usb_device_t* dev = usb_stack_device_at(0);
+        const usb_device_t* dev = usb::usb_stack_device_at(0);
         if (dev) {
-            const usb_device_descriptor_t* ddesc = usb_device_get_descriptor(dev);
+            const usb_device_descriptor_t* ddesc = usb::usb_device_get_descriptor(dev);
             if (ddesc) {
                 const char* tail = " vid:pid=";
                 for (size_t i = 0; tail[i] != 0 && len + 1 < cap; ++i) {

@@ -10,8 +10,9 @@
 #include "ui/shell.hpp"
 #include "util/logger.hpp"
 #include "efi/gop.hpp"
-#include "drivers/usb/usb_core.hpp"
-#include "drivers/ps2/ps2.hpp"
+#include <drivers/usb/usb_core.h>
+#include <drivers/usb/usb_core.hpp>
+#include <drivers/input/ps2/ps2.hpp>
 
 #define EFIAPI __attribute__((ms_abi))
 

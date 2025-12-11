@@ -59,6 +59,7 @@ extern "C" void input_push_key(uint8_t key, bool pressed) {
 #include "../kernel/drivers/usb/xhci/xhci_events.c"
 #include "../kernel/drivers/usb/xhci/xhci_commands.c"
 #include "../kernel/drivers/usb/xhci/xhci_transfer.c"
+#include "../kernel/drivers/usb/xhci/xhci_ports.c"
 #include "../kernel/drivers/usb/hid/hid.c"
 #include "../kernel/drivers/usb/hid/hid_keyboard.c"
 #include "../kernel/drivers/usb/hid/hid_mouse.c"
@@ -276,6 +277,9 @@ int main() {
     assert(ddesc != nullptr);
     assert(ddesc->idVendor == 0x1234);
     assert(ddesc->idProduct == 0x5678);
+    assert(usb_device_has_hid_keyboard(dev0));
+    assert(usb_device_ep_in_addr(dev0) == 0x81);
+    assert(usb_device_ep_in_max_packet(dev0) == 8);
     // Shell poll uses usb_poll(), so run once.
     usb::usb_poll();
 

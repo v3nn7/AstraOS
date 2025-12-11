@@ -1,74 +1,119 @@
-#include "../include/hid_keyboard.h"
-#include "../include/hid.h"
+/**
+ * USB HID Keyboard Integration
+ * 
+ * Handles USB HID keyboard input and converts to AstraOS events.
+ */
 
-extern void input_push_key(uint8_t key, bool pressed);
+#include <drivers/usb/usb_hid.h>
+#include <drivers/usb/usb_core.h>
+#include <drivers/usb/usb_device.h>
+#include "event.h"
+#include "kernel.h"
+#include "klog.h"
 
-static void copy_codes(uint8_t* dst, const uint8_t* src, size_t n) {
-    for (size_t i = 0; i < n; ++i) {
-        dst[i] = src[i];
+/* USB HID Keyboard State */
+usb_device_t *usb_hid_keyboard_device = NULL;
+
+/* Boot protocol keyboard scancode to ASCII mapping */
+__attribute__((unused)) static const char usb_keyboard_scancode_map[128] = {
+    0,   0,   '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t',
+    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,   'a', 's',
+    'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0,   '\\', 'z', 'x', 'c', 'v',
+    'b', 'n', 'm', ',', '.', '/', 0,   '*', 0,   ' ', 0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   '7', '8', '9', '-', '4', '5', '6', '+', '1',
+    '2', '3', '0', '.', 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
+};
+
+/**
+ * Register USB HID keyboard device
+ */
+void usb_hid_register_keyboard(usb_device_t *dev) {
+    if (!dev) return;
+    
+    if (usb_hid_keyboard_init(dev) == 0) {
+        usb_hid_keyboard_device = dev;
+        klog_printf(KLOG_INFO, "usb_hid: registered keyboard device");
     }
 }
 
-void hid_keyboard_reset(hid_keyboard_state_t* state) {
-    if (!state) return;
-    state->modifier_mask = 0;
-    for (size_t i = 0; i < 6; ++i) {
-        state->key_codes[i] = 0;
+/**
+ * Poll USB HID keyboard and update events
+ */
+void usb_hid_poll_keyboard(void) {
+    if (!usb_hid_keyboard_device) {
+        return;
+    }
+
+    /* Process keyboard report and generate input events */
+    extern void usb_hid_process_keyboard_report(usb_device_t *dev, uint8_t *report, size_t len);
+    
+    /* Read report - this will populate the report buffer */
+    uint8_t modifiers, keys[6];
+    int ret = usb_hid_keyboard_read(usb_hid_keyboard_device, &modifiers, keys);
+    if (ret < 0) {
+        return; /* No data or error */
+    }
+    
+    /* Get report buffer from device driver data */
+    typedef struct {
+        void *report_buffer;
+        size_t report_size;
+    } usb_hid_device_t;
+    usb_hid_device_t *hid = (usb_hid_device_t *)usb_hid_keyboard_device->driver_data;
+    if (hid && hid->report_buffer) {
+        /* Process the report that was just read */
+        usb_hid_process_keyboard_report(usb_hid_keyboard_device, 
+                                        (uint8_t*)hid->report_buffer, 
+                                        ret);
     }
 }
 
-uint8_t hid_keyboard_usage_to_key(uint8_t usage) {
-    if (usage >= 0x04 && usage <= 0x1d) {  // 'a'..'z'
-        return (uint8_t)('a' + (usage - 0x04));
-    }
-    if (usage >= 0x1e && usage <= 0x27) {  // '1'..'0'
-        static const char nums[10] = {'1','2','3','4','5','6','7','8','9','0'};
-        return (uint8_t)nums[usage - 0x1e];
-    }
-    switch (usage) {
-        case 0x2c: return ' ';
-        case 0x28: return '\n';
-        case 0x2a: return '\b';
-        default: return 0;
-    }
+/**
+ * Check if USB HID keyboard is available
+ */
+bool usb_hid_keyboard_available(void) {
+    return usb_hid_keyboard_device != NULL;
 }
 
-static bool contains_code(const uint8_t* codes, size_t n, uint8_t code) {
-    for (size_t i = 0; i < n; ++i) {
-        if (codes[i] == code) return true;
+/**
+ * Keyboard init wrapper (for drivers.h compatibility)
+ */
+void keyboard_init(void) {
+    /* USB HID keyboard is initialized via usb_hid_init() */
+    /* This function is called from kmain() */
+}
+
+/**
+ * Read character from keyboard buffer
+ */
+bool keyboard_read_char(char *ch_out) {
+    if (!ch_out) return false;
+    
+    /* Poll keyboard first (only if available) */
+    if (usb_hid_keyboard_available()) {
+        usb_hid_poll_keyboard();
     }
+    
+    /* Try to get character from event queue */
+    extern bool gui_event_poll(gui_event_t *out);
+    extern void gui_event_push_keychar(char c);
+    gui_event_t ev;
+    if (gui_event_poll(&ev)) {
+        if (ev.type == GUI_EVENT_KEY_CHAR) {
+            *ch_out = ev.key.ch;
+            return true;
+        }
+    }
+    
     return false;
 }
 
-void hid_keyboard_handle_report(hid_keyboard_state_t* state, const uint8_t* report, size_t len) {
-    if (!state || !report || len < 8) {
-        return;
-    }
-    uint8_t new_mod = report[0];
-    const uint8_t* new_codes = &report[2];
-
-    // Releases: keys that were present and are gone.
-    for (size_t i = 0; i < 6; ++i) {
-        uint8_t prev = state->key_codes[i];
-        if (prev != 0 && !contains_code(new_codes, 6, prev)) {
-            uint8_t ch = hid_keyboard_usage_to_key(prev);
-            if (ch) {
-                input_push_key(ch, false);
-            }
-        }
-    }
-
-    // Presses: keys newly present.
-    for (size_t i = 0; i < 6; ++i) {
-        uint8_t cur = new_codes[i];
-        if (cur != 0 && !contains_code(state->key_codes, 6, cur)) {
-            uint8_t ch = hid_keyboard_usage_to_key(cur);
-            if (ch) {
-                input_push_key(ch, true);
-            }
-        }
-    }
-
-    state->modifier_mask = new_mod;
-    copy_codes(state->key_codes, new_codes, 6);
+/**
+ * Poll character from keyboard (non-blocking)
+ */
+bool keyboard_poll_char(char *ch_out) {
+    return keyboard_read_char(ch_out);
 }
+

@@ -4,7 +4,7 @@ HOST_CXX         := clang++
 LINKER           := lld-link
 RUSTC            := rustc
 RUST_TARGET      ?=
-HHDM_BASE        ?= 0
+HHDM_BASE        ?= 0xffff800000000000
 QEMU             ?= qemu-system-x86_64
 OVMF_CODE        ?= /home/v3nn7/OVMF/ovmf-code-x86_64.fd
 
@@ -25,11 +25,12 @@ BOOT_ENTRY_CONF  := $(BOOT_SRC)/entries/astra.conf
 
 CXXFLAGS := --target=x86_64-pc-win32-coff -ffreestanding -fno-exceptions -fno-rtti \
             -fshort-wchar -mno-red-zone -fno-stack-protector -Wall -Wextra -Werror \
-            -fdata-sections -ffunction-sections -std=c++17 -Ikernel $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
+            -fdata-sections -ffunction-sections -std=c++17 -Ikernel -Ikernel/include \
+            $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
 
 CFLAGS := --target=x86_64-pc-win32-coff -ffreestanding -fshort-wchar -mno-red-zone \
           -fno-stack-protector -Wall -Wextra -Werror -fdata-sections -ffunction-sections \
-          -std=c17 -Ikernel $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
+          -std=c17 -Ikernel -Ikernel/include $(if $(HHDM_BASE),-DHHDM_BASE=$(HHDM_BASE),)
 
 LDFLAGS := /machine:x64 /subsystem:efi_application /entry:efi_main /nodefaultlib /align:4096
 
@@ -43,38 +44,38 @@ CPP_SOURCES := $(SRC_DIR)/main.cpp \
                $(SRC_DIR)/arch/x86_64/lapic.cpp \
                $(SRC_DIR)/arch/x86_64/smp.cpp \
                $(SRC_DIR)/acpi/ACPI_OSC_USB.cpp \
-               $(SRC_DIR)/drivers/ps2/ps2.cpp \
+               $(SRC_DIR)/drivers/input/ps2/ps2.cpp \
                $(SRC_DIR)/drivers/serial.cpp \
-               $(SRC_DIR)/drivers/usb/usb_core.cpp \
+               $(SRC_DIR)/drivers/usb/hid/hid_driver.cpp \
+               $(SRC_DIR)/drivers/usb/hid/parser/hid_parser.cpp \
+               $(SRC_DIR)/drivers/usb/hid/parser/hid_report_descriptor.cpp \
                $(SRC_DIR)/ui/renderer.cpp \
                $(SRC_DIR)/ui/shell.cpp \
                $(SRC_DIR)/util/logger.cpp \
                $(SRC_DIR)/util/memory.cpp
 
-C_SOURCES := $(SRC_DIR)/drivers/usb/core/usb_core.c \
-             $(SRC_DIR)/drivers/usb/core/usb_descriptor.c \
+C_SOURCES := $(SRC_DIR)/drivers/input/input_core.c \
+             $(SRC_DIR)/drivers/usb/core/usb_core.c \
+             $(SRC_DIR)/drivers/usb/core/usb_descriptors.c \
              $(SRC_DIR)/drivers/usb/core/usb_device.c \
-             $(SRC_DIR)/drivers/usb/core/usb_helpers.c \
-             $(SRC_DIR)/drivers/usb/core/usb_hub.c \
-             $(SRC_DIR)/drivers/usb/core/usb_request.c \
+             $(SRC_DIR)/drivers/usb/core/usb_enumeration.c \
+             $(SRC_DIR)/drivers/usb/core/usb_init.c \
+             $(SRC_DIR)/drivers/usb/core/usb_manager.c \
              $(SRC_DIR)/drivers/usb/core/usb_transfer.c \
-             $(SRC_DIR)/drivers/usb/msi.c \
-             $(SRC_DIR)/drivers/usb/msi_allocator.c \
-             $(SRC_DIR)/drivers/usb/msix.c \
-             $(SRC_DIR)/drivers/usb/ehci/ehci.c \
-             $(SRC_DIR)/drivers/usb/ehci/ehci_ports.c \
-             $(SRC_DIR)/drivers/usb/hid/hid.c \
+             $(SRC_DIR)/drivers/usb/host/ehci.c \
+             $(SRC_DIR)/drivers/usb/host/ehci_qh.c \
+             $(SRC_DIR)/drivers/usb/host/ehci_td.c \
+             $(SRC_DIR)/drivers/usb/host/ohci.c \
+             $(SRC_DIR)/drivers/usb/host/pci_msi.c \
+             $(SRC_DIR)/drivers/usb/host/pci_usb_detect.c \
+             $(SRC_DIR)/drivers/usb/host/xhci.c \
+             $(SRC_DIR)/drivers/usb/host/xhci_irq.c \
              $(SRC_DIR)/drivers/usb/hid/hid_keyboard.c \
              $(SRC_DIR)/drivers/usb/hid/hid_mouse.c \
-             $(SRC_DIR)/drivers/usb/hid/hid_parser.c \
-             $(SRC_DIR)/drivers/usb/ohci/ohci.c \
-             $(SRC_DIR)/drivers/usb/ohci/ohci_ports.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_commands.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_debug.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_events.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_init.c \
-             $(SRC_DIR)/drivers/usb/xhci/xhci_ports.c \
+             $(SRC_DIR)/drivers/usb/hid/hid_usb_driver.c \
+             $(SRC_DIR)/drivers/usb/util/usb_debug.c \
+             $(SRC_DIR)/drivers/usb/util/usb_helpers.c \
+             $(SRC_DIR)/drivers/usb/xhci/xhci_doorbell.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_ring.c \
              $(SRC_DIR)/drivers/usb/xhci/xhci_transfer.c
 RUST_OBJS := $(if $(RUST_TARGET),$(OBJ_DIR)/crypto/crypto.o,)
@@ -85,7 +86,7 @@ OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SOURCES)) \
         $(patsubst $(SRC_DIR)/%.S,$(OBJ_DIR)/%.o,$(ASM_SOURCES)) \
         $(COBJS) \
         $(RUST_OBJS)
-HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST -Ikernel
+HOST_CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -DHOST_TEST -Ikernel -Ikernel/include
 
 .PHONY: all kernel iso run test clean distclean
 
@@ -164,7 +165,6 @@ run: iso
 	$(QEMU) -machine q35 -m 2G \
 		-bios $(OVMF_CODE) \
 		-serial stdio \
-		-d guest_errors,unimp,pcall \
 		-no-reboot -no-shutdown \
 		-drive if=none,id=cdrom,file=AstraOS.iso,format=raw,media=cdrom \
 		-device ide-cd,drive=cdrom \

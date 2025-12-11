@@ -4,7 +4,7 @@
 #include "lapic.hpp"
 #include "../x86_64/idt.hpp"
 #include "../../util/logger.hpp"
-#include "../../drivers/usb/usb_core.hpp"
+#include <drivers/usb/usb_core.h>
 
 extern "C" void* kmemalign(size_t alignment, size_t size);
 extern "C" uintptr_t virt_to_phys(const void* p);
